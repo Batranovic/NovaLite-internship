@@ -12,6 +12,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
+import { NavBarComponent } from './features/layout/nav-bar/nav-bar.component';
+import {LayoutModule} from "./features/layout/layout.module";
+import { MatOptionModule } from '@angular/material/core';
+import { RouterOutlet } from '@angular/router';
 
 @NgModule({
   declarations: [
@@ -21,12 +25,15 @@ import { HttpClientModule } from '@angular/common/http';
   imports: [
     BrowserModule,
     AppRoutingModule,
+    LayoutModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatOptionModule,
     MatButtonModule,
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
+    RouterOutlet
   ],
   providers: [
     provideAnimationsAsync(), HttpClientModule
