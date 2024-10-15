@@ -6,32 +6,6 @@ import { MsalService } from '@azure/msal-angular';
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   title = 'back-office-app';
-
-  constructor(private msalService: MsalService) { }
-
-  ngOnInit(): void {
-    this.msalService.instance.initialize().then(() => {
-      this.msalService.instance.handleRedirectPromise().then(
-        res => {
-          if (res != null && res.account != null) {
-            this.msalService.instance.setActiveAccount(res.account);
-          }
-        }
-      )
-    })
-  }
-
-  isLoggedIn(): boolean {
-    return this.msalService.instance.getActiveAccount() != null;
-  }
-
-  login() {
-    this.msalService.loginRedirect();
-  }
-
-  logout() {
-    this.msalService.logout();
-  }
 }

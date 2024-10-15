@@ -1,3 +1,23 @@
 .menu-spacer {
     flex: 1 1 auto;
 }
+
+.account-username {
+    margin: 8px 0; 
+    padding: 8px 12px; 
+    font-size: 14px; 
+    font-weight: 500;
+    color: black; 
+    text-decoration: none; 
+    border: 1px solid transparent; 
+    border-radius: 4px; 
+    background-color: rgba(0, 0, 0, 0.05); 
+  }
+
+  .logout-button {
+    width: 100%; 
+    text-align: center; 
+    margin-top: 12px;
+  }
+
+

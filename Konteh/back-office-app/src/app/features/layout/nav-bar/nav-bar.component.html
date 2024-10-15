@@ -3,8 +3,20 @@
       <span class="menu-spacer"></span>
       <a mat-button (click)="redirectToHome()">Home</a>
       <a mat-button (click)="redirectToQuestionsOverview()">Questions Overview</a>
-      <a href="#" mat-button>Menu Item 3</a>
-      <a href="#" mat-button>Menu Item 4</a>
-      <a href="#" mat-button>Menu Item 5</a>
-      <a href="#" mat-button>Menu Item 6</a>
-</mat-toolbar>
+      
+      <ng-container *ngIf="!isLoggedIn(); else loggedInTemplate">
+        <button mat-button (click)="login()">Login</button>
+      </ng-container>
+    
+      <ng-template #loggedInTemplate>
+        <button mat-button [matMenuTriggerFor]="userMenu">
+          <mat-icon>person</mat-icon> 
+        </button>
+        <mat-menu #userMenu="matMenu">
+          <span class="account-username">{{ getAccountUsername() }}</span>
+          <br>
+          <button class="logout-button" mat-menu-item (click)="logout()" >Logout</button>
+        </mat-menu>
+      </ng-template>
+    </mat-toolbar>
+    

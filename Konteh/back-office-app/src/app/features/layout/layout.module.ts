@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavBarComponent } from './nav-bar/nav-bar.component';
-import {MatToolbar} from "@angular/material/toolbar";
-import {MatIcon} from '@angular/material/icon';
-import {MatAnchor, MatIconButton} from '@angular/material/button';
+import {MatToolbar, MatToolbarModule} from "@angular/material/toolbar";
+import {MatIcon, MatIconModule} from '@angular/material/icon';
+import {MatAnchor, MatButtonModule, MatIconButton} from '@angular/material/button';
 import {MaterialModule} from '../../infrastructure/material/material.module';
-
+import { MatMenuModule } from '@angular/material/menu';
 @NgModule({
   declarations: [
     NavBarComponent
@@ -19,7 +19,11 @@ import {MaterialModule} from '../../infrastructure/material/material.module';
     MatIcon,
     MatIconButton,
     MatAnchor,
-    MaterialModule
+    MaterialModule,
+    MatToolbarModule,
+    MatButtonModule,
+    MatIconModule,
+    MatMenuModule
   ]
 })
 export class LayoutModule { }

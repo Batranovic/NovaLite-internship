@@ -1,10 +1,2 @@
-<div *ngIf="!isLoggedIn()">
-  <button (click)="login()">Login</button>
-</div>
-
-<div *ngIf="isLoggedIn()">
-  <button (click)="logout()">Logout</button>
-  <p>Welcome! You are logged in.</p>
-</div>
 <app-nav-bar></app-nav-bar>
 <router-outlet></router-outlet>
