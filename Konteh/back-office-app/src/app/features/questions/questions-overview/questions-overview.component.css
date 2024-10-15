@@ -16,3 +16,18 @@ tr:hover{
   opacity: 0.7;
   background: #faf9fd;
 }
+.mat-column-id {
+  width: 10%; /* 10% of the table width */
+}
+
+.mat-column-text {
+  width: 80%; /* 60% of the table width */
+}
+
+.mat-column-category {
+  width: 10%; /* 30% of the table width */
+}
+
+.mat-mdc-row{
+  width: 100%;
+}

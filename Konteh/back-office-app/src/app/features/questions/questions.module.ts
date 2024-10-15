@@ -4,15 +4,16 @@ import { QuestionsOverviewComponent } from './questions-overview/questions-overv
 import { QuestionTableItemComponent } from './question-table-item/question-table-item.component';
 import {MatCell, MatColumnDef, MatHeaderCell, MatHeaderRow, MatRow, MatTable} from '@angular/material/table';
 import {MatPaginator} from '@angular/material/paginator';
+import {HttpClientModule} from '@angular/common/http';
 
 
 
 @NgModule({
   declarations: [
-    QuestionsOverviewComponent,
     QuestionTableItemComponent
   ],
   imports: [
+    HttpClientModule,
     CommonModule,
     MatTable,
     MatColumnDef,

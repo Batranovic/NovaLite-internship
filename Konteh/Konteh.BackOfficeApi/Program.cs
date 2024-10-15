@@ -15,12 +15,24 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(buil
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 builder.Services.AddScoped<IRepository<Question>, QuestionRepository>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("MyCorsPolicy", builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 app.UseOpenApi();
 app.UseSwaggerUi();
 app.UseHttpsRedirection();
+
+app.UseCors("MyCorsPolicy");
 
 app.UseAuthorization();
 
