@@ -24,6 +24,39 @@
             </mat-select>
         </mat-form-field>
 
-        <button mat-raised-button color="primary" type="submit">Submit</button>
+        <button mat-flat-button color="primary" type="submit">Submit</button>
     </form>
+
+    <button mat-raised-button color="primary" *ngIf="!showAnswerForm"  (click)="showAnswerForm = true">Add an answer</button>
+
+        <div *ngIf="showAnswerForm" >
+            <form [formGroup]="answerForm" (ngSubmit)="onAnswerSubmit()">
+                <mat-form-field appearance="fill">
+                    <mat-label>Answer Text</mat-label>
+                    <input matInput formControlName="text" required>
+                </mat-form-field>
+    
+                <mat-label>Is Correct?</mat-label>
+                <mat-radio-group formControlName="isCorrect">
+                    <mat-radio-button [value]="true">Yes</mat-radio-button>
+                    <mat-radio-button [value]="false">No</mat-radio-button>
+                </mat-radio-group>
+                <div></div>
+                <button mat-flat-button color="primary" type="submit">Submit answer</button>
+            </form>
+
+        </div>
+
+    
+</div>
+
+<div *ngIf="answers.length > 0">
+    <h3 class="answers-list-title">Added Answers</h3>
+    <mat-list>
+      <mat-list-item *ngFor="let answer of answers">
+        <span>{{ answer.text }}</span>
+        <span *ngIf="answer.isCorrect" class="correct">(Correct)</span>
+        <span *ngIf="!answer.isCorrect" class="incorrect">(Incorrect)</span>
+      </mat-list-item>
+    </mat-list>
 </div>

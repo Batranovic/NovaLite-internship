@@ -16,6 +16,8 @@ import { NavBarComponent } from './features/layout/nav-bar/nav-bar.component';
 import {LayoutModule} from "./features/layout/layout.module";
 import { MatOptionModule } from '@angular/material/core';
 import { RouterOutlet } from '@angular/router';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatListModule } from '@angular/material/list';
 
 @NgModule({
   declarations: [
@@ -33,7 +35,9 @@ import { RouterOutlet } from '@angular/router';
     MatButtonModule,
     ReactiveFormsModule,
     HttpClientModule,
-    RouterOutlet
+    RouterOutlet,
+    MatRadioModule,
+    MatListModule
   ],
   providers: [
     provideAnimationsAsync(), HttpClientModule

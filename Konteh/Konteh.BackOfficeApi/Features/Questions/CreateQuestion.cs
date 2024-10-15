@@ -12,6 +12,7 @@ namespace Konteh.BackOfficeApi.Features.Questions
             public string Text { get; set; } = string.Empty;
             public QuestionCategory Category { get; set; }
             public QuestionType QuestionType { get; set; }
+            public List<Answer> Answers { get; set; } = [];
         }
 
 
@@ -35,7 +36,13 @@ namespace Konteh.BackOfficeApi.Features.Questions
                 {
                     Text = request.Text,
                     Category = request.Category,
-                    Type = request.QuestionType
+                    Type = request.QuestionType,
+                    Answers = request.Answers.Select(a => new Answer
+                    {
+                        Text = a.Text,
+                        IsCorrect = a.IsCorrect
+
+                    }).ToList()
                 };
 
                 _questionsRepository.Create(question);

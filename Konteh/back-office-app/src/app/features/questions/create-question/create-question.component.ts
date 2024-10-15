@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { CreateQuestionCommand, QuestionsClient } from '../../../api/api-reference';
+import { Answer, CreateQuestionCommand, QuestionsClient } from '../../../api/api-reference';
 
 @Component({
   selector: 'app-create-question',
@@ -10,6 +10,9 @@ import { CreateQuestionCommand, QuestionsClient } from '../../../api/api-referen
 export class CreateQuestionComponent {
 
   questionForm: FormGroup;
+  answerForm: FormGroup;
+  showAnswerForm: boolean = false;
+  answers: Answer[] = [];
 
   questionCategories = [
     { value: 1, viewValue: 'OOP' },
@@ -31,21 +34,33 @@ export class CreateQuestionComponent {
       category: ['', Validators.required],
       type: ['', Validators.required]
     })
+    this.answerForm = this.formBuilder.group({
+      text: ['', Validators.required],
+      isCorrect: ['', Validators.required]
+    })
   }
 
   onSubmit(){
     console.log(this.questionForm.value)
     if(this.questionForm.valid){
+      const hasCorrectAnswer = this.answers.some(answer => answer.isCorrect);
+
+      if (!hasCorrectAnswer) {
+        alert('At least one correct answer is required!');
+        return;
+      }
       const command = new CreateQuestionCommand();
-      command.text = this.questionForm.get('text')?.value;
-      command.category = this.questionForm.get('category')?.value;
-      command.questionType = this.questionForm.get('type')?.value;
+      command.text = this.questionForm.value.text;
+      command.category = this.questionForm.value.category;
+      command.questionType = this.questionForm.value.type;
+      command.answers = this.answers;
 
       this.questionClient.create(command).subscribe({
         next: (response) => {
           console.log('Success: ', response)
-
-         this.questionForm.reset();
+          alert('Question successfully submitted!')
+          this.questionForm.reset();
+          this.answers = [];
         },
         error: (err) => {
           console.error('Error', err)
@@ -53,6 +68,22 @@ export class CreateQuestionComponent {
       });
     }else{
       alert('All fields are required!')
+    }
+  }
+
+  onAnswerSubmit(){
+    if(this.answerForm.valid){
+      const newAnswer = new Answer();  
+      newAnswer.text = this.answerForm.value.text;
+      newAnswer.isCorrect = this.answerForm.value.isCorrect;
+         
+      this.answers.push(newAnswer);
+      this.answerForm.reset();
+      this.showAnswerForm =  false;
+      alert('Answer successfully submitted!')
+    }
+    else{
+      alert('All fields for answer are required!')
     }
   }
 

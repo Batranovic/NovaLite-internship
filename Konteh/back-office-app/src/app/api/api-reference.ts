@@ -275,6 +275,7 @@ export class CreateQuestionCommand implements ICreateQuestionCommand {
     text?: string;
     category?: QuestionCategory;
     questionType?: QuestionType;
+    answers?: Answer[];
 
     constructor(data?: ICreateQuestionCommand) {
         if (data) {
@@ -290,6 +291,11 @@ export class CreateQuestionCommand implements ICreateQuestionCommand {
             this.text = _data["text"];
             this.category = _data["category"];
             this.questionType = _data["questionType"];
+            if (Array.isArray(_data["answers"])) {
+                this.answers = [] as any;
+                for (let item of _data["answers"])
+                    this.answers!.push(Answer.fromJS(item));
+            }
         }
     }
 
@@ -305,6 +311,11 @@ export class CreateQuestionCommand implements ICreateQuestionCommand {
         data["text"] = this.text;
         data["category"] = this.category;
         data["questionType"] = this.questionType;
+        if (Array.isArray(this.answers)) {
+            data["answers"] = [];
+            for (let item of this.answers)
+                data["answers"].push(item.toJSON());
+        }
         return data;
     }
 }
@@ -313,11 +324,56 @@ export interface ICreateQuestionCommand {
     text?: string;
     category?: QuestionCategory;
     questionType?: QuestionType;
+    answers?: Answer[];
 }
 
 export enum QuestionType {
     RadioButton = 1,
     CheckBox = 2,
+}
+
+export class Answer implements IAnswer {
+    id?: number;
+    text?: string;
+    isCorrect?: boolean;
+
+    constructor(data?: IAnswer) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.text = _data["text"];
+            this.isCorrect = _data["isCorrect"];
+        }
+    }
+
+    static fromJS(data: any): Answer {
+        data = typeof data === 'object' ? data : {};
+        let result = new Answer();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["text"] = this.text;
+        data["isCorrect"] = this.isCorrect;
+        return data;
+    }
+}
+
+export interface IAnswer {
+    id?: number;
+    text?: string;
+    isCorrect?: boolean;
 }
 
 export class WeatherForecast implements IWeatherForecast {
