@@ -21,4 +21,17 @@ public class QuestionsController : ControllerBase
         return Ok(response);
     }
 
+    [HttpGet("paginate/{page}/{pageSize}")]
+    public async Task<ActionResult<IEnumerable<GetAllQuestions.Response>>> Paginate(int page, float pageSize)
+    {
+        var response = await _mediator.Send(new PaginateQuestions.Query(page, pageSize));
+        return Ok(response);
+    }
+
+    [HttpGet("paginate/{pageSize}")]
+    public async Task<ActionResult<IEnumerable<GetAllQuestions.Response>>> GetPageCount(float pageSize)
+    {
+        var response = await _mediator.Send(new QuestionPageCount.Query(pageSize));
+        return Ok(response);
+    }
 }
