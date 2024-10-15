@@ -1,0 +1,18 @@
+.question-table-container{
+  padding-top: 4vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.mat-elevation-z8 {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  width: 80%;
+}
+
+tr:hover{
+  opacity: 0.7;
+  background: #faf9fd;
+}
