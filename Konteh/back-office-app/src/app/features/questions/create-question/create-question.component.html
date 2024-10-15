@@ -1,0 +1,29 @@
+<div class="form-container">
+    <h2 class="form-title">Question Form</h2>
+    <form [formGroup]="questionForm" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="fill">
+            <mat-label>Text</mat-label>
+            <input matInput formControlName="text">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+            <mat-label>Category</mat-label>
+            <mat-select formControlName="category">
+                <mat-option *ngFor="let c of questionCategories" [value]="c.value">
+                    {{ c.viewValue }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+            <mat-label>Type</mat-label>
+            <mat-select formControlName="type">
+                <mat-option *ngFor="let t of questionTypes" [value]="t.value">
+                    {{ t.viewValue }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="submit">Submit</button>
+    </form>
+</div>

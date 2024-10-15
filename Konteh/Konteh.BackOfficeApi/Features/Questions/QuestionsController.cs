@@ -21,4 +21,11 @@ public class QuestionsController : ControllerBase
         return Ok(response);
     }
 
+    [HttpPost("")]
+    public async Task<ActionResult> Create([FromBody] CreateQuestion.Command command)
+    {
+        var response = await _mediator.Send(command);
+        return Ok(response);
+    }
+
 }
