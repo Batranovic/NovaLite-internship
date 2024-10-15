@@ -6,7 +6,8 @@ import { AppComponent } from './app.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { MSAL_INSTANCE, MsalModule, MsalService } from '@azure/msal-angular'
 import { IPublicClientApplication, PublicClientApplication } from '@azure/msal-browser';
-
+import { NavBarComponent } from './features/layout/nav-bar/nav-bar.component';
+import {LayoutModule} from "./features/layout/layout.module";
 export function MSALInstanceFactory(): IPublicClientApplication {
   return new PublicClientApplication({
     auth: {
@@ -24,7 +25,8 @@ export function MSALInstanceFactory(): IPublicClientApplication {
   imports: [
     BrowserModule,
     AppRoutingModule,
-    MsalModule
+    MsalModule,
+    LayoutModule
   ],
   providers: [
   {
