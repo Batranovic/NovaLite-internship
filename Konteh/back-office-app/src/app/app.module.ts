@@ -18,6 +18,7 @@ import { MatOptionModule } from '@angular/material/core';
 import { RouterOutlet } from '@angular/router';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatListModule } from '@angular/material/list';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,8 @@ import { MatListModule } from '@angular/material/list';
     HttpClientModule,
     RouterOutlet,
     MatRadioModule,
-    MatListModule
+    MatListModule,
+    MatCheckboxModule
   ],
   providers: [
     provideAnimationsAsync(), HttpClientModule

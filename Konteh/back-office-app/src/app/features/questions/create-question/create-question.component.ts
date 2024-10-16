@@ -36,7 +36,7 @@ export class CreateQuestionComponent {
     })
     this.answerForm = this.formBuilder.group({
       text: ['', Validators.required],
-      isCorrect: ['', Validators.required]
+      isCorrect: [false, Validators.required]
     })
   }
 
@@ -78,7 +78,7 @@ export class CreateQuestionComponent {
       newAnswer.isCorrect = this.answerForm.value.isCorrect;
          
       this.answers.push(newAnswer);
-      this.answerForm.reset();
+      this.answerForm.reset({ text: '', isCorrect: false });
       this.showAnswerForm =  false;
       alert('Answer successfully submitted!')
     }
