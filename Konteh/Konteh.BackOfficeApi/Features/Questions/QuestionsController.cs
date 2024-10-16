@@ -14,20 +14,6 @@ public class QuestionsController : ControllerBase
         _mediator = mediator;
     }
 
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<GetAllQuestions.Response>>> GetAll()
-    {
-        var response = await _mediator.Send(new GetAllQuestions.Query());
-        return Ok(response);
-    }
-
-    [HttpGet("/search/{text}")]
-    public async Task<ActionResult<IEnumerable<SearchQuestions.Response>>> Search(string text)
-    {
-        var response = await _mediator.Send(new SearchQuestions.Query(text));
-        return Ok(response);
-    }
-
     [HttpGet("paginate")]
     public async Task<ActionResult<IEnumerable<PaginateQuestions.Response>>> Paginate(
     [FromQuery] int page = 1,

@@ -16,8 +16,6 @@ import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angula
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 export interface IQuestionsClient {
-    getAll(): Observable<GetAllQuestionsResponse[]>;
-    search(text: string): Observable<SearchQuestionsResponse[]>;
     paginate(page: number | undefined, pageSize: number | undefined, questionText: string | null | undefined): Observable<PaginateQuestionsResponse[]>;
     getPageCount(pageSize: number | undefined, questionText: string | null | undefined): Observable<QuestionPageCountResponse>;
 }
@@ -33,119 +31,6 @@ export class QuestionsClient implements IQuestionsClient {
     constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
         this.http = http;
         this.baseUrl = baseUrl ?? "https://localhost:7184";
-    }
-
-    getAll(): Observable<GetAllQuestionsResponse[]> {
-        let url_ = this.baseUrl + "/questions";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetAll(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetAll(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<GetAllQuestionsResponse[]>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<GetAllQuestionsResponse[]>;
-        }));
-    }
-
-    protected processGetAll(response: HttpResponseBase): Observable<GetAllQuestionsResponse[]> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(GetAllQuestionsResponse.fromJS(item));
-            }
-            else {
-                result200 = <any>null;
-            }
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-
-    search(text: string): Observable<SearchQuestionsResponse[]> {
-        let url_ = this.baseUrl + "/search/{text}";
-        if (text === undefined || text === null)
-            throw new Error("The parameter 'text' must be defined.");
-        url_ = url_.replace("{text}", encodeURIComponent("" + text));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processSearch(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processSearch(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<SearchQuestionsResponse[]>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<SearchQuestionsResponse[]>;
-        }));
-    }
-
-    protected processSearch(response: HttpResponseBase): Observable<SearchQuestionsResponse[]> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(SearchQuestionsResponse.fromJS(item));
-            }
-            else {
-                result200 = <any>null;
-            }
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
     }
 
     paginate(page: number | undefined, pageSize: number | undefined, questionText: string | null | undefined): Observable<PaginateQuestionsResponse[]> {
@@ -341,103 +226,6 @@ export class WeatherForecastClient implements IWeatherForecastClient {
     }
 }
 
-export class GetAllQuestionsResponse implements IGetAllQuestionsResponse {
-    id?: number;
-    text?: string;
-    category?: QuestionCategory;
-
-    constructor(data?: IGetAllQuestionsResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.text = _data["text"];
-            this.category = _data["category"];
-        }
-    }
-
-    static fromJS(data: any): GetAllQuestionsResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new GetAllQuestionsResponse();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["text"] = this.text;
-        data["category"] = this.category;
-        return data;
-    }
-}
-
-export interface IGetAllQuestionsResponse {
-    id?: number;
-    text?: string;
-    category?: QuestionCategory;
-}
-
-export enum QuestionCategory {
-    OOP = 1,
-    General = 2,
-    Git = 3,
-    Testing = 4,
-    Sql = 5,
-    Csharp = 6,
-}
-
-export class SearchQuestionsResponse implements ISearchQuestionsResponse {
-    id?: number;
-    text?: string;
-    category?: QuestionCategory;
-
-    constructor(data?: ISearchQuestionsResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.text = _data["text"];
-            this.category = _data["category"];
-        }
-    }
-
-    static fromJS(data: any): SearchQuestionsResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new SearchQuestionsResponse();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["text"] = this.text;
-        data["category"] = this.category;
-        return data;
-    }
-}
-
-export interface ISearchQuestionsResponse {
-    id?: number;
-    text?: string;
-    category?: QuestionCategory;
-}
-
 export class PaginateQuestionsResponse implements IPaginateQuestionsResponse {
     id?: number;
     text?: string;
@@ -480,6 +268,15 @@ export interface IPaginateQuestionsResponse {
     id?: number;
     text?: string;
     category?: QuestionCategory;
+}
+
+export enum QuestionCategory {
+    OOP = 1,
+    General = 2,
+    Git = 3,
+    Testing = 4,
+    Sql = 5,
+    Csharp = 6,
 }
 
 export class QuestionPageCountResponse implements IQuestionPageCountResponse {

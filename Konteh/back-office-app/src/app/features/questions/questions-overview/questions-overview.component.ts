@@ -5,7 +5,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatButtonModule} from '@angular/material/button';
 import {
-  GetAllQuestionsResponse,
+  PaginateQuestionsResponse,
   QuestionCategory,
   QuestionPageCountResponse,
   QuestionsClient
@@ -23,7 +23,7 @@ import {MatLabel} from '@angular/material/form-field';
 })
 export class QuestionsOverviewComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = ['id', 'text', 'category', 'actions'];
-  dataSource = new MatTableDataSource<GetAllQuestionsResponse>();
+  dataSource = new MatTableDataSource<PaginateQuestionsResponse>();
   pageNum: number = 1;
   pageSize: number = 5;
   pageCount: number = 100;
@@ -90,7 +90,7 @@ export class QuestionsOverviewComponent implements OnInit, AfterViewInit {
     });
   }
 
-  editQuestion(question : GetAllQuestionsResponse) {
+  editQuestion(question : PaginateQuestionsResponse) {
 
   }
 

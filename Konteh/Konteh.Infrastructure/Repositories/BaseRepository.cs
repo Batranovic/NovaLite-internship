@@ -76,6 +76,4 @@ public abstract class BaseRepository<T> : IRepository<T> where T : class
     {
         return await _context.Set<T>().Where(predicate).ToListAsync();
     }
-
-
 }
