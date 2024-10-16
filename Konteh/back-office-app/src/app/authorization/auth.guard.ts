@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, GuardResult, MaybeAsync, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
 
 @Injectable({
@@ -8,9 +8,7 @@ import { MsalService } from '@azure/msal-angular';
 export class AuthGuard implements CanActivate {
   constructor(private msalService: MsalService) {}
 
-  canActivate(_route: ActivatedRouteSnapshot, _state: RouterStateSnapshot): MaybeAsync<GuardResult> {
-
+  canActivate(_route: ActivatedRouteSnapshot, _state: RouterStateSnapshot){
     return this.msalService.instance.getActiveAccount() != null;
-
   }
 }

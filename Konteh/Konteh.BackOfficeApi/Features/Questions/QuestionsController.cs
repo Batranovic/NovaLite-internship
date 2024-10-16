@@ -22,12 +22,4 @@ public class QuestionsController : ControllerBase
         var response = await _mediator.Send(new GetAllQuestions.Query());
         return Ok(response);
     }
-
-
-    [HttpGet("hello")]
-    public IActionResult GetHello()
-    {
-        return Ok(new { message = "Hello World" });
-    }
-
 }

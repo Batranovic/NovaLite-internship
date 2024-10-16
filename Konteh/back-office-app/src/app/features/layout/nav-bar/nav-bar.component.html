@@ -4,19 +4,17 @@
       <a mat-button (click)="redirectToHome()">Home</a>
       <a mat-button (click)="redirectToQuestionsOverview()">Questions Overview</a>
       
-      <ng-container *ngIf="!isLoggedIn(); else loggedInTemplate">
-        <button mat-button (click)="login()">Login</button>
-      </ng-container>
+
+      <button mat-button *ngIf="!isLoggedIn()" (click)="login()">Login</button>
+
     
-      <ng-template #loggedInTemplate>
-        <button mat-button [matMenuTriggerFor]="userMenu">
+      <button mat-button [matMenuTriggerFor]="userMenu" *ngIf="isLoggedIn()">
           <mat-icon>person</mat-icon> 
-        </button>
+      </button>
         <mat-menu #userMenu="matMenu">
           <span class="account-username">{{ getAccountUsername() }}</span>
           <br>
           <button class="logout-button" mat-menu-item (click)="logout()" >Logout</button>
         </mat-menu>
-      </ng-template>
-    </mat-toolbar>
+</mat-toolbar>
     

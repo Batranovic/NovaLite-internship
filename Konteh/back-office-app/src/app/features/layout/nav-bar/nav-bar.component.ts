@@ -6,13 +6,10 @@ import { MsalService } from '@azure/msal-angular';
   selector: 'app-nav-bar',
   templateUrl: './nav-bar.component.html',
   styleUrl: './nav-bar.component.css',
-
-
 })
 export class NavBarComponent implements OnInit{
 
-  constructor(private router: Router, private msalService: MsalService) {
-  }
+  constructor(private router: Router, private msalService: MsalService) {}
 
   ngOnInit(): void {
     this.msalService.instance.initialize().then(() => {
@@ -25,6 +22,7 @@ export class NavBarComponent implements OnInit{
       )
     })
   }
+
   redirectToHome() {
     this.router.navigate(['']).then(r => {});
   }
@@ -32,8 +30,6 @@ export class NavBarComponent implements OnInit{
   redirectToQuestionsOverview() {
     this.router.navigate(["questions-overview"]).then(r => {});
   }
-
-  
 
   isLoggedIn(): boolean {
     return this.msalService.instance.getActiveAccount() != null;
@@ -52,9 +48,3 @@ export class NavBarComponent implements OnInit{
     return account ? account.username : null;
   }
 }
-
-
-
-
-
-  
