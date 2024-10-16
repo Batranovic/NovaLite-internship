@@ -1,19 +1,11 @@
 import { Component, ViewChild, AfterViewInit, OnInit } from '@angular/core';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import {MatIconModule} from '@angular/material/icon';
-import {MatMenuModule} from '@angular/material/menu';
-import {MatButtonModule} from '@angular/material/button';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
 import {
   PaginateQuestionsResponse,
   QuestionCategory,
   QuestionsClient
 } from '../../../api/api-reference';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import {MatButton} from '@angular/material/button';
-import {QuestionsModule} from '../questions.module';
-import {MatLabel} from '@angular/material/form-field';
 
 @Component({
   selector: 'app-questions-overview',

@@ -1,12 +1,10 @@
 ﻿using Konteh.Domain;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 using System.Linq.Expressions;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Konteh.Infrastructure.Repositories;
 
-public class QuestionRepository : BaseRepository<Question>
+public class QuestionRepository : BaseRepository<Question>, IQuestionRepository
 {
     private AppDbContext _context;
     public QuestionRepository(AppDbContext context) : base(context)
