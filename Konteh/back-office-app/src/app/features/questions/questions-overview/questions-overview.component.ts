@@ -6,7 +6,4 @@ import { Component } from '@angular/core';
   styleUrl: './questions-overview.component.css'
 })
 export class QuestionsOverviewComponent {
-  apiResponse: string | undefined;
-
-  constructor() {}
 }

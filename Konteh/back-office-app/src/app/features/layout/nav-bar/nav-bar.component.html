@@ -3,11 +3,7 @@
       <span class="menu-spacer"></span>
       <a mat-button (click)="redirectToHome()">Home</a>
       <a mat-button (click)="redirectToQuestionsOverview()">Questions Overview</a>
-      
-
       <button mat-button *ngIf="!isLoggedIn()" (click)="login()">Login</button>
-
-    
       <button mat-button [matMenuTriggerFor]="userMenu" *ngIf="isLoggedIn()">
           <mat-icon>person</mat-icon> 
       </button>

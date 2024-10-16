@@ -24,11 +24,11 @@ export class NavBarComponent implements OnInit{
   }
 
   redirectToHome() {
-    this.router.navigate(['']).then(r => {});
+    this.router.navigate(['']);
   }
 
   redirectToQuestionsOverview() {
-    this.router.navigate(["questions-overview"]).then(r => {});
+    this.router.navigate(["questions-overview"]);
   }
 
   isLoggedIn(): boolean {
