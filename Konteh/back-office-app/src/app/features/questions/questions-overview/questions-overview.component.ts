@@ -1,6 +1,5 @@
-import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { QuestionsClient } from '../../../api/api-reference';
 
 @Component({
   selector: 'app-questions-overview',
@@ -9,13 +8,30 @@ import { Router } from '@angular/router';
 })
 export class QuestionsOverviewComponent {
   apiResponse: string | undefined;
-  constructor(private router: Router, private httpClient: HttpClient) {
+  constructor(private questionClient: QuestionsClient ) {
 
   }
-
-  helloWorld() {
+/*
+  helloWorlds() {
     this.httpClient.get("https://localhost:7184/questions/hello").subscribe(resp => {
       this.apiResponse = JSON.stringify(resp);
     });
+  }*/
+
+  helloWorld() {
+    this.questionClient.getHello().subscribe({
+      next: (response) => {
+      
+        const reader = new FileReader();
+        reader.onload = () => {
+          const text = reader.result as string;
+          const json = JSON.parse(text);
+          this.apiResponse = json.message;  
+        };
+        reader.readAsText(response.data);  
+      },
+    
+    });
   }
+  
 }

@@ -1,5 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { MsalService } from '@azure/msal-angular';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-root',
