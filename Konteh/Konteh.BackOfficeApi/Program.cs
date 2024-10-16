@@ -16,6 +16,7 @@ builder.Services.AddOpenApiDocument(o => o.SchemaSettings.SchemaNameGenerator = 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 builder.Services.AddScoped<IRepository<Question>, QuestionRepository>();
+builder.Services.AddScoped<IRepository<Exam>, ExamRepository>();
 
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
