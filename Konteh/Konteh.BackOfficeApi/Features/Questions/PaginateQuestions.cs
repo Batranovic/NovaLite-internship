@@ -42,18 +42,9 @@ namespace Konteh.BackOfficeApi.Features.Questions
 
             public async Task<IEnumerable<Response>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var (items, pageCount) = await ((QuestionRepository)_repository).PaginateItems(request.Page, request.PageSize, prepareFilter(request));
+                var (items, pageCount) = await ((QuestionRepository)_repository).PaginateItems(request.Page, request.PageSize, request.QuestionText);
 
                 return items.Select(q => new Response { Id = q.Id, Category = q.Category, Text = q.Text, PageCount = pageCount});
-            }
-
-            private Expression<Func<Question, bool>>? prepareFilter(Query request)
-            {
-                if (request.QuestionText == null)
-                {
-                    return null;
-                }
-                return q => q.Text.Contains(request.QuestionText);
             }
         }
     }

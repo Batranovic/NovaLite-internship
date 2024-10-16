@@ -14,10 +14,11 @@ public class QuestionRepository : BaseRepository<Question>
         _context = context;
     }
 
-    public async Task<(IEnumerable<Question>, int)> PaginateItems(int page, float pageSize, Expression<Func<Question, bool>>? filter = null)
+    public async Task<(IEnumerable<Question>, int)> PaginateItems(int page, float pageSize, string? questionText = null)
     {
         var query = _context.Set<Question>().AsQueryable();
 
+        var filter = prepareFilter(questionText);
         if (filter != null)
         {
             query = query.Where(filter);
@@ -31,6 +32,15 @@ public class QuestionRepository : BaseRepository<Question>
             .ToListAsync();
 
         return (items, (int)totalCount);
+    }
+
+    private Expression<Func<Question, bool>>? prepareFilter(string? questionText)
+    {
+        if (questionText == null)
+        {
+            return null;
+        }
+        return q => q.Text.Contains(questionText);
     }
 
 }
