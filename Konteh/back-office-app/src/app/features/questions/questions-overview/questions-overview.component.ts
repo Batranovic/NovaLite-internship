@@ -26,12 +26,9 @@ export class QuestionsOverviewComponent implements OnInit, AfterViewInit {
   pageNum: number = 1;
   pageSize: number = 5;
   pageCount: number | undefined = 100;
-  loading = false;
-  errorMessage: string | null = null;
 
   @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
   private filteredText: string = "";
-  private filteredCategory: QuestionCategory | null = null;
 
   constructor(private questionService: QuestionsClient) {}
 
@@ -54,34 +51,27 @@ export class QuestionsOverviewComponent implements OnInit, AfterViewInit {
   }
 
   fetchQuestions() {
-    this.loading = true;
-    this.errorMessage = null;
-
     this.questionService.paginate(this.pageNum, this.pageSize, this.filteredText).subscribe({
       next: (data) => {
         this.dataSource.data = data;
-        this.loading = false;
         this.pageCount = data[0].pageCount;
       },
       error: (error) => {
-        this.errorMessage = 'Error fetching data. Please try again.';
-        this.loading = false;
-        console.error('Error fetching data:', error);
+        console.error('Error fetching data: Error fetching data. Please try again.');
       },
     });
   }
 
   editQuestion(question : PaginateQuestionsResponse) {
-
+    //TO DO: redirect to edit page
   }
 
   deleteQuestion(id : number) {
-
+    //TO DO: call api for deletion of the item and call this.resetPaginator();
   }
 
   onFilterChanged(filterData: { text: string; category: QuestionCategory | null } | any) {
     this.filteredText = filterData.text;
-    this.filteredCategory = filterData.category;
     this.resetPaginator();
   }
 
