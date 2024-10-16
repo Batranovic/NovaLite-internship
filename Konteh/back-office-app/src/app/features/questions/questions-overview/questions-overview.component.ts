@@ -7,7 +7,6 @@ import {MatButtonModule} from '@angular/material/button';
 import {
   PaginateQuestionsResponse,
   QuestionCategory,
-  QuestionPageCountResponse,
   QuestionsClient
 } from '../../../api/api-reference';
 import { Subject } from 'rxjs';
@@ -26,7 +25,7 @@ export class QuestionsOverviewComponent implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource<PaginateQuestionsResponse>();
   pageNum: number = 1;
   pageSize: number = 5;
-  pageCount: number = 100;
+  pageCount: number | undefined = 100;
   loading = false;
   errorMessage: string | null = null;
 
@@ -46,13 +45,11 @@ export class QuestionsOverviewComponent implements OnInit, AfterViewInit {
         this.pageNum = this.paginator.pageIndex + 1;
         this.pageSize = this.paginator.pageSize;
         this.fetchQuestions();
-        this.fetchPageCount();
       });
     }
   }
 
   ngOnInit() {
-    this.fetchPageCount();
     this.fetchQuestions();
   }
 
@@ -64,28 +61,12 @@ export class QuestionsOverviewComponent implements OnInit, AfterViewInit {
       next: (data) => {
         this.dataSource.data = data;
         this.loading = false;
+        this.pageCount = data[0].pageCount;
       },
       error: (error) => {
         this.errorMessage = 'Error fetching data. Please try again.';
         this.loading = false;
         console.error('Error fetching data:', error);
-      },
-    });
-  }
-
-  private fetchPageCount() {
-    this.questionService.getPageCount(this.pageSize,this.filteredText).subscribe({
-      next: (data : QuestionPageCountResponse) => {
-        if (!data.pageCount){
-          return;
-        }
-        this.pageCount = data.pageCount;
-        if (this.paginator) {
-          this.paginator.length = this.pageCount * this.pageSize;
-        }
-      },
-      error: (error) => {
-        console.error('Error fetching page count:', error);
       },
     });
   }
@@ -112,7 +93,6 @@ export class QuestionsOverviewComponent implements OnInit, AfterViewInit {
         this.paginator.length = this.pageSize;
       }
     }
-    this.fetchPageCount();
     this.fetchQuestions();
   }
 }

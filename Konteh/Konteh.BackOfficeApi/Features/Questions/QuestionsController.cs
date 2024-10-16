@@ -23,15 +23,4 @@ public class QuestionsController : ControllerBase
         var response = await _mediator.Send(new PaginateQuestions.Query(page, pageSize, questionText));
         return Ok(response);
     }
-
-    [HttpGet("page-count")]
-    public async Task<ActionResult<QuestionPageCount.Response>> GetPageCount(
-    [FromQuery] float pageSize,
-    [FromQuery] string? questionText = null)
-    {
-        var response = await _mediator.Send(new QuestionPageCount.Query(pageSize, questionText));
-        return Ok(response);
-    }
-
-
 }

@@ -1,5 +1,8 @@
 ﻿using Konteh.Domain;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Konteh.Infrastructure.Repositories;
 
@@ -11,20 +14,23 @@ public class QuestionRepository : BaseRepository<Question>
         _context = context;
     }
 
-    public async Task<(IEnumerable<Question>, int)> PaginateItems(int page, float pageSize)
+    public async Task<(IEnumerable<Question>, int)> PaginateItems(int page, float pageSize, Expression<Func<Question, bool>>? filter = null)
     {
-        if (_context.Set<Question>() == null)
+        var query = _context.Set<Question>().AsQueryable();
+
+        if (filter != null)
         {
-            return (new List<Question>(), 0);
+            query = query.Where(filter);
         }
 
-        var pageCount = Math.Ceiling(_context.Set<Question>().Count() / pageSize);
+        var totalCount = await query.CountAsync();
 
-        var items = await _context.Set<Question>()
+        var items = await query
             .Skip((page - 1) * (int)pageSize)
-            .Take((int)pageSize).ToListAsync();
+            .Take((int)pageSize)
+            .ToListAsync();
 
-        return (items, (int)pageCount);
+        return (items, (int)totalCount);
     }
 
 }

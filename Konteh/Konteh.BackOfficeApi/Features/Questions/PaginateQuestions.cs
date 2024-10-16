@@ -28,6 +28,7 @@ namespace Konteh.BackOfficeApi.Features.Questions
             public long Id { get; set; }
             public string Text { get; set; } = string.Empty;
             public QuestionCategory Category { get; set; }
+            public int PageCount { get; set; }
         }
 
         public class RequestHandler : IRequestHandler<Query, IEnumerable<Response>>
@@ -41,10 +42,9 @@ namespace Konteh.BackOfficeApi.Features.Questions
 
             public async Task<IEnumerable<Response>> Handle(Query request, CancellationToken cancellationToken)
             {
-                
-                var items = await _repository.PaginateItems(request.Page, request.PageSize, prepareFilter(request));
+                var (items, pageCount) = await ((QuestionRepository)_repository).PaginateItems(request.Page, request.PageSize, prepareFilter(request));
 
-                return items.Select(q => new Response { Id = q.Id, Category = q.Category, Text = q.Text});
+                return items.Select(q => new Response { Id = q.Id, Category = q.Category, Text = q.Text, PageCount = pageCount});
             }
 
             private Expression<Func<Question, bool>>? prepareFilter(Query request)
