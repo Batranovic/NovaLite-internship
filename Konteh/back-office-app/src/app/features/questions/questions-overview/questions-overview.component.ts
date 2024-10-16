@@ -101,6 +101,17 @@ export class QuestionsOverviewComponent implements OnInit, AfterViewInit {
   onFilterChanged(filterData: { text: string; category: QuestionCategory | null } | any) {
     this.filteredText = filterData.text;
     this.filteredCategory = filterData.category;
+    this.resetPaginator();
+  }
+
+  resetPaginator = () =>{
+    if (this.paginator) {
+      this.paginator.pageIndex = 0;
+      this.pageNum = 1;
+      if (this.dataSource.data.length === 0){
+        this.paginator.length = this.pageSize;
+      }
+    }
     this.fetchPageCount();
     this.fetchQuestions();
   }
