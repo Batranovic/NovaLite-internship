@@ -1,1 +1,29 @@
-<p>question-overview works!</p>
+<div class="question-container" *ngIf="question">
+    <h2 class="question-title">Question no. {{ question.id }}</h2>
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>{{ question.text }}</mat-card-title>
+        <mat-card-subtitle>Category: {{ getCategoryText(question.category) }}</mat-card-subtitle>
+        <mat-card-subtitle>Type: {{ getTypeText(question.type) }}</mat-card-subtitle>
+        <span class="menu-button">
+            <button mat-icon-button [matMenuTriggerFor]="menu">
+             
+            </button>
+        </span>
+        <mat-menu #menu="matMenu">
+         <button mat-menu-item>Edit</button>
+          <button mat-menu-item>Delete</button>
+        </mat-menu>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-list>
+          <mat-list-item *ngFor="let answer of question.answers; let i = index">
+            <span>{{ i + 1 }})  </span>
+            <span>{{ answer.text }}</span>
+            <span *ngIf="answer.isCorrect" style="color: green;"> - Correct</span>
+            <span *ngIf="!answer.isCorrect" style="color: red;"> - Incorrect</span>
+          </mat-list-item>
+        </mat-list>          
+      </mat-card-content>
+    </mat-card>
+</div>

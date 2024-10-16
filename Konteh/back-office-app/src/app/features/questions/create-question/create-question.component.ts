@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Answer, CreateQuestionCommand, QuestionsClient } from '../../../api/api-reference';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-create-question',
@@ -28,7 +29,7 @@ export class CreateQuestionComponent {
     { value: 2, viewValue: 'CheckBox' }
   ]
 
-  constructor(private formBuilder: FormBuilder, private questionClient: QuestionsClient){
+  constructor(private formBuilder: FormBuilder, private questionClient: QuestionsClient, private router: Router){
     this.questionForm = this.formBuilder.group({
       text: ['', Validators.required],
       category: ['', Validators.required],
@@ -57,10 +58,10 @@ export class CreateQuestionComponent {
 
       this.questionClient.create(command).subscribe({
         next: (response) => {
-          console.log('Success: ', response)
+          const createdQuestionId = response.id;
+          console.log(createdQuestionId);
           alert('Question successfully submitted!')
-          this.questionForm.reset();
-          this.answers = [];
+          this.router.navigate(['/question-overview/', response.id])
         },
         error: (err) => {
           console.error('Error', err)

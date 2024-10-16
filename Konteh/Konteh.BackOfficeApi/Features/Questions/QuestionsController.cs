@@ -22,9 +22,21 @@ public class QuestionsController : ControllerBase
     }
 
     [HttpPost("")]
-    public async Task<ActionResult> Create([FromBody] CreateQuestion.Command command)
+    public async Task<ActionResult<GetAllQuestions.Response>> Create([FromBody] CreateQuestion.Command command)
     {
         var response = await _mediator.Send(command);
+        return Ok(response);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<GetQuestionById.Response>> GetQuestionById(long id)
+    {
+        var response = await _mediator.Send(new GetQuestionById.Query { Id = id });
+        if (response == null)
+        {
+            return NotFound();
+        }
+
         return Ok(response);
     }
 

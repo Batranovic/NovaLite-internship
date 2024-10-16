@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -11,21 +10,25 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-
-import { NavBarComponent } from './features/layout/nav-bar/nav-bar.component';
 import {LayoutModule} from "./features/layout/layout.module";
 import { MatOptionModule } from '@angular/material/core';
 import { RouterOutlet } from '@angular/router';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatListModule } from '@angular/material/list';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { QuestionOverviewComponent } from './features/questions/question-overview/question-overview.component';
+import { MatCard, MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
     AppComponent,
-    CreateQuestionComponent
+    CreateQuestionComponent,
   ],
   imports: [
+    BrowserAnimationsModule,
     BrowserModule,
     AppRoutingModule,
     LayoutModule,
@@ -39,7 +42,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     RouterOutlet,
     MatRadioModule,
     MatListModule,
-    MatCheckboxModule
+    MatCheckboxModule,
   ],
   providers: [
     provideAnimationsAsync(), HttpClientModule

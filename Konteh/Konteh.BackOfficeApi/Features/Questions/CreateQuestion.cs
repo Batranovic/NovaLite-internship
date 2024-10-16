@@ -18,7 +18,7 @@ namespace Konteh.BackOfficeApi.Features.Questions
 
         public class Response
         {
-            public bool Success { get; set; }
+            public long Id { get; set; }
         }
 
         public class RequestHandler : IRequestHandler<Command, Response>
@@ -50,7 +50,7 @@ namespace Konteh.BackOfficeApi.Features.Questions
 
                 return new Response
                 {
-                    Success = true
+                    Id = question.Id
                 };
 
             }
