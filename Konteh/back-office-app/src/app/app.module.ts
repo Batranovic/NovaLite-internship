@@ -7,6 +7,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { NavBarComponent } from './features/layout/nav-bar/nav-bar.component';
 import {LayoutModule} from "./features/layout/layout.module";
 import {HttpClientModule} from '@angular/common/http';
+import {CategoryNamePipe} from './features/questions/category-name.pipe';
 
 @NgModule({
   declarations: [
