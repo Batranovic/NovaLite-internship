@@ -27,18 +27,19 @@ public abstract class BaseRepository<T> : IRepository<T> where T : class
         return await _context.Set<T>().ToListAsync();
     }
 
-    public async Task<IEnumerable<T>> PaginateItems(int page, float pageSize)
+    public async Task<IEnumerable<T>> PaginateItems(int page, float pageSize, Expression<Func<T, bool>>? filter = null)
     {
-        if (_context.Set<T>() == null)
+        var query = _context.Set<T>().AsQueryable();
+
+        if (filter != null)
         {
-            return new List<T>();
+            query = query.Where(filter);
         }
 
-        var totalCount = _context.Set<T>().Count();
+        var totalCount = await query.CountAsync();
         var pageCount = Math.Ceiling(totalCount / pageSize);
 
-
-        var items = await _context.Set<T>()
+        var items = await query
             .Skip((page - 1) * (int)pageSize)
             .Take((int)pageSize)
             .ToListAsync();
@@ -46,14 +47,21 @@ public abstract class BaseRepository<T> : IRepository<T> where T : class
         return items;
     }
 
-    public async Task<int> GetPageCount(float pageSize)
+    public async Task<int> GetPageCount(float pageSize, Expression<Func<T, bool>>? filter = null)
     {
         if (_context.Set<T>() == null || pageSize <= 0)
         {
-            return 0; 
+            return 0;
         }
 
-        var totalCount = await _context.Set<T>().CountAsync();
+        var query = _context.Set<T>().AsQueryable();
+
+        if (filter != null)
+        {
+            query = query.Where(filter);
+        }
+
+        var totalCount = await query.CountAsync();
         return (int)Math.Ceiling(totalCount / pageSize);
     }
 
@@ -69,7 +77,5 @@ public abstract class BaseRepository<T> : IRepository<T> where T : class
         return await _context.Set<T>().Where(predicate).ToListAsync();
     }
 
- 
 
-    
 }

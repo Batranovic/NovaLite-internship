@@ -2,6 +2,8 @@
 using Konteh.Domain;
 using Konteh.Infrastructure.Repositories;
 using MediatR;
+using System.Numerics;
+using System.Linq.Expressions;
 
 namespace Konteh.BackOfficeApi.Features.Questions
 {
@@ -9,12 +11,14 @@ namespace Konteh.BackOfficeApi.Features.Questions
     {
         public class Query : IRequest<IEnumerable<Response>>
         {
-            public Query(int page, float pageSize)
+            public Query(int page, float pageSize, string? questionText)
             {
                 Page = page;
                 PageSize = pageSize;
+                QuestionText = questionText;
             }
 
+            public string? QuestionText { get; set; }
             public int Page { get; set; }
             public float PageSize { get; set; }
         }
@@ -37,9 +41,19 @@ namespace Konteh.BackOfficeApi.Features.Questions
 
             public async Task<IEnumerable<Response>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var items = await _repository.PaginateItems(request.Page, request.PageSize);
+                
+                var items = await _repository.PaginateItems(request.Page, request.PageSize, prepareFilter(request));
 
                 return items.Select(q => new Response { Id = q.Id, Category = q.Category, Text = q.Text});
+            }
+
+            private Expression<Func<Question, bool>>? prepareFilter(Query request)
+            {
+                if (request.QuestionText == null)
+                {
+                    return null;
+                }
+                return q => q.Text.Contains(request.QuestionText);
             }
         }
     }

@@ -21,17 +21,31 @@ public class QuestionsController : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet("paginate/{page}/{pageSize}")]
-    public async Task<ActionResult<IEnumerable<PaginateQuestions.Response>>> Paginate(int page, float pageSize)
+    [HttpGet("/search/{text}")]
+    public async Task<ActionResult<IEnumerable<SearchQuestions.Response>>> Search(string text)
     {
-        var response = await _mediator.Send(new PaginateQuestions.Query(page, pageSize));
+        var response = await _mediator.Send(new SearchQuestions.Query(text));
         return Ok(response);
     }
 
-    [HttpGet("paginate/{pageSize}")]
-    public async Task<ActionResult<QuestionPageCount.Response>> GetPageCount(float pageSize)
+    [HttpGet("paginate")]
+    public async Task<ActionResult<IEnumerable<PaginateQuestions.Response>>> Paginate(
+    [FromQuery] int page = 1,
+    [FromQuery] float pageSize = 10,
+    [FromQuery] string? questionText = null)
     {
-        var response = await _mediator.Send(new QuestionPageCount.Query(pageSize));
+        var response = await _mediator.Send(new PaginateQuestions.Query(page, pageSize, questionText));
         return Ok(response);
     }
+
+    [HttpGet("page-count")]
+    public async Task<ActionResult<QuestionPageCount.Response>> GetPageCount(
+    [FromQuery] float pageSize,
+    [FromQuery] string? questionText = null)
+    {
+        var response = await _mediator.Send(new QuestionPageCount.Query(pageSize, questionText));
+        return Ok(response);
+    }
+
+
 }

@@ -1,5 +1,12 @@
 .form-container {
   display: flex;
   justify-content: center;
-  gap: 1rem;
+  align-items: center; /* Align items vertically */
+  gap: 1rem; /* Space between inputs and button */
+  padding: 1rem;
+}
+
+.mat-form-field {
+  flex: 1; /* Make inputs flexible to take available space */
+  min-width: 200px; /* Set a minimum width for the form fields */
 }

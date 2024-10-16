@@ -60,7 +60,7 @@ export class QuestionsOverviewComponent implements OnInit, AfterViewInit {
     this.loading = true;
     this.errorMessage = null;
 
-    this.questionService.paginate(this.pageNum, this.pageSize).subscribe({
+    this.questionService.paginate(this.pageNum, this.pageSize, this.filteredText).subscribe({
       next: (data) => {
         this.dataSource.data = data;
         this.loading = false;
@@ -74,7 +74,7 @@ export class QuestionsOverviewComponent implements OnInit, AfterViewInit {
   }
 
   private fetchPageCount() {
-    this.questionService.getPageCount(this.pageSize).subscribe({
+    this.questionService.getPageCount(this.pageSize,this.filteredText).subscribe({
       next: (data : QuestionPageCountResponse) => {
         if (!data.pageCount){
           return;
@@ -101,8 +101,7 @@ export class QuestionsOverviewComponent implements OnInit, AfterViewInit {
   onFilterChanged(filterData: { text: string; category: QuestionCategory | null } | any) {
     this.filteredText = filterData.text;
     this.filteredCategory = filterData.category;
-
-    console.log('Filtered text:', this.filteredText);
-    console.log('Filtered category:', this.filteredCategory);
+    this.fetchPageCount();
+    this.fetchQuestions();
   }
 }

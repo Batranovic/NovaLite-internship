@@ -1,15 +1,6 @@
 <div class="form-container">
-  <mat-form-field appearance="fill">
-    <mat-label>Question Text</mat-label>
+    <mat-form-field appearance="outline">
+    <mat-label>Question Text <mat-icon>search</mat-icon></mat-label>
     <input matInput [(ngModel)]="questionText" (ngModelChange)="onFilterChange()" />
-  </mat-form-field>
-
-  <mat-form-field appearance="fill">
-    <mat-label>Category</mat-label>
-    <mat-select [(value)]="selectedCategory" (selectionChange)="onFilterChange()">
-      <mat-option *ngFor="let category of categories" [value]="category.value">
-        {{ category.viewValue }}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
+    </mat-form-field>
 </div>

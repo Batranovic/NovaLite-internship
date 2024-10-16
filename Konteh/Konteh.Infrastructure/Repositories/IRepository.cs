@@ -9,7 +9,7 @@ public interface IRepository<T>
     void Create(T entity);
     void Delete(T entity);
     Task SaveChanges();
-    Task<IEnumerable<T>> PaginateItems(int page, float pageSize);
-    Task<int> GetPageCount(float pageSize);
+    Task<IEnumerable<T>> PaginateItems(int page, float pageSize, Expression<Func<T, bool>>? filter = null);
+    Task<int> GetPageCount(float pageSize, Expression<Func<T, bool>>? filter = null);
     Task<IEnumerable<T>> Search(Expression<Func<T, bool>> predicate);
 }
