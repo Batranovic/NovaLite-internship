@@ -30,14 +30,15 @@ namespace Konteh.BackOfficeApi.Features.Questions
                 _repository = repository;
             }
 
-            public async Task<Response?> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<Response> Handle(Query request, CancellationToken cancellationToken)
             {
                 var question = await _repository.Query()
                     .Include(q => q.Answers)
                     .FirstOrDefaultAsync(q => q.Id == request.Id);
+
                 if (question == null)
                 {
-                    return null;
+                    throw new Exception("Question not found.");
                 }
 
                 return new Response

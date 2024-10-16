@@ -40,4 +40,16 @@ public class QuestionsController : ControllerBase
         return Ok(response);
     }
 
+    [HttpPut]
+    public async Task<ActionResult<UpdateQuestion.Response>> UpdateQuestion([FromBody] UpdateQuestion.Command command)
+    {
+        var response = await _mediator.Send(command);
+        if (response == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(response);
+    }
+
 }

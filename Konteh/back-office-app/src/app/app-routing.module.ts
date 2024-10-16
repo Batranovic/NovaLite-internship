@@ -9,7 +9,8 @@ const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'questions-overview', component: QuestionsOverviewComponent },
   { path: 'create-question', component: CreateQuestionComponent },
-  { path: 'question-overview/:id', component: QuestionOverviewComponent}
+  { path: 'question-overview/:id', component: QuestionOverviewComponent},
+  { path: 'edit-question/:id', component: CreateQuestionComponent }
 ];
 
 @NgModule({

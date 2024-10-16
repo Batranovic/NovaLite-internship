@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { GetQuestionByIdResponse, QuestionCategory, QuestionsClient, QuestionType } from '../../../api/api-reference';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-question-overview',
@@ -11,7 +11,7 @@ export class QuestionOverviewComponent {
   questionId!: number;
   question: GetQuestionByIdResponse | null = null;
 
-  constructor(private route: ActivatedRoute, private questionsClient: QuestionsClient){}
+  constructor(private route: ActivatedRoute, private questionsClient: QuestionsClient, private router: Router){}
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -60,5 +60,9 @@ export class QuestionOverviewComponent {
       default:
         return 'Unknown Category';
     }
+  }
+
+  editQuestion(): void {
+    this.router.navigate(['/edit-question', this.question?.id])
   }
 }

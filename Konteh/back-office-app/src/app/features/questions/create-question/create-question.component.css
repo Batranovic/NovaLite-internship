@@ -95,4 +95,7 @@ mat-list-item span {
     color: #333; 
 }
   
-  
+.edit-answer-textarea{
+    margin-top: 24px;
+    width: 60%;
+} 

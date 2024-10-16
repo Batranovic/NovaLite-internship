@@ -1,5 +1,5 @@
 <div class="question-container" *ngIf="question">
-    <h2 class="question-title">Question no. {{ question.id }}</h2>
+    <h2 class="question-title">Question no. {{ question!.id }}</h2>
     <mat-card>
       <mat-card-header>
         <mat-card-title>{{ question.text }}</mat-card-title>
@@ -7,12 +7,11 @@
         <mat-card-subtitle>Type: {{ getTypeText(question.type) }}</mat-card-subtitle>
         <span class="menu-button">
             <button mat-icon-button [matMenuTriggerFor]="menu">
-             
+              <mat-icon>more_vert</mat-icon>
             </button>
         </span>
         <mat-menu #menu="matMenu">
-         <button mat-menu-item>Edit</button>
-          <button mat-menu-item>Delete</button>
+         <button mat-menu-item (click)="editQuestion()">Edit</button>
         </mat-menu>
       </mat-card-header>
       <mat-card-content>

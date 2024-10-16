@@ -18,6 +18,7 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 export interface IQuestionsClient {
     getAll(): Observable<GetAllQuestionsResponse[]>;
     create(command: CreateQuestionCommand): Observable<GetAllQuestionsResponse>;
+    updateQuestion(command: UpdateQuestionCommand): Observable<UpdateQuestionResponse>;
     getQuestionById(id: number): Observable<GetQuestionByIdResponse>;
 }
 
@@ -131,6 +132,58 @@ export class QuestionsClient implements IQuestionsClient {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = GetAllQuestionsResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    updateQuestion(command: UpdateQuestionCommand): Observable<UpdateQuestionResponse> {
+        let url_ = this.baseUrl + "/questions";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateQuestion(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateQuestion(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<UpdateQuestionResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<UpdateQuestionResponse>;
+        }));
+    }
+
+    protected processUpdateQuestion(response: HttpResponseBase): Observable<UpdateQuestionResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = UpdateQuestionResponse.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -477,6 +530,126 @@ export class GetQuestionByIdResponse implements IGetQuestionByIdResponse {
 }
 
 export interface IGetQuestionByIdResponse {
+    id?: number;
+    text?: string;
+    category?: QuestionCategory;
+    type?: QuestionType;
+    answers?: Answer[];
+}
+
+export class UpdateQuestionResponse implements IUpdateQuestionResponse {
+    id?: number;
+    text?: string;
+    category?: QuestionCategory;
+    type?: QuestionType;
+    answers?: Answer[];
+
+    constructor(data?: IUpdateQuestionResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.text = _data["text"];
+            this.category = _data["category"];
+            this.type = _data["type"];
+            if (Array.isArray(_data["answers"])) {
+                this.answers = [] as any;
+                for (let item of _data["answers"])
+                    this.answers!.push(Answer.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): UpdateQuestionResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateQuestionResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["text"] = this.text;
+        data["category"] = this.category;
+        data["type"] = this.type;
+        if (Array.isArray(this.answers)) {
+            data["answers"] = [];
+            for (let item of this.answers)
+                data["answers"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IUpdateQuestionResponse {
+    id?: number;
+    text?: string;
+    category?: QuestionCategory;
+    type?: QuestionType;
+    answers?: Answer[];
+}
+
+export class UpdateQuestionCommand implements IUpdateQuestionCommand {
+    id?: number;
+    text?: string;
+    category?: QuestionCategory;
+    type?: QuestionType;
+    answers?: Answer[];
+
+    constructor(data?: IUpdateQuestionCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.text = _data["text"];
+            this.category = _data["category"];
+            this.type = _data["type"];
+            if (Array.isArray(_data["answers"])) {
+                this.answers = [] as any;
+                for (let item of _data["answers"])
+                    this.answers!.push(Answer.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): UpdateQuestionCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateQuestionCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["text"] = this.text;
+        data["category"] = this.category;
+        data["type"] = this.type;
+        if (Array.isArray(this.answers)) {
+            data["answers"] = [];
+            for (let item of this.answers)
+                data["answers"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IUpdateQuestionCommand {
     id?: number;
     text?: string;
     category?: QuestionCategory;

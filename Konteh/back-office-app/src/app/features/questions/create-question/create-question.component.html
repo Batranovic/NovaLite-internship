@@ -1,5 +1,6 @@
 <div class="form-container">
-    <h2 class="form-title">Question Form</h2>
+    <h2 class="form-title" *ngIf="!isEditMode">Question Form</h2>
+    <h2 class="form-title" *ngIf="isEditMode">Edit Question</h2>
     <form [formGroup]="questionForm" (ngSubmit)="onSubmit()">
         <mat-form-field appearance="fill">
             <mat-label>Text</mat-label>
@@ -21,7 +22,8 @@
                 </mat-option>
             </mat-select>
         </mat-form-field>
-        <button class="question-form-button" mat-flat-button color="primary" type="submit">Submit</button>
+        <button class="question-form-button" mat-flat-button color="primary" type="submit" *ngIf="!isEditMode">Submit</button>
+        <button class="question-form-button" mat-flat-button color="primary" type="submit" *ngIf="isEditMode">Save Changes</button>
     </form>
 
     <button mat-raised-button color="primary" *ngIf="!showAnswerForm"  (click)="showAnswerForm = true">Add an answer</button>
@@ -40,13 +42,24 @@
     </div>
 </div>
 
-<div *ngIf="answers.length > 0">
+<div *ngIf="answers.length > 0 && !isEditMode" >
     <h2 class="answers-list-title">Added Answers</h2>
     <mat-list>
       <mat-list-item *ngFor="let answer of answers" class="answer-item">
         <span>{{ answer.text }}</span>
         <span *ngIf="answer.isCorrect" class="correct">(Correct)</span>
         <span *ngIf="!answer.isCorrect" class="incorrect">(Incorrect)</span>
+      </mat-list-item>
+    </mat-list>
+</div>
+
+<div *ngIf="answers.length > 0 && isEditMode">
+    <h2 class="answers-list-title">Edit Answers</h2>
+    <mat-list>
+      <mat-list-item *ngFor="let answer of answers; let i = index" class="answer-item">
+        <textarea class="edit-answer-text" matInput [(ngModel)]="answer.text"></textarea>
+        <mat-checkbox [(ngModel)]="answer.isCorrect">Is Correct?</mat-checkbox>
+        <button mat-raised-button color="primary" (click)="updateAnswer(i)">Update Answer</button>
       </mat-list-item>
     </mat-list>
 </div>
