@@ -1,5 +1,5 @@
 using Konteh.BackOfficeApi.Features.Exams;
-using Konteh.BackOfficeApi.Utils;
+using Konteh.BackOfficeApi.Features.Exams.RandomGenerator;
 using Konteh.Domain;
 using Konteh.Domain.Enumerations;
 using Konteh.Infrastructure.Repositories;
@@ -27,7 +27,6 @@ namespace Konteh.Tests
         [Test]
         public async Task Handle_ShouldThrowException_WhenNotEnoughQuestionsInCategory()
         {
-            //Arrange
             var command = new GenerateExam.Command { QuestionPerCategory = 3 };
             var questions = new List<Question>
             {
@@ -35,7 +34,6 @@ namespace Konteh.Tests
                 new Question {Id = 3, Category = QuestionCategory.General}
             };
 
-            //Act and Assert
             _questionRepository.Search(Arg.Any<Expression<Func<Question, bool>>>()).Returns(questions);
 
             var exception = Assert.ThrowsAsync<InvalidOperationException>(() => _handler.Handle(command, CancellationToken.None));
@@ -48,7 +46,6 @@ namespace Konteh.Tests
         [Test]
         public async Task Handle_ShouldCreateExam_WithTwoQuestionsPerCategory()
         {
-            // Arrange
             var command = new GenerateExam.Command { QuestionPerCategory = 2 };
             var questions = new List<Question>
             {
@@ -63,10 +60,9 @@ namespace Konteh.Tests
             };
 
             _questionRepository.Search(Arg.Any<Expression<Func<Question, bool>>>()).Returns(questions);
-            // Act
+           
             var response = await _handler.Handle(command, CancellationToken.None);
 
-            // Assert
             await Verify(response);
 
             _examRepository.Received(1).Create(Arg.Is<Exam>(e => e.ExamQuestions.Count == 4));

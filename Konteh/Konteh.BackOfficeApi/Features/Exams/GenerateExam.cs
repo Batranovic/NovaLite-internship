@@ -1,4 +1,4 @@
-﻿using Konteh.BackOfficeApi.Utils;
+﻿using Konteh.BackOfficeApi.Features.Exams.RandomGenerator;
 using Konteh.Domain;
 using Konteh.Domain.Enumerations;
 using Konteh.Infrastructure.Repositories;
@@ -43,11 +43,11 @@ namespace Konteh.BackOfficeApi.Features.Exams
                 var questions = await _questionRepository.Search(x => Categories.Contains(x.Category));
                 var randomQuestions = new List<ExamQuestion>();
 
-                foreach (QuestionCategory category in Categories)
+                foreach (var category in Categories)
                 {
                     var questionsInCategory = questions.Where(q => q.Category == category).ToList();
-                    
-                    if(questionsInCategory.Count() < request.QuestionPerCategory)
+
+                    if (questionsInCategory.Count() < request.QuestionPerCategory)
                     {
                         throw new InvalidOperationException($"Not enough questions available in category '{category}'.");
                     }
@@ -55,14 +55,14 @@ namespace Konteh.BackOfficeApi.Features.Exams
                     var selectedQuestions = questionsInCategory.OrderBy(q => _randomGenerator.Next())
                         .Take(request.QuestionPerCategory)
                         .Select(x => new ExamQuestion { Question = x });
-                        randomQuestions.AddRange(selectedQuestions);
+                    randomQuestions.AddRange(selectedQuestions);
                 }
 
                 var exam = new Exam
                 {
                     StartTime = DateTime.UtcNow,
                     ExamQuestions = randomQuestions,
-                    Candiate = new Candidate { Email = "candidate@gmail.com", Faculty ="FTN", Name="N", Surname="B"}
+                    Candiate = new Candidate { Email = "candidate@gmail.com", Faculty = "FTN", Name = "N", Surname = "B" }
                 };
 
                 _examRepository.Create(exam);
@@ -73,10 +73,8 @@ namespace Konteh.BackOfficeApi.Features.Exams
                     Id = exam.Id,
                     StartTime = exam.StartTime,
                     ExamQuestions = randomQuestions,
-
                 };
             }
         }
-
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Konteh.BackOfficeApi.Utils
+﻿namespace Konteh.BackOfficeApi.Features.Exams.RandomGenerator
 {
     public class RandomGenerator : IRandomGenerator
     {

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Identity.Web;
-using Konteh.BackOfficeApi.Utils;
+using Konteh.BackOfficeApi.Features.Exams.RandomGenerator;
 
 var builder = WebApplication.CreateBuilder(args);
 
