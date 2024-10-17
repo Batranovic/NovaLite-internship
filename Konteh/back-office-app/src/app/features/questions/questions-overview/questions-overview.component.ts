@@ -1,4 +1,4 @@
-import { Component, ViewChild, AfterViewInit, OnInit } from '@angular/core';
+import {Component, ViewChild, AfterViewInit, OnInit, inject} from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import {
@@ -8,6 +8,7 @@ import {
 } from '../../../api/api-reference';
 import {MatDialog} from '@angular/material/dialog';
 import {ConfirmDialogComponent} from '../../layout/confirm-dialog/confirm-dialog.component';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-questions-overview',
@@ -20,7 +21,7 @@ export class QuestionsOverviewComponent implements OnInit, AfterViewInit {
   pageNum: number = 1;
   pageSize: number = 5;
   pageCount: number | undefined = 100;
-
+  private _snackBar: MatSnackBar = inject(MatSnackBar)
   @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
   private filteredText: string = "";
 
@@ -65,9 +66,10 @@ export class QuestionsOverviewComponent implements OnInit, AfterViewInit {
       this.questionService.deleteById(id).subscribe({
         next: () => {
           this.resetPaginator();
+          this.openSnackBar("Successfully deleted the question.", "Close")
         },
         error: () => {
-
+          this.openSnackBar("Unsuccessfully deleted the question.", "Close")
         },
       });
     });
@@ -98,6 +100,13 @@ export class QuestionsOverviewComponent implements OnInit, AfterViewInit {
       } else {
         console.log('User canceled deletion');
       }
+    });
+  }
+
+  openSnackBar(message: string, action: string) {
+    this._snackBar.open(message, action, {
+      duration: 2000,
+      horizontalPosition: 'center',
     });
   }
 }

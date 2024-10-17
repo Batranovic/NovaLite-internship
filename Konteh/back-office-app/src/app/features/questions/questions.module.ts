@@ -22,6 +22,7 @@ import {MatButton, MatButtonModule} from '@angular/material/button';
 import { CategoryNamePipe } from './category-name.pipe';
 import {MatMenu, MatMenuItem, MatMenuModule, MatMenuTrigger} from '@angular/material/menu';
 import {MatIconModule} from '@angular/material/icon';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 
 
 
@@ -34,6 +35,7 @@ import {MatIconModule} from '@angular/material/icon';
   exports:[
   ],
   imports: [
+    MatSnackBarModule,
     HttpClientModule,
     CommonModule,
     MatTable,
