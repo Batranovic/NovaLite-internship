@@ -1,6 +1,8 @@
 import {Component, ViewChild, AfterViewInit, OnInit, inject} from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import {
   PaginateQuestionsResponse,
   QuestionCategory,
@@ -21,15 +23,30 @@ export class QuestionsOverviewComponent implements OnInit, AfterViewInit {
   pageNum: number = 1;
   pageSize: number = 5;
   pageCount: number | undefined = 100;
-  private _snackBar: MatSnackBar = inject(MatSnackBar)
+  private _snackBar: MatSnackBar = inject(MatSnackBar);
   @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
   private filteredText: string = "";
+  private filterTextChanged: Subject<string> = new Subject<string>();
 
   constructor(private questionService: QuestionsClient, public dialog: MatDialog) {}
 
+  ngOnInit() {
+    this.fetchQuestions();
+    this.initFilterDebouncing();
+  }
+
+  private initFilterDebouncing() {
+    this.filterTextChanged.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    ).subscribe((filterText) => {
+      this.filteredText = filterText;
+      this.resetPaginator();
+    });
+  }
+
   ngAfterViewInit() {
     if (this.paginator) {
-``
       this.paginator.page.subscribe(() => {
         if (!this.paginator) {
           return;
@@ -39,10 +56,6 @@ export class QuestionsOverviewComponent implements OnInit, AfterViewInit {
         this.fetchQuestions();
       });
     }
-  }
-
-  ngOnInit() {
-    this.fetchQuestions();
   }
 
   fetchQuestions() {
@@ -57,34 +70,33 @@ export class QuestionsOverviewComponent implements OnInit, AfterViewInit {
     });
   }
 
-  editQuestion(question : PaginateQuestionsResponse) {
-    //TO DO: redirect to edit page
+  editQuestion(question: PaginateQuestionsResponse) {
+    // TO DO: redirect to edit page
   }
 
-  deleteQuestion(id : number) {
-    this.openConfirmDialog(()=> {
+  deleteQuestion(id: number) {
+    this.openConfirmDialog(() => {
       this.questionService.deleteById(id).subscribe({
         next: () => {
           this.resetPaginator();
-          this.openSnackBar("Successfully deleted the question.", "Close")
+          this.openSnackBar('Successfully deleted the question.', 'Close');
         },
         error: () => {
-          this.openSnackBar("Unsuccessfully deleted the question.", "Close")
+          this.openSnackBar('Unsuccessfully deleted the question.', 'Close');
         },
       });
     });
   }
 
   onFilterChanged(filterData: { text: string; category: QuestionCategory | null } | any) {
-    this.filteredText = filterData.text;
-    this.resetPaginator();
+    this.filterTextChanged.next(filterData.text);
   }
 
-  resetPaginator = () =>{
+  resetPaginator = () => {
     if (this.paginator) {
       this.paginator.pageIndex = 0;
       this.pageNum = 1;
-      if (this.dataSource.data.length === 0){
+      if (this.dataSource.data.length === 0) {
         this.paginator.length = this.pageSize;
       }
     }
@@ -94,7 +106,7 @@ export class QuestionsOverviewComponent implements OnInit, AfterViewInit {
   openConfirmDialog(functionToBeDone: Function): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent);
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         functionToBeDone();
       } else {
