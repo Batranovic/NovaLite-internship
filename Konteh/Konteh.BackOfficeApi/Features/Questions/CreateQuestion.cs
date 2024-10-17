@@ -40,8 +40,8 @@ namespace Konteh.BackOfficeApi.Features.Questions
                     Answers = request.Answers.Select(a => new Answer
                     {
                         Text = a.Text,
-
-                        IsCorrect = a.IsCorrect
+                        IsCorrect = a.IsCorrect,
+                        IsDeleted = false,
 
                     }).ToList()
                 };

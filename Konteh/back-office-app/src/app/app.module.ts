@@ -22,6 +22,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { QuestionsModule } from './features/questions/questions.module';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
@@ -45,7 +46,9 @@ import { QuestionsModule } from './features/questions/questions.module';
     MatListModule,
     MatCheckboxModule,
     QuestionsModule,
-    FormsModule
+    FormsModule,
+    MatMenuModule,
+    MatIconModule,
   ],
   providers: [
     provideAnimationsAsync(), HttpClientModule

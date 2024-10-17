@@ -1,3 +1,6 @@
+.container{
+    min-height: 800px;
+}
 .form-container {
     display: flex;
     flex-direction: column;
@@ -35,30 +38,25 @@ mat-list {
     background-color: white;
     border: 1px solid #ddd;
     border-radius: 8px;
-    padding: 10px;
+    padding: 5px;
     margin-top: 20px;
     width: 60%;
-    margin: 20px auto;
+    margin: 10px auto;
 }
   
-.answer-item {
-  display: flex;
-  justify-content: space-between; 
-  align-items: center; 
+mat-list-item {
+    display: flex;
+    align-items: center;
+    min-height: 50px;
 }
 
-mat-list-item span {
-    margin-right: 20px;
+.edit-answer-text{
+    display: flex;
+    align-items: center;
 }
 
-.correct {
-    color: green;
-    font-weight: bold;
-}
-
-.incorrect {
-    color: red;
-    font-weight: bold;
+.edit-answer-button{
+    margin-right: 10px;
 }
 
 .answers-list-title {
@@ -94,8 +92,30 @@ mat-list-item span {
     margin-bottom: 20px;
     color: #333; 
 }
-  
-.edit-answer-textarea{
-    margin-top: 24px;
-    width: 60%;
-} 
+
+.correct-answer {
+    background-color: rgb(102, 177, 102);
+    border-radius: 10px;
+}
+
+.answer-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    min-height: 50px;
+}
+
+.answer-container-edit-mode{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    min-height: 50px;
+    background-color: rgb(224, 224, 224);
+    border-radius: 10px;
+}
+
+.mat-icon-button {
+    margin-left: auto;
+}

@@ -33,7 +33,7 @@ namespace Konteh.BackOfficeApi.Features.Questions
             public async Task<Response> Handle(Query request, CancellationToken cancellationToken)
             {
                 var question = await _repository.Query()
-                    .Include(q => q.Answers)
+                    .Include(q => q.Answers.Where(a => !a.IsDeleted))
                     .FirstOrDefaultAsync(q => q.Id == request.Id);
 
                 if (question == null)

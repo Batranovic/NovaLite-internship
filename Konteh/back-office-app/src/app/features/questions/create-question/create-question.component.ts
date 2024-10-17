@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Answer, CreateQuestionCommand, QuestionsClient, UpdateQuestionCommand } from '../../../api/api-reference';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { DeleteAnswerDialogComponent } from '../delete-answer-dialog/delete-answer-dialog.component';
 
 @Component({
   selector: 'app-create-question',
@@ -16,6 +18,8 @@ export class CreateQuestionComponent {
   answers: Answer[] = [];
   isEditMode: boolean = false;
   questionId: number | null = null;
+  isAnswerEditMode: boolean = false;
+  editingAnswerIndex: number | null = null;
 
   questionCategories = [
     { value: 1, viewValue: 'OOP' },
@@ -31,7 +35,7 @@ export class CreateQuestionComponent {
     { value: 2, viewValue: 'CheckBox' }
   ]
 
-  constructor(private formBuilder: FormBuilder, private questionClient: QuestionsClient, private router: Router, private route: ActivatedRoute){
+  constructor(private formBuilder: FormBuilder, private questionClient: QuestionsClient, private router: Router, private route: ActivatedRoute, private dialog: MatDialog){
     this.questionForm = this.formBuilder.group({
       text: ['', Validators.required],
       category: ['', Validators.required],
@@ -140,8 +144,6 @@ export class CreateQuestionComponent {
     });
   }
   
-
-
   onAnswerSubmit(){
     if(this.answerForm.valid){
       const newAnswer = new Answer();  
@@ -174,10 +176,34 @@ export class CreateQuestionComponent {
     });
   }
 
-  updateAnswer(index: number): void {
+  onAnswerEdit(index: number){
+    this.isAnswerEditMode = true;
+    this.editingAnswerIndex = index;
+  }
+
+  onCancelEditAnswer(){
+    this.isAnswerEditMode = false;
+    this.editingAnswerIndex = null;
+  }
+
+  updateAnswer(index: number){
     if (index >= 0 && index < this.answers.length) {
       const updatedAnswer = this.answers[index];
+      this.isAnswerEditMode = false;
+      this.editingAnswerIndex = null;
       console.log(`Updated Answer ${index}:`, updatedAnswer);
+    }
+  }
+
+  onAnswerDelete(index: number) {
+    if(index >= 0 && index < this.answers.length){
+      const confirmDialog = this.dialog.open(DeleteAnswerDialogComponent);
+      confirmDialog.afterClosed().subscribe(result => {
+        if(result){
+          this.answers[index].isDeleted = true;
+          this.answers = this.answers.filter(answer => !answer.isDeleted)
+        }
+      })
     }
   }
 

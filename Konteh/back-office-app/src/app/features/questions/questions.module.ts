@@ -9,11 +9,14 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
+import { DeleteAnswerDialogComponent } from './delete-answer-dialog/delete-answer-dialog.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
     QuestionsOverviewComponent,
-    QuestionOverviewComponent
+    QuestionOverviewComponent,
+    DeleteAnswerDialogComponent
   ],
   imports: [
     CommonModule,
@@ -23,7 +26,8 @@ import { FormsModule } from '@angular/forms';
     MatMenuModule,
     MatRadioModule,
     BrowserAnimationsModule,
-    FormsModule
+    FormsModule,
+    MatDialogModule,
   ]
 })
 export class QuestionsModule { }
