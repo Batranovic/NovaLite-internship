@@ -1,0 +1,33 @@
+﻿{
+  StartTime: DateTime_1,
+  ExamQuestions: [
+    {
+      Question: {
+        Id: 3,
+        Text: ,
+        Category: General
+      }
+    },
+    {
+      Question: {
+        Id: 5,
+        Text: ,
+        Category: General
+      }
+    },
+    {
+      Question: {
+        Id: 1,
+        Text: ,
+        Category: OOP
+      }
+    },
+    {
+      Question: {
+        Id: 2,
+        Text: ,
+        Category: OOP
+      }
+    }
+  ]
+}

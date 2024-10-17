@@ -1,4 +1,5 @@
-﻿using Konteh.Domain;
+﻿using Konteh.BackOfficeApi.Utils;
+using Konteh.Domain;
 using Konteh.Domain.Enumerations;
 using Konteh.Infrastructure.Repositories;
 using MediatR;
@@ -9,8 +10,8 @@ namespace Konteh.BackOfficeApi.Features.Exams
     {
         private static readonly List<QuestionCategory> Categories =
         [
+            QuestionCategory.General,
             QuestionCategory.OOP,
-            QuestionCategory.General
         ];
 
         public class Command : IRequest<Response>
@@ -29,26 +30,32 @@ namespace Konteh.BackOfficeApi.Features.Exams
         {
             private readonly IRepository<Question> _questionRepository;
             private readonly IRepository<Exam> _examRepository;
-
-            public Handler(IRepository<Question> questionRepository, IRepository<Exam> examRepository)
+            private readonly IRandomGenerator _randomGenerator;
+            public Handler(IRepository<Question> questionRepository, IRepository<Exam> examRepository, IRandomGenerator randomGenerator)
             {
                 _questionRepository = questionRepository;
                 _examRepository = examRepository;
+                _randomGenerator = randomGenerator;
             }
 
             public async Task<Response> Handle(Command request, CancellationToken cancellationToken)
             {
                 var questions = await _questionRepository.Search(x => Categories.Contains(x.Category));
                 var randomQuestions = new List<ExamQuestion>();
-                var r = new Random();
 
                 foreach (QuestionCategory category in Categories)
                 {
                     var questionsInCategory = questions.Where(q => q.Category == category).ToList();
-                    var selectedQuestions = questionsInCategory.OrderBy(q => r.Next())
+                    
+                    if(questionsInCategory.Count() < request.QuestionPerCategpry)
+                    {
+                        throw new InvalidOperationException($"Not enough questions available in category '{category}'.");
+                    }
+
+                    var selectedQuestions = questionsInCategory.OrderBy(q => _randomGenerator.Next())
                         .Take(request.QuestionPerCategpry)
                         .Select(x => new ExamQuestion { Question = x });
-                    randomQuestions.AddRange(selectedQuestions);
+                        randomQuestions.AddRange(selectedQuestions);
                 }
 
                 var exam = new Exam
