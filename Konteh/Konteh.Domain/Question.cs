@@ -9,4 +9,5 @@ public class Question
     public QuestionCategory Category { get; set; }
     public QuestionType Type { get; set; }
     public List<Answer> Answers { get; set; } = [];
+    public bool IsDeleted { get; set; } = false;
 }
