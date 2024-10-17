@@ -6,6 +6,8 @@ import {
   QuestionCategory,
   QuestionsClient
 } from '../../../api/api-reference';
+import {MatDialog} from '@angular/material/dialog';
+import {ConfirmDialogComponent} from '../../layout/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-questions-overview',
@@ -22,7 +24,7 @@ export class QuestionsOverviewComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
   private filteredText: string = "";
 
-  constructor(private questionService: QuestionsClient) {}
+  constructor(private questionService: QuestionsClient, public dialog: MatDialog) {}
 
   ngAfterViewInit() {
     if (this.paginator) {
@@ -59,7 +61,16 @@ export class QuestionsOverviewComponent implements OnInit, AfterViewInit {
   }
 
   deleteQuestion(id : number) {
-    //TO DO: call api for deletion of the item and call this.resetPaginator();
+    this.openConfirmDialog(()=> {
+      this.questionService.deleteById(id).subscribe({
+        next: () => {
+          this.resetPaginator();
+        },
+        error: () => {
+
+        },
+      });
+    });
   }
 
   onFilterChanged(filterData: { text: string; category: QuestionCategory | null } | any) {
@@ -76,5 +87,17 @@ export class QuestionsOverviewComponent implements OnInit, AfterViewInit {
       }
     }
     this.fetchQuestions();
+  }
+
+  openConfirmDialog(functionToBeDone: Function): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent);
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        functionToBeDone();
+      } else {
+        console.log('User canceled deletion');
+      }
+    });
   }
 }

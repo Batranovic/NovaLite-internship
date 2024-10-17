@@ -23,4 +23,19 @@ public class QuestionsController : ControllerBase
         var response = await _mediator.Send(new PaginateQuestions.Query(page, pageSize, questionText));
         return Ok(response);
     }
+
+    [HttpDelete]
+    public async Task<ActionResult<DeleteQuestion.Response>> DeleteById(
+    [FromQuery] long questionId)
+    {
+        var response = await _mediator.Send(new DeleteQuestion.Query(questionId));
+        if (response.Success)
+        {
+            return Ok(response);
+        }
+        else
+        {
+            return NotFound();
+        }
+    }
 }
