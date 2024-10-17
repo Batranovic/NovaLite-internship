@@ -16,7 +16,7 @@ namespace Konteh.BackOfficeApi.Features.Exams
 
         public class Command : IRequest<Response>
         {
-            public int QuestionPerCategpry { get; set; } = 3;
+            public int QuestionPerCategory { get; set; } = 3;
         }
 
         public class Response
@@ -47,13 +47,13 @@ namespace Konteh.BackOfficeApi.Features.Exams
                 {
                     var questionsInCategory = questions.Where(q => q.Category == category).ToList();
                     
-                    if(questionsInCategory.Count() < request.QuestionPerCategpry)
+                    if(questionsInCategory.Count() < request.QuestionPerCategory)
                     {
                         throw new InvalidOperationException($"Not enough questions available in category '{category}'.");
                     }
 
                     var selectedQuestions = questionsInCategory.OrderBy(q => _randomGenerator.Next())
-                        .Take(request.QuestionPerCategpry)
+                        .Take(request.QuestionPerCategory)
                         .Select(x => new ExamQuestion { Question = x });
                         randomQuestions.AddRange(selectedQuestions);
                 }

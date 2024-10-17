@@ -28,7 +28,7 @@ namespace Konteh.Tests
         public async Task Handle_ShouldThrowException_WhenNotEnoughQuestionsInCategory()
         {
             //Arrange
-            var command = new GenerateExam.Command { QuestionPerCategpry = 3 };
+            var command = new GenerateExam.Command { QuestionPerCategory = 3 };
             var questions = new List<Question>
             {
                 new Question {Id = 1, Category = QuestionCategory.General},
@@ -49,7 +49,7 @@ namespace Konteh.Tests
         public async Task Handle_ShouldCreateExam_WithTwoQuestionsPerCategory()
         {
             // Arrange
-            var command = new GenerateExam.Command { QuestionPerCategpry = 2 };
+            var command = new GenerateExam.Command { QuestionPerCategory = 2 };
             var questions = new List<Question>
             {
                 new Question { Id = 1, Category = QuestionCategory.OOP },
