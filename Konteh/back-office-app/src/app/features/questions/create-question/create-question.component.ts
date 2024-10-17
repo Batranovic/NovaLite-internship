@@ -20,6 +20,7 @@ export class CreateQuestionComponent {
   questionId: number | null = null;
   isAnswerEditMode: boolean = false;
   editingAnswerIndex: number | null = null;
+  displayAnswers: Answer[] = [];
 
   questionCategories = [
     { value: 1, viewValue: 'OOP' },
@@ -109,6 +110,12 @@ export class CreateQuestionComponent {
     command.category = this.questionForm.value.category;
     command.questionType = this.questionForm.value.type;
     command.answers = this.answers;
+
+    const correctAnswers = this.answers.filter(answer => answer.isCorrect).length;
+    if (command.questionType === 1 && correctAnswers > 1) {
+      alert('Cannot set question type to RadioButton when there are multiple correct answers.');
+      return;
+    }
   
     this.questionClient.create(command).subscribe({
       next: (response) => {
@@ -132,6 +139,12 @@ export class CreateQuestionComponent {
     command.category = this.questionForm.value.category;
     command.type = this.questionForm.value.type;
     command.answers = this.answers;
+
+    const correctAnswers = this.answers.filter(answer => answer.isCorrect).length;
+    if (command.type === 1 && correctAnswers > 1) { 
+      alert('Cannot set question type to RadioButton when there are multiple correct answers.');
+      return;
+    }
   
     this.questionClient.updateQuestion(command).subscribe({
       next: () => {
@@ -149,8 +162,16 @@ export class CreateQuestionComponent {
       const newAnswer = new Answer();  
       newAnswer.text = this.answerForm.value.text;
       newAnswer.isCorrect = this.answerForm.value.isCorrect;
-         
+      if (this.questionForm.value.type === 1 && newAnswer.isCorrect) {
+        const alreadyHasCorrectAnswer = this.answers.some(answer => answer.isCorrect);
+  
+        if (alreadyHasCorrectAnswer) {
+          alert('Only one correct answer is allowed for RadioButton type questions.');
+          return;
+        }
+      }
       this.answers.push(newAnswer);
+      this.displayAnswers.push(newAnswer)
       this.answerForm.reset({ text: '', isCorrect: false });
       this.showAnswerForm =  false;
       alert('Answer successfully submitted!')
@@ -169,6 +190,7 @@ export class CreateQuestionComponent {
           type: response.type
         });
         this.answers = response.answers ?? []; // empty array if undefined/null
+        this.displayAnswers = [...this.answers]; 
       },
       error: (err) => {
         console.error('Error loading question', err);
@@ -187,24 +209,48 @@ export class CreateQuestionComponent {
   }
 
   updateAnswer(index: number){
-    if (index >= 0 && index < this.answers.length) {
-      const updatedAnswer = this.answers[index];
+    if (index >= 0 && index < this.displayAnswers.length) {
+      const updatedAnswer = this.displayAnswers[index];
+      const answerIndexInMainList = this.answers.findIndex(a => a.text === updatedAnswer.text);
+      if (answerIndexInMainList !== -1) {
+        this.answers[answerIndexInMainList] = updatedAnswer;
+      }
       this.isAnswerEditMode = false;
       this.editingAnswerIndex = null;
-      console.log(`Updated Answer ${index}:`, updatedAnswer);
     }
   }
 
+  // onAnswerDelete(index: number) {
+  //   if(index >= 0 && index < this.answers.length){
+  //     const confirmDialog = this.dialog.open(DeleteAnswerDialogComponent);
+  //     confirmDialog.afterClosed().subscribe(result => {
+  //       if(result){
+  //         this.answers[index].isDeleted = true;
+  //         this.displayAnswers[index].isDeleted = true;
+  //         this.displayAnswers = this.displayAnswers.filter(answer => !answer.isDeleted)
+  //       }
+  //     })
+  //   }
+  // }
+
   onAnswerDelete(index: number) {
-    if(index >= 0 && index < this.answers.length){
+    if (index >= 0 && index < this.displayAnswers.length) {
       const confirmDialog = this.dialog.open(DeleteAnswerDialogComponent);
       confirmDialog.afterClosed().subscribe(result => {
-        if(result){
-          this.answers[index].isDeleted = true;
-          this.answers = this.answers.filter(answer => !answer.isDeleted)
+        if (result) {
+          const answerIndexInMainList = this.answers.findIndex(a => a.text === this.displayAnswers[index].text);
+          if (answerIndexInMainList !== -1) {
+            this.answers[answerIndexInMainList].isDeleted = true; 
+          }
+          this.displayAnswers = this.displayAnswers.filter((_, i) => i !== index);
         }
-      })
+      });
     }
   }
+
+  removeFromAnswersList(index: number) {
+    this.displayAnswers = this.displayAnswers.filter((_, i) => i !== index);
+  }
+  
 
 }

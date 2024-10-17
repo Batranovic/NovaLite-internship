@@ -12,7 +12,8 @@ mat-card {
 }
 
 mat-card-header {
-    background-color: #f5f5f5;
+    background-color: #e4f3ff;
+    border-radius: 10px;
 }
 
 mat-card-title {
@@ -38,7 +39,10 @@ mat-list {
 mat-list-item {
     padding: 10px;
     border-bottom: 1px solid #ddd;
+    display: flex;
+    align-items: center;
 }
+
 
 .question-title {
     font-size: 24px;
@@ -52,7 +56,14 @@ mat-list-item {
     right: 16px;
 }
 
-.correct-answer {
-    background-color: rgb(102, 177, 102);
-    border-radius: 5px;
-} 
+.check-icon{
+    color: green;
+    margin-right: 8px;
+    height: 20px;
+}
+
+.empty-space{
+    margin-right: 8px;
+    height: 20px;
+    margin-left: 20px;
+}

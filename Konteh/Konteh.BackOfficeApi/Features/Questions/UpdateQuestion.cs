@@ -47,13 +47,27 @@ namespace Konteh.BackOfficeApi.Features.Questions
                 existingQuestion.Text = request.Text;
                 existingQuestion.Category = request.Category;
                 existingQuestion.Type = request.Type;
-                existingQuestion.Answers = request.Answers.Select(a => new Answer
+                foreach (var answer in request.Answers)
                 {
-                    Text = a.Text,
-                    IsCorrect = a.IsCorrect,
-                    IsDeleted = a.IsDeleted
+                    var existingAnswer = existingQuestion.Answers
+                        .FirstOrDefault(a => a.Id == answer.Id);
 
-                }).ToList();
+                    if (existingAnswer != null)
+                    {
+                        existingAnswer.Text = answer.Text;
+                        existingAnswer.IsCorrect = answer.IsCorrect;
+                        existingAnswer.IsDeleted = answer.IsDeleted;
+                    }
+                    else
+                    {
+                        existingQuestion.Answers.Add(new Answer
+                        {
+                            Text = answer.Text,
+                            IsCorrect = answer.IsCorrect,
+                            IsDeleted = answer.IsDeleted
+                        });
+                    }
+                }
 
                 await _repository.SaveChanges();
 
