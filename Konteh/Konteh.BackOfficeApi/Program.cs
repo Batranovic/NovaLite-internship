@@ -1,9 +1,10 @@
+using Konteh.Domain;
 using Konteh.Infrastructure;
 using Konteh.Infrastructure.Repositories;
-using Microsoft.EntityFrameworkCore;
-using System.Reflection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
