@@ -15,7 +15,7 @@ public class QuestionsController : ControllerBase
     {
         _mediator = mediator;
     }
-
+    
     [HttpGet("paginate")]
     public async Task<ActionResult<IEnumerable<PaginateQuestions.Response>>> Paginate(
     [FromQuery] int page = 1,
