@@ -1,5 +1,4 @@
-﻿using Konteh.Domain;
-using Konteh.Domain.Enumerations;
+﻿using Konteh.Domain.Enumerations;
 using Konteh.Infrastructure.Repositories;
 using MediatR;
 
@@ -18,9 +17,9 @@ public static class GetAllQuestions
 
     public class RequestHandler : IRequestHandler<Query, IEnumerable<Response>>
     {
-        private readonly IRepository<Question> _repository;
+        private readonly IQuestionRepository _repository;
 
-        public RequestHandler(IRepository<Question> repository)
+        public RequestHandler(IQuestionRepository repository)
         {
             _repository = repository;
         }

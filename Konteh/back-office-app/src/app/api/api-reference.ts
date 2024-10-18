@@ -16,7 +16,8 @@ import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angula
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 export interface IQuestionsClient {
-    getAll(): Observable<GetAllQuestionsResponse[]>;
+    paginate(page: number | undefined, pageSize: number | undefined, questionText: string | null | undefined): Observable<PaginateQuestionsResponse[]>;
+    deleteById(questionId: number | undefined): Observable<DeleteQuestionResponse>;
 }
 
 @Injectable({
@@ -32,8 +33,18 @@ export class QuestionsClient implements IQuestionsClient {
         this.baseUrl = baseUrl ?? "https://localhost:7184";
     }
 
-    getAll(): Observable<GetAllQuestionsResponse[]> {
-        let url_ = this.baseUrl + "/questions";
+    paginate(page: number | undefined, pageSize: number | undefined, questionText: string | null | undefined): Observable<PaginateQuestionsResponse[]> {
+        let url_ = this.baseUrl + "/questions/paginate?";
+        if (page === null)
+            throw new Error("The parameter 'page' cannot be null.");
+        else if (page !== undefined)
+            url_ += "page=" + encodeURIComponent("" + page) + "&";
+        if (pageSize === null)
+            throw new Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "pageSize=" + encodeURIComponent("" + pageSize) + "&";
+        if (questionText !== undefined && questionText !== null)
+            url_ += "questionText=" + encodeURIComponent("" + questionText) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -45,20 +56,20 @@ export class QuestionsClient implements IQuestionsClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetAll(response_);
+            return this.processPaginate(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetAll(response_ as any);
+                    return this.processPaginate(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<GetAllQuestionsResponse[]>;
+                    return _observableThrow(e) as any as Observable<PaginateQuestionsResponse[]>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<GetAllQuestionsResponse[]>;
+                return _observableThrow(response_) as any as Observable<PaginateQuestionsResponse[]>;
         }));
     }
 
-    protected processGetAll(response: HttpResponseBase): Observable<GetAllQuestionsResponse[]> {
+    protected processPaginate(response: HttpResponseBase): Observable<PaginateQuestionsResponse[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -72,11 +83,63 @@ export class QuestionsClient implements IQuestionsClient {
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
-                    result200!.push(GetAllQuestionsResponse.fromJS(item));
+                    result200!.push(PaginateQuestionsResponse.fromJS(item));
             }
             else {
                 result200 = <any>null;
             }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    deleteById(questionId: number | undefined): Observable<DeleteQuestionResponse> {
+        let url_ = this.baseUrl + "/questions?";
+        if (questionId === null)
+            throw new Error("The parameter 'questionId' cannot be null.");
+        else if (questionId !== undefined)
+            url_ += "questionId=" + encodeURIComponent("" + questionId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeleteById(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeleteById(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<DeleteQuestionResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<DeleteQuestionResponse>;
+        }));
+    }
+
+    protected processDeleteById(response: HttpResponseBase): Observable<DeleteQuestionResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = DeleteQuestionResponse.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -161,12 +224,13 @@ export class WeatherForecastClient implements IWeatherForecastClient {
     }
 }
 
-export class GetAllQuestionsResponse implements IGetAllQuestionsResponse {
+export class PaginateQuestionsResponse implements IPaginateQuestionsResponse {
     id?: number;
     text?: string;
     category?: QuestionCategory;
+    pageCount?: number;
 
-    constructor(data?: IGetAllQuestionsResponse) {
+    constructor(data?: IPaginateQuestionsResponse) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -180,12 +244,13 @@ export class GetAllQuestionsResponse implements IGetAllQuestionsResponse {
             this.id = _data["id"];
             this.text = _data["text"];
             this.category = _data["category"];
+            this.pageCount = _data["pageCount"];
         }
     }
 
-    static fromJS(data: any): GetAllQuestionsResponse {
+    static fromJS(data: any): PaginateQuestionsResponse {
         data = typeof data === 'object' ? data : {};
-        let result = new GetAllQuestionsResponse();
+        let result = new PaginateQuestionsResponse();
         result.init(data);
         return result;
     }
@@ -195,14 +260,16 @@ export class GetAllQuestionsResponse implements IGetAllQuestionsResponse {
         data["id"] = this.id;
         data["text"] = this.text;
         data["category"] = this.category;
+        data["pageCount"] = this.pageCount;
         return data;
     }
 }
 
-export interface IGetAllQuestionsResponse {
+export interface IPaginateQuestionsResponse {
     id?: number;
     text?: string;
     category?: QuestionCategory;
+    pageCount?: number;
 }
 
 export enum QuestionCategory {
@@ -212,6 +279,42 @@ export enum QuestionCategory {
     Testing = 4,
     Sql = 5,
     Csharp = 6,
+}
+
+export class DeleteQuestionResponse implements IDeleteQuestionResponse {
+    success?: boolean;
+
+    constructor(data?: IDeleteQuestionResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.success = _data["success"];
+        }
+    }
+
+    static fromJS(data: any): DeleteQuestionResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new DeleteQuestionResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["success"] = this.success;
+        return data;
+    }
+}
+
+export interface IDeleteQuestionResponse {
+    success?: boolean;
 }
 
 export class WeatherForecast implements IWeatherForecast {

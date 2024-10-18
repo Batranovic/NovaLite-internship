@@ -14,11 +14,28 @@ public class QuestionsController : ControllerBase
         _mediator = mediator;
     }
 
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<GetAllQuestions.Response>>> GetAll()
+    [HttpGet("paginate")]
+    public async Task<ActionResult<IEnumerable<PaginateQuestions.Response>>> Paginate(
+    [FromQuery] int page = 1,
+    [FromQuery] float pageSize = 10,
+    [FromQuery] string? questionText = null)
     {
-        var response = await _mediator.Send(new GetAllQuestions.Query());
+        var response = await _mediator.Send(new PaginateQuestions.Query(page, pageSize, questionText));
         return Ok(response);
     }
 
+    [HttpDelete]
+    public async Task<ActionResult<DeleteQuestion.Response>> DeleteById(
+    [FromQuery] long questionId)
+    {
+        var response = await _mediator.Send(new DeleteQuestion.Query(questionId));
+        if (response.Success)
+        {
+            return Ok(response);
+        }
+        else
+        {
+            return NotFound();
+        }
+    }
 }
