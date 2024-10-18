@@ -7,6 +7,7 @@
             <mat-label>Text</mat-label>
             <textarea matInput formControlName="text"></textarea>
         </mat-form-field>
+        <span *ngIf="questionForm.get('text')?.hasError('required') && (questionForm.get('text')?.dirty || questionForm.get('text')?.touched || isSubmitted)" class="error">This field is required.</span>
         <mat-form-field appearance="fill">
             <mat-label>Category</mat-label>
             <mat-select formControlName="category">
@@ -15,6 +16,7 @@
                 </mat-option>
             </mat-select>
         </mat-form-field>
+        <span *ngIf="questionForm.get('category')?.hasError('required') && (questionForm.get('category')?.dirty || questionForm.get('category')?.touched || isSubmitted)" class="error">This field is required.</span>
         <mat-form-field appearance="fill">
             <mat-label>Type</mat-label>
             <mat-select formControlName="type">
@@ -23,8 +25,10 @@
                 </mat-option>
             </mat-select>
         </mat-form-field>
+        <span *ngIf="questionForm.get('type')?.hasError('required') && (questionForm.get('type')?.dirty || questionForm.get('type')?.touched || isSubmitted)" class="error">This field is required.</span>
+        <span *ngIf="questionForm.get('type')?.hasError('multipleCorrect')" class="error">{{ errorMessage.multipleCorrect }}</span>
         <button class="question-form-button" mat-flat-button color="primary" type="submit" *ngIf="!isEditMode">Submit</button>
-        <button class="question-form-button" mat-flat-button color="primary" type="submit" *ngIf="isEditMode">Save Changes</button>
+        <button class="question-form-button-edit" mat-flat-button color="primary" type="submit" *ngIf="isEditMode">Save Changes</button>
     </form>
 
     <button mat-raised-button color="primary" *ngIf="!showAnswerForm"  (click)="showAnswerForm = true">Add an answer</button>
@@ -32,11 +36,12 @@
     <div *ngIf="showAnswerForm" class="answer-form-container">
             <h2 class="answer-form-title">Answer Form</h2>
             <form [formGroup]="answerForm" (ngSubmit)="onAnswerSubmit()">
+                <mat-checkbox formControlName="isCorrect">Is Correct?</mat-checkbox>
                 <mat-form-field appearance="fill">
                     <mat-label>Answer Text</mat-label>
                     <textarea matInput formControlName="text" required></textarea>
                 </mat-form-field>
-                <mat-checkbox formControlName="isCorrect">Is Correct?</mat-checkbox>
+                <span *ngIf="answerForm.get('text')?.hasError('required') && (answerForm.get('text')?.dirty || answerForm.get('text')?.touched || isAnswerSubmitted)" class="error">This field is required.</span>
                 <div></div>
                 <button class="form-button" mat-raised-button color="primary" type="submit">Submit answer</button>
             </form>
@@ -66,9 +71,9 @@
                     <span class="empty-space" *ngIf="!answer.isCorrect"></span>
                     <span>{{ answer.text }}</span>
                 </div>
-                <!-- <button mat-icon-button class="answer-delete-button" *ngIf="!isEditMode" (click)="onAnswerDelete(i)">
+                <button mat-icon-button class="answer-delete-button" *ngIf="!isEditMode" (click)="onAnswerDelete(i)">
                     <mat-icon color="warn">delete</mat-icon>
-                </button> -->
+                </button>
                 <button mat-icon-button class="answer-menu-button" [matMenuTriggerFor]="answerMenu" *ngIf="isEditMode">
                 <mat-icon>more_vert</mat-icon>
                 </button>

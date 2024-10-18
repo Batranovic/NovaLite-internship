@@ -1,19 +1,20 @@
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { Answer, CreateQuestionCommand, QuestionsClient, UpdateQuestionCommand } from '../../../api/api-reference';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { DeleteAnswerDialogComponent } from '../delete-answer-dialog/delete-answer-dialog.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { radioButtonRestriction } from '../../../validators/radioButtonRestriction.validator';
 
 @Component({
   selector: 'app-create-question',
   templateUrl: './create-question.component.html',
   styleUrl: './create-question.component.css'
 })
-export class CreateQuestionComponent {
-
-  questionForm: FormGroup;
-  answerForm: FormGroup;
+export class CreateQuestionComponent implements OnInit {
+  questionForm!: FormGroup;
+  answerForm!: FormGroup;
   showAnswerForm: boolean = false;
   answers: Answer[] = [];
   isEditMode: boolean = false;
@@ -21,7 +22,8 @@ export class CreateQuestionComponent {
   isAnswerEditMode: boolean = false;
   editingAnswerIndex: number | null = null;
   displayAnswers: Answer[] = [];
-
+  isSubmitted = false;
+  isAnswerSubmitted = false;
   questionCategories = [
     { value: 1, viewValue: 'OOP' },
     { value: 2, viewValue: 'General' },
@@ -30,21 +32,23 @@ export class CreateQuestionComponent {
     { value: 5, viewValue: 'Sql' },
     { value: 6, viewValue: 'Csharp' },
   ];
-
   questionTypes = [
     { value: 1, viewValue: 'RadioButton' },
     { value: 2, viewValue: 'CheckBox' }
   ]
 
-  constructor(private formBuilder: FormBuilder, private questionClient: QuestionsClient, private router: Router, private route: ActivatedRoute, private dialog: MatDialog){
+  constructor(private formBuilder: FormBuilder, private questionClient: QuestionsClient, private router: Router, private route: ActivatedRoute, private dialog: MatDialog, private snackBar: MatSnackBar){}
+
+  ngOnInit() {
     this.questionForm = this.formBuilder.group({
-      text: ['', Validators.required],
+      text:['', Validators.required],
       category: ['', Validators.required],
-      type: ['', Validators.required]
+      type: ['', [Validators.required]],
     });
     this.answerForm = this.formBuilder.group({
       text: ['', Validators.required],
-      isCorrect: [false, Validators.required]
+      isCorrect: [false, Validators.required],
+      isDeleted: [false]
     });
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
@@ -56,42 +60,25 @@ export class CreateQuestionComponent {
     })
   }
 
-  // onSubmit(){
-  //   console.log(this.questionForm.value)
-  //   if(this.questionForm.valid){
-  //     const hasCorrectAnswer = this.answers.some(answer => answer.isCorrect);
-
-  //     if (!hasCorrectAnswer) {
-  //       alert('At least one correct answer is required!');
-  //       return;
-  //     }
-  //     const command = new CreateQuestionCommand();
-  //     command.text = this.questionForm.value.text;
-  //     command.category = this.questionForm.value.category;
-  //     command.questionType = this.questionForm.value.type;
-  //     command.answers = this.answers;
-
-  //     this.questionClient.create(command).subscribe({
-  //       next: (response) => {
-  //         const createdQuestionId = response.id;
-  //         console.log(createdQuestionId);
-  //         alert('Question successfully submitted!')
-  //         this.router.navigate(['/question-overview/', response.id])
-  //       },
-  //       error: (err) => {
-  //         console.error('Error', err)
-  //       }
-  //     });
-  //   }else{
-  //     alert('All fields are required!')
-  //   }
-  // }
+  openSnackBar(message: string, action: string) {
+    this.snackBar,open(message, action)
+  }
 
   onSubmit() {
+    this.isSubmitted = true;
+    const correctAnswersCount = this.answers.filter(answer => answer.isCorrect && !answer.isDeleted).length;
+    if (correctAnswersCount > 1 && this.questionForm.value.type === 1) {
+      this.questionForm.get('type')?.setErrors({ multipleCorrect: true }); 
+      return;
+    }
+    console.log(this.questionForm.valid)
     if (this.questionForm.valid) {
       const hasCorrectAnswer = this.answers.some(answer => answer.isCorrect);
       if (!hasCorrectAnswer) {
-        alert('At least one correct answer is required!');
+        this.snackBar.open('At least one correct answer is required', 'Ok', {
+          duration: 4000,
+          panelClass: 'red-snackbar'
+        });
         return;
       }
       if (this.isEditMode) {
@@ -100,7 +87,7 @@ export class CreateQuestionComponent {
         this.createQuestion();
       }
     } else {
-      alert('All fields are required!');
+     return;
     }
   }
   
@@ -110,13 +97,6 @@ export class CreateQuestionComponent {
     command.category = this.questionForm.value.category;
     command.questionType = this.questionForm.value.type;
     command.answers = this.answers;
-
-    const correctAnswers = this.answers.filter(answer => answer.isCorrect).length;
-    if (command.questionType === 1 && correctAnswers > 1) {
-      alert('Cannot set question type to RadioButton when there are multiple correct answers.');
-      return;
-    }
-  
     this.questionClient.create(command).subscribe({
       next: (response) => {
         alert('Question successfully created!');
@@ -139,13 +119,6 @@ export class CreateQuestionComponent {
     command.category = this.questionForm.value.category;
     command.type = this.questionForm.value.type;
     command.answers = this.answers;
-
-    const correctAnswers = this.answers.filter(answer => answer.isCorrect).length;
-    if (command.type === 1 && correctAnswers > 1) { 
-      alert('Cannot set question type to RadioButton when there are multiple correct answers.');
-      return;
-    }
-  
     this.questionClient.updateQuestion(command).subscribe({
       next: () => {
         alert('Question successfully updated!');
@@ -158,26 +131,16 @@ export class CreateQuestionComponent {
   }
   
   onAnswerSubmit(){
+    this.isAnswerSubmitted = true;
     if(this.answerForm.valid){
       const newAnswer = new Answer();  
       newAnswer.text = this.answerForm.value.text;
       newAnswer.isCorrect = this.answerForm.value.isCorrect;
-      if (this.questionForm.value.type === 1 && newAnswer.isCorrect) {
-        const alreadyHasCorrectAnswer = this.answers.some(answer => answer.isCorrect);
-  
-        if (alreadyHasCorrectAnswer) {
-          alert('Only one correct answer is allowed for RadioButton type questions.');
-          return;
-        }
-      }
+      newAnswer.isDeleted = false;
       this.answers.push(newAnswer);
       this.displayAnswers.push(newAnswer)
       this.answerForm.reset({ text: '', isCorrect: false });
       this.showAnswerForm =  false;
-      alert('Answer successfully submitted!')
-    }
-    else{
-      alert('All fields for answer are required!')
     }
   }
 
@@ -189,7 +152,7 @@ export class CreateQuestionComponent {
           category: response.category,
           type: response.type
         });
-        this.answers = response.answers ?? []; // empty array if undefined/null
+        this.answers = response.answers ?? []; 
         this.displayAnswers = [...this.answers]; 
       },
       error: (err) => {
@@ -215,25 +178,14 @@ export class CreateQuestionComponent {
       if (answerIndexInMainList !== -1) {
         this.answers[answerIndexInMainList] = updatedAnswer;
       }
+      this.questionForm.get('type')?.updateValueAndValidity();
       this.isAnswerEditMode = false;
       this.editingAnswerIndex = null;
     }
   }
 
-  // onAnswerDelete(index: number) {
-  //   if(index >= 0 && index < this.answers.length){
-  //     const confirmDialog = this.dialog.open(DeleteAnswerDialogComponent);
-  //     confirmDialog.afterClosed().subscribe(result => {
-  //       if(result){
-  //         this.answers[index].isDeleted = true;
-  //         this.displayAnswers[index].isDeleted = true;
-  //         this.displayAnswers = this.displayAnswers.filter(answer => !answer.isDeleted)
-  //       }
-  //     })
-  //   }
-  // }
-
   onAnswerDelete(index: number) {
+    console.log(this.answers)
     if (index >= 0 && index < this.displayAnswers.length) {
       const confirmDialog = this.dialog.open(DeleteAnswerDialogComponent);
       confirmDialog.afterClosed().subscribe(result => {
@@ -243,14 +195,16 @@ export class CreateQuestionComponent {
             this.answers[answerIndexInMainList].isDeleted = true; 
           }
           this.displayAnswers = this.displayAnswers.filter((_, i) => i !== index);
+          if(!this.isEditMode){
+            this.answers = this.answers.filter((_, i) => i !== answerIndexInMainList);
+            this.questionForm.get('type')?.updateValueAndValidity();
+          }
         }
       });
     }
   }
 
-  removeFromAnswersList(index: number) {
-    this.displayAnswers = this.displayAnswers.filter((_, i) => i !== index);
-  }
-  
-
+  errorMessage = {
+    multipleCorrect: 'You can only select one correct answer.',
+  };  
 }

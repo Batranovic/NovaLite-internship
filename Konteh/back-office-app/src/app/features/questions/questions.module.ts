@@ -11,6 +11,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { DeleteAnswerDialogComponent } from './delete-answer-dialog/delete-answer-dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import {  MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { MatDialogModule } from '@angular/material/dialog';
     BrowserAnimationsModule,
     FormsModule,
     MatDialogModule,
+    MatSnackBarModule
   ]
 })
 export class QuestionsModule { }
