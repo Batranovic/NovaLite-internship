@@ -24,8 +24,6 @@ import {MatMenu, MatMenuItem, MatMenuModule, MatMenuTrigger} from '@angular/mate
 import {MatIconModule} from '@angular/material/icon';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 
-
-
 @NgModule({
   declarations: [
     QuestionFilterComponent,
