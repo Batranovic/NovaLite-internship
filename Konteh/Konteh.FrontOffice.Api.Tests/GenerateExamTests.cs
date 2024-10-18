@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 using Konteh.FrontOfficeApi.Features.Exams;
 using Konteh.FrontOfficeApi.Features.Exams.RandomGenerator;
 
-namespace Konteh.Tests
+namespace Konteh.FrontOffice.Api.Tests
 {
     public class GenerateExamTests
     {
@@ -14,6 +14,7 @@ namespace Konteh.Tests
         private IRepository<Exam> _examRepository;
         private GenerateExam.Handler _handler;
         private IRandomGenerator _randomGenerator;
+        private IRepository<ExamQuestion> _examQuestionRepository;
 
         [SetUp]
         public void Setup()
@@ -21,7 +22,8 @@ namespace Konteh.Tests
             _questionRepository = Substitute.For<IRepository<Question>>();
             _examRepository = Substitute.For<IRepository<Exam>>();
             _randomGenerator = Substitute.For<IRandomGenerator>();
-            _handler = new GenerateExam.Handler(_questionRepository, _examRepository, _randomGenerator);
+            _examQuestionRepository = Substitute.For<IRepository<ExamQuestion>>();
+            _handler = new GenerateExam.Handler(_questionRepository, _examRepository, _randomGenerator, _examQuestionRepository);
         }
 
         [Test]
