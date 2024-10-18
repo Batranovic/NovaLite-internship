@@ -1,10 +1,10 @@
-using Konteh.BackOfficeApi.Features.Exams;
-using Konteh.BackOfficeApi.Features.Exams.RandomGenerator;
 using Konteh.Domain;
 using Konteh.Domain.Enumerations;
 using Konteh.Infrastructure.Repositories;
 using NSubstitute;
 using System.Linq.Expressions;
+using Konteh.FrontOfficeApi.Features.Exams;
+using Konteh.FrontOfficeApi.Features.Exams.RandomGenerator;
 
 namespace Konteh.Tests
 {
@@ -56,9 +56,9 @@ namespace Konteh.Tests
                     Category = QuestionCategory.OOP,
                     Answers = new List<Answer>
                     {
-                        new Answer { Id = 5, Text = "The ability of a class to inherit features from another class", IsCorrect = true },
-                        new Answer { Id = 6, Text = "The ability to encapsulate data", IsCorrect = false },
-                        new Answer { Id = 7, Text = "The ability to create objects", IsCorrect = false }
+                        new Answer { Id = 5, Text = "The ability of a class to inherit features from another class"},
+                        new Answer { Id = 6, Text = "The ability to encapsulate data" },
+                        new Answer { Id = 7, Text = "The ability to create objects"}
                     }
                 },
                 new Question
@@ -68,7 +68,9 @@ namespace Konteh.Tests
                     Category = QuestionCategory.General,
                     Answers = new List<Answer>
                     {
-                        new Answer { Id = 9, Text = "To initialize the state of an object", IsCorrect = true }
+                        new Answer { Id = 9, Text = "To initialize the state of an object"},
+                        new Answer { Id = 10, Text = "To define methods for the class"},
+                        new Answer { Id = 13, Text = "To inherit properties from another class"}
                     }
                 },
                 new Question
@@ -78,9 +80,9 @@ namespace Konteh.Tests
                     Category = QuestionCategory.OOP,
                     Answers = new List<Answer>
                     {
-                        new Answer { Id = 10, Text = "Hiding internal details of an object", IsCorrect = true },
-                        new Answer { Id = 11, Text = "Allowing objects to inherit from other objects", IsCorrect = false },
-                        new Answer { Id = 13, Text = "Separating object concerns", IsCorrect = false }
+                        new Answer { Id = 10, Text = "Hiding internal details of an object"},
+                        new Answer { Id = 11, Text = "Allowing objects to inherit from other objects"},
+                        new Answer { Id = 13, Text = "Separating object concerns"}
                     }
                 },
                 new Question
@@ -90,10 +92,10 @@ namespace Konteh.Tests
                     Category = QuestionCategory.General,
                     Answers = new List<Answer>
                     {
-                        new Answer { Id = 14, Text = "A class that can have multiple methods", IsCorrect = false },
-                        new Answer { Id = 15, Text = "A reference type used to define a contract for classes", IsCorrect = true },
-                        new Answer { Id = 16, Text = "A class with no constructors", IsCorrect = false },
-                        new Answer { Id = 17, Text = "A static class", IsCorrect = false }
+                        new Answer { Id = 14, Text = "A class that can have multiple methods"},
+                        new Answer { Id = 15, Text = "A reference type used to define a contract for classes"},
+                        new Answer { Id = 16, Text = "A class with no constructors"},
+                        new Answer { Id = 17, Text = "A static class" }
                     }
                 },
                 new Question
@@ -103,7 +105,9 @@ namespace Konteh.Tests
                     Category = QuestionCategory.General,
                     Answers = new List<Answer>
                     {
-                        new Answer { Id = 18, Text = "Hiding complexity and showing only the essential features of an object", IsCorrect = true }
+                        new Answer { Id = 18, Text = "Hiding complexity and showing only the essential features of an object"},
+                        new Answer { Id = 20, Text = "Providing access to all details of an object"},
+                        new Answer { Id = 21, Text = "Combining multiple classes into one"},
                     }
                 }
             };

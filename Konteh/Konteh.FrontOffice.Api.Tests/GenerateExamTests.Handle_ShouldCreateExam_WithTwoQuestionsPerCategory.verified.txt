@@ -9,8 +9,15 @@
         Answers: [
           {
             Id: 9,
-            Text: To initialize the state of an object,
-            IsCorrect: true
+            Text: To initialize the state of an object
+          },
+          {
+            Id: 10,
+            Text: To define methods for the class
+          },
+          {
+            Id: 13,
+            Text: To inherit properties from another class
           }
         ]
       }
@@ -23,23 +30,19 @@
         Answers: [
           {
             Id: 14,
-            Text: A class that can have multiple methods,
-            IsCorrect: false
+            Text: A class that can have multiple methods
           },
           {
             Id: 15,
-            Text: A reference type used to define a contract for classes,
-            IsCorrect: true
+            Text: A reference type used to define a contract for classes
           },
           {
             Id: 16,
-            Text: A class with no constructors,
-            IsCorrect: false
+            Text: A class with no constructors
           },
           {
             Id: 17,
-            Text: A static class,
-            IsCorrect: false
+            Text: A static class
           }
         ]
       }
@@ -52,18 +55,15 @@
         Answers: [
           {
             Id: 5,
-            Text: The ability of a class to inherit features from another class,
-            IsCorrect: true
+            Text: The ability of a class to inherit features from another class
           },
           {
             Id: 6,
-            Text: The ability to encapsulate data,
-            IsCorrect: false
+            Text: The ability to encapsulate data
           },
           {
             Id: 7,
-            Text: The ability to create objects,
-            IsCorrect: false
+            Text: The ability to create objects
           }
         ]
       }
@@ -76,18 +76,15 @@
         Answers: [
           {
             Id: 10,
-            Text: Hiding internal details of an object,
-            IsCorrect: true
+            Text: Hiding internal details of an object
           },
           {
             Id: 11,
-            Text: Allowing objects to inherit from other objects,
-            IsCorrect: false
+            Text: Allowing objects to inherit from other objects
           },
           {
             Id: 13,
-            Text: Separating object concerns,
-            IsCorrect: false
+            Text: Separating object concerns
           }
         ]
       }

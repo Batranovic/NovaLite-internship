@@ -1,10 +1,10 @@
-﻿using Konteh.BackOfficeApi.Features.Exams.RandomGenerator;
-using Konteh.Domain;
+﻿using Konteh.Domain;
 using Konteh.Domain.Enumerations;
+using Konteh.FrontOfficeApi.Features.Exams.RandomGenerator;
 using Konteh.Infrastructure.Repositories;
 using MediatR;
 
-namespace Konteh.BackOfficeApi.Features.Exams
+namespace Konteh.FrontOfficeApi.Features.Exams
 {
     public static class GenerateExam
     {
@@ -21,7 +21,6 @@ namespace Konteh.BackOfficeApi.Features.Exams
         {
             public long Id { get; set; }
             public string Text { get; set; } = string.Empty;
-            public bool IsCorrect { get; set; }
         }
         public class QuestionDto
         {
@@ -85,8 +84,7 @@ namespace Konteh.BackOfficeApi.Features.Exams
                         Answers = q.Question.Answers.Select(a => new AnswerDto
                         {
                             Id = a.Id,
-                            Text = a.Text,
-                            IsCorrect = a.IsCorrect
+                            Text = a.Text
                         }).ToList()
                     }
                 }).ToList();

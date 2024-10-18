@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Konteh.BackOfficeApi.Features.Exams
+namespace Konteh.FrontOfficeApi.Features.Exams
 {
     [ApiController]
     [Route("exams")]
@@ -12,7 +12,7 @@ namespace Konteh.BackOfficeApi.Features.Exams
 
         public ExamController(IMediator mediator)
         {
-            this._mediator = mediator;
+            _mediator = mediator;
         }
 
         [HttpPost]
