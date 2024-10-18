@@ -13,17 +13,33 @@ namespace Konteh.BackOfficeApi.Features.Exams
             QuestionCategory.General,
             QuestionCategory.OOP,
         ];
-
         public class Command : IRequest<Response>
         {
             public int QuestionPerCategory { get; set; } = 3;
         }
-
+        public class AnswerDto
+        {
+            public long Id { get; set; }
+            public string Text { get; set; } = string.Empty;
+            public bool IsCorrect { get; set; }
+        }
+        public class QuestionDto
+        {
+            public long Id { get; set; }
+            public string Text { get; set; } = string.Empty;
+            public QuestionCategory Category { get; set; }
+            public List<AnswerDto> Answers { get; set; } = [];
+        }
+        public class ExamQuestionDto
+        {
+            public long Id { get; set; }
+            public required QuestionDto Question { get; set; }
+        }
         public class Response
         {
             public long Id { get; set; }
             public DateTime StartTime { get; set; }
-            public List<ExamQuestion> ExamQuestions { get; set; } = new List<ExamQuestion>();
+            public List<ExamQuestionDto> ExamQuestions { get; set; } = new List<ExamQuestionDto>();
         }
 
         public class Handler : IRequestHandler<Command, Response>
@@ -58,6 +74,23 @@ namespace Konteh.BackOfficeApi.Features.Exams
                     randomQuestions.AddRange(selectedQuestions);
                 }
 
+                var examQuestionsDto = randomQuestions.Select(q => new ExamQuestionDto
+                {
+                    Id = q.Id,
+                    Question = new QuestionDto
+                    {
+                        Id = q.Question.Id,
+                        Text = q.Question.Text,
+                        Category = q.Question.Category,
+                        Answers = q.Question.Answers.Select(a => new AnswerDto
+                        {
+                            Id = a.Id,
+                            Text = a.Text,
+                            IsCorrect = a.IsCorrect
+                        }).ToList()
+                    }
+                }).ToList();
+
                 var exam = new Exam
                 {
                     StartTime = DateTime.UtcNow,
@@ -72,7 +105,7 @@ namespace Konteh.BackOfficeApi.Features.Exams
                 {
                     Id = exam.Id,
                     StartTime = exam.StartTime,
-                    ExamQuestions = randomQuestions,
+                    ExamQuestions = examQuestionsDto,
                 };
             }
         }

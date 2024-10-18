@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Konteh.Domain", "Konteh.Dom
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Konteh.Infrastructure", "Konteh.Infrastructure\Konteh.Infrastructure.csproj", "{EC04FAE7-AADC-4822-888C-BA16E6BD0284}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Konteh.Tests", "Konteh.Tests\Konteh.Tests.csproj", "{F870045F-9B98-4E0F-A59B-E1FE6A5362FA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Konteh.BackOffice.Api.Tests", "Konteh.Tests\Konteh.BackOffice.Api.Tests.csproj", "{F870045F-9B98-4E0F-A59B-E1FE6A5362FA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -16,7 +16,7 @@ public class QuestionsController : ControllerBase
         _mediator = mediator;
     }
 
-    [HttpGet]
+    [HttpGet] 
     public async Task<ActionResult<IEnumerable<GetAllQuestions.Response>>> GetAll()
     {
         var response = await _mediator.Send(new GetAllQuestions.Query());
