@@ -25,24 +25,12 @@ export class QuestionsOverviewComponent implements OnInit, AfterViewInit {
   pageCount: number | undefined = 100;
   private _snackBar: MatSnackBar = inject(MatSnackBar);
   @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
-  private filteredText: string = "";
-  private filterTextChanged: Subject<string> = new Subject<string>();
+  private filteredText: string | null = "";
 
   constructor(private questionService: QuestionsClient, public dialog: MatDialog) {}
 
   ngOnInit() {
     this.fetchQuestions();
-    this.initFilterDebouncing();
-  }
-
-  private initFilterDebouncing() {
-    this.filterTextChanged.pipe(
-      debounceTime(300),
-      distinctUntilChanged()
-    ).subscribe((filterText) => {
-      this.filteredText = filterText;
-      this.resetPaginator();
-    });
   }
 
   ngAfterViewInit() {
@@ -62,7 +50,11 @@ export class QuestionsOverviewComponent implements OnInit, AfterViewInit {
     this.questionService.paginate(this.pageNum, this.pageSize, this.filteredText).subscribe({
       next: (data) => {
         this.dataSource.data = data;
-        this.pageCount = data[0].pageCount;
+        if (data.length !== 0){
+          this.pageCount = data[0].pageCount;
+        }else{
+          this.pageCount = this.pageSize;
+        }
       },
       error: (error) => {
         console.error('Error fetching data: Error fetching data. Please try again.');
@@ -89,7 +81,10 @@ export class QuestionsOverviewComponent implements OnInit, AfterViewInit {
   }
 
   onFilterChanged(filterData: { text: string; category: QuestionCategory | null } | any) {
-    this.filterTextChanged.next(filterData.text);
+    console.log("ehy")
+
+    this.filteredText = filterData.text;
+    this.resetPaginator();
   }
 
   resetPaginator = () => {
