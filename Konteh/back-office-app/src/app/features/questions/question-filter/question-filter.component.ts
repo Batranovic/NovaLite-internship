@@ -11,16 +11,6 @@ import {Subject} from 'rxjs';
 export class QuestionFilterComponent {
   @Output() filterChange = new EventEmitter<{ text: string | null; category: QuestionCategory | null }>();
 
-  categories = [
-    { value: null, viewValue: 'All Categories' },
-    { value: QuestionCategory.OOP, viewValue: 'OOP' },
-    { value: QuestionCategory.General, viewValue: 'General' },
-    { value: QuestionCategory.Git, viewValue: 'Git' },
-    { value: QuestionCategory.Testing, viewValue: 'Testing' },
-    { value: QuestionCategory.Sql, viewValue: 'SQL' },
-    { value: QuestionCategory.Csharp, viewValue: 'C#' },
-  ];
-
   selectedCategory: QuestionCategory | null = null;
   questionText: string | null = '';
   private filterTextChanged: Subject<string | null> = new Subject<string | null>();

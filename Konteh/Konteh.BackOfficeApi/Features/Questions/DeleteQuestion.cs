@@ -4,15 +4,10 @@ using MediatR;
 
 namespace Konteh.BackOfficeApi.Features.Questions
 {
-    public class DeleteQuestion
+    public static class DeleteQuestion
     {
         public class Query : IRequest<Response>
         {
-            public Query(long id)
-            {
-                this.Id = id;
-            }
-
             public long Id { get; set; }
         }
 

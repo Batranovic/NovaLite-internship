@@ -6,10 +6,8 @@ namespace Konteh.Infrastructure.Repositories;
 
 public class QuestionRepository : BaseRepository<Question>, IQuestionRepository
 {
-    private AppDbContext _context;
     public QuestionRepository(AppDbContext context) : base(context)
     {
-        _context = context;
     }
 
     public async Task<(IEnumerable<Question>, int)> PaginateItems(int page, float pageSize, string? questionText = null)

@@ -16,7 +16,7 @@ import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angula
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 export interface IQuestionsClient {
-    paginate(page: number | undefined, pageSize: number | undefined, questionText: string | null | undefined): Observable<PaginateQuestionsResponse[]>;
+    paginate(page: number | undefined, pageSize: number | undefined, questionText: string | null | undefined): Observable<SearchQuestionsResponse[]>;
     deleteById(questionId: number | undefined): Observable<DeleteQuestionResponse>;
 }
 
@@ -33,8 +33,8 @@ export class QuestionsClient implements IQuestionsClient {
         this.baseUrl = baseUrl ?? "https://localhost:7184";
     }
 
-    paginate(page: number | undefined, pageSize: number | undefined, questionText: string | null | undefined): Observable<PaginateQuestionsResponse[]> {
-        let url_ = this.baseUrl + "/questions/paginate?";
+    paginate(page: number | undefined, pageSize: number | undefined, questionText: string | null | undefined): Observable<SearchQuestionsResponse[]> {
+        let url_ = this.baseUrl + "/questions/search?";
         if (page === null)
             throw new Error("The parameter 'page' cannot be null.");
         else if (page !== undefined)
@@ -62,14 +62,14 @@ export class QuestionsClient implements IQuestionsClient {
                 try {
                     return this.processPaginate(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<PaginateQuestionsResponse[]>;
+                    return _observableThrow(e) as any as Observable<SearchQuestionsResponse[]>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<PaginateQuestionsResponse[]>;
+                return _observableThrow(response_) as any as Observable<SearchQuestionsResponse[]>;
         }));
     }
 
-    protected processPaginate(response: HttpResponseBase): Observable<PaginateQuestionsResponse[]> {
+    protected processPaginate(response: HttpResponseBase): Observable<SearchQuestionsResponse[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -83,7 +83,7 @@ export class QuestionsClient implements IQuestionsClient {
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
-                    result200!.push(PaginateQuestionsResponse.fromJS(item));
+                    result200!.push(SearchQuestionsResponse.fromJS(item));
             }
             else {
                 result200 = <any>null;
@@ -224,13 +224,13 @@ export class WeatherForecastClient implements IWeatherForecastClient {
     }
 }
 
-export class PaginateQuestionsResponse implements IPaginateQuestionsResponse {
+export class SearchQuestionsResponse implements ISearchQuestionsResponse {
     id?: number;
     text?: string;
     category?: QuestionCategory;
     pageCount?: number;
 
-    constructor(data?: IPaginateQuestionsResponse) {
+    constructor(data?: ISearchQuestionsResponse) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -248,9 +248,9 @@ export class PaginateQuestionsResponse implements IPaginateQuestionsResponse {
         }
     }
 
-    static fromJS(data: any): PaginateQuestionsResponse {
+    static fromJS(data: any): SearchQuestionsResponse {
         data = typeof data === 'object' ? data : {};
-        let result = new PaginateQuestionsResponse();
+        let result = new SearchQuestionsResponse();
         result.init(data);
         return result;
     }
@@ -265,7 +265,7 @@ export class PaginateQuestionsResponse implements IPaginateQuestionsResponse {
     }
 }
 
-export interface IPaginateQuestionsResponse {
+export interface ISearchQuestionsResponse {
     id?: number;
     text?: string;
     category?: QuestionCategory;

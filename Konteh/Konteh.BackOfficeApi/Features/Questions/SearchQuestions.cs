@@ -4,20 +4,13 @@ using MediatR;
 
 namespace Konteh.BackOfficeApi.Features.Questions
 {
-    public class PaginateQuestions
+    public static class SearchQuestions
     {
         public class Query : IRequest<IEnumerable<Response>>
         {
-            public Query(int page, float pageSize, string? questionText)
-            {
-                Page = page;
-                PageSize = pageSize;
-                QuestionText = questionText;
-            }
-
             public string? QuestionText { get; set; }
             public int Page { get; set; }
-            public float PageSize { get; set; }
+            public int PageSize { get; set; }
         }
 
         public class Response

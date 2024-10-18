@@ -7,7 +7,7 @@ import {MatDialogRef} from '@angular/material/dialog';
   styleUrl: './confirm-dialog.component.css'
 })
 export class ConfirmDialogComponent {
-  constructor(public dialogRef: MatDialogRef<ConfirmDialogComponent>) {}
+  constructor(private dialogRef: MatDialogRef<ConfirmDialogComponent>) {}
 
   onCancel(): void {
     this.dialogRef.close(false);

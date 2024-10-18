@@ -5,7 +5,7 @@ namespace Konteh.Infrastructure.Repositories;
 
 public abstract class BaseRepository<T> : IRepository<T> where T : class
 {
-    private readonly AppDbContext _context;
+    protected readonly AppDbContext _context;
 
     public BaseRepository(AppDbContext context)
     {
@@ -25,7 +25,7 @@ public abstract class BaseRepository<T> : IRepository<T> where T : class
             await SaveChanges();
             return true;
         }
-        catch (DbUpdateException ex)
+        catch (DbUpdateException)
         {
             return false;
         }

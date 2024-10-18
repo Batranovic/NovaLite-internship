@@ -4,7 +4,6 @@ import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import {
-  PaginateQuestionsResponse,
   QuestionCategory,
   QuestionsClient
 } from '../../../api/api-reference';
@@ -19,15 +18,15 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 })
 export class QuestionsOverviewComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = ['id', 'text', 'category', 'actions'];
-  dataSource = new MatTableDataSource<PaginateQuestionsResponse>();
+  dataSource = new MatTableDataSource();
   pageNum: number = 1;
   pageSize: number = 5;
-  pageCount: number | undefined = 100;
-  private _snackBar: MatSnackBar = inject(MatSnackBar);
+  itemCount: number = 5;
   @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
   private filteredText: string | null = "";
 
-  constructor(private questionService: QuestionsClient, public dialog: MatDialog) {}
+  constructor(private _snackBar : MatSnackBar, private questionService: QuestionsClient, public dialog: MatDialog) {
+  }
 
   ngOnInit() {
     this.fetchQuestions();
@@ -50,19 +49,18 @@ export class QuestionsOverviewComponent implements OnInit, AfterViewInit {
     this.questionService.paginate(this.pageNum, this.pageSize, this.filteredText).subscribe({
       next: (data) => {
         this.dataSource.data = data;
-        if (data.length !== 0){
-          this.pageCount = data[0].pageCount;
+        if (data.length !== 0 && data[0].pageCount){
+          this.itemCount = data[0].pageCount;
         }else{
-          this.pageCount = this.pageSize;
+          this.itemCount = this.pageSize;
         }
       },
       error: (error) => {
-        console.error('Error fetching data: Error fetching data. Please try again.');
       },
     });
   }
 
-  editQuestion(question: PaginateQuestionsResponse) {
+  editQuestion(question : any) {
     // TO DO: redirect to edit page
   }
 
@@ -80,9 +78,7 @@ export class QuestionsOverviewComponent implements OnInit, AfterViewInit {
     });
   }
 
-  onFilterChanged(filterData: { text: string; category: QuestionCategory | null } | any) {
-    console.log("ehy")
-
+  onFilterChanged(filterData: { text: string } | any) {
     this.filteredText = filterData.text;
     this.resetPaginator();
   }
@@ -98,14 +94,12 @@ export class QuestionsOverviewComponent implements OnInit, AfterViewInit {
     this.fetchQuestions();
   }
 
-  openConfirmDialog(functionToBeDone: Function): void {
+  openConfirmDialog(actionToConfirm: Function): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent);
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        functionToBeDone();
-      } else {
-        console.log('User canceled deletion');
+        actionToConfirm();
       }
     });
   }
