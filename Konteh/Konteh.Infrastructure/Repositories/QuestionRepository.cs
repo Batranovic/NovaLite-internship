@@ -12,16 +12,24 @@ public class QuestionRepository : BaseRepository<Question>, IQuestionRepository
 
     public async Task<(IEnumerable<Question> SearchedQuestions, int QuestionCount)> PaginateItems(int page, float pageSize, string? questionText = null)
     {
-        var query = GetBaseQuery(questionText);
+        var query = _context.Set<Question>().AsQueryable();
 
-        query = FilterNonDeletedItems(query);
+        if (!string.IsNullOrEmpty(questionText))
+        {
+            query = query.Where(q => q.Text.Contains(questionText));
+        }
 
-        var totalCount = await GetTotalCount(query);
+        query = query.Where(q => q.IsDeleted == false);
 
-        var items = await GetPagedItems(query, page, pageSize);
+        var totalCount = await query.CountAsync();
 
+        var items = await query
+            .Skip((page - 1) * (int)pageSize)
+            .Take((int)pageSize)
+            .ToListAsync();
         return (items, totalCount);
     }
+
 
     public new async Task<bool> Delete(long questionId)
     {
@@ -46,24 +54,6 @@ public class QuestionRepository : BaseRepository<Question>, IQuestionRepository
         }
 
         return query;
-    }
-
-    private IQueryable<Question> FilterNonDeletedItems(IQueryable<Question> query)
-    {
-        return query.Where(q => q.IsDeleted == false);
-    }
-
-    private async Task<int> GetTotalCount(IQueryable<Question> query)
-    {
-        return await query.CountAsync();
-    }
-
-    private async Task<List<Question>> GetPagedItems(IQueryable<Question> query, int page, float pageSize)
-    {
-        return await query
-            .Skip((page - 1) * (int)pageSize)
-            .Take((int)pageSize)
-            .ToListAsync();
     }
 
     private Expression<Func<Question, bool>>? PrepareFilter(string? questionText)
