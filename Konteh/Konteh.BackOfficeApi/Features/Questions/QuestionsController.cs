@@ -16,10 +16,17 @@ public class QuestionsController : ControllerBase
         _mediator = mediator;
     }
 
-    [HttpGet] 
-    public async Task<ActionResult<IEnumerable<GetAllQuestions.Response>>> GetAll()
+    [HttpGet("search")]
+    public async Task<ActionResult<SearchQuestions.Response>> Paginate([FromQuery] SearchQuestions.Query request)
     {
-        var response = await _mediator.Send(new GetAllQuestions.Query());
+        var response = await _mediator.Send(request);
         return Ok(response);
+    }
+
+    [HttpDelete("{questionId:long}")]
+    public async Task<ActionResult<bool>> DeleteById(long questionId)
+    {
+        await _mediator.Send(new DeleteQuestion.Command { Id = questionId });
+        return Ok();
     }
 }

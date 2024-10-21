@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { QuestionsModule } from './features/questions/questions.module';
 import { MSAL_INSTANCE, MSAL_INTERCEPTOR_CONFIG, MsalInterceptor, MsalInterceptorConfiguration, MsalModule, MsalService } from '@azure/msal-angular'
 import { InteractionType, IPublicClientApplication, PublicClientApplication } from '@azure/msal-browser';
 import { LayoutModule } from "./features/layout/layout.module";
@@ -36,7 +37,8 @@ export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
     MsalModule,
     LayoutModule,
     FeaturesModule,
-    HttpClientModule
+    HttpClientModule,
+    QuestionsModule
   ],
   providers: [
     {
