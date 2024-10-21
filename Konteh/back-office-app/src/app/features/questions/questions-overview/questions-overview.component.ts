@@ -35,12 +35,11 @@ export class QuestionsOverviewComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     if (this.paginator) {
       this.paginator.page.subscribe(() => {
-        if (!this.paginator) {
-          return;
+        if (this.paginator) {
+          this.pageNum = this.paginator.pageIndex + 1;
+          this.pageSize = this.paginator.pageSize;
+          this.fetchQuestions();
         }
-        this.pageNum = this.paginator.pageIndex + 1;
-        this.pageSize = this.paginator.pageSize;
-        this.fetchQuestions();
       });
     }
   }
