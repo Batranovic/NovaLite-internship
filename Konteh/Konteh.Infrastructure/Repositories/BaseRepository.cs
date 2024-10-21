@@ -17,8 +17,13 @@ public abstract class BaseRepository<T> : IRepository<T> where T : class
         _context.Set<T>().Add(entity);
     }
 
-    public async Task<bool> Delete(T entity)
+    public async Task<bool> Delete(long id)
     {
+        var entity = await _context.Set<T>().FindAsync(id);
+        if (entity == null)
+        {
+            return false;
+        }
         try
         {
             _context.Set<T>().Remove(entity);

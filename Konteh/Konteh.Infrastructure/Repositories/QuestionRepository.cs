@@ -10,7 +10,7 @@ public class QuestionRepository : BaseRepository<Question>, IQuestionRepository
     {
     }
 
-    public async Task<(IEnumerable<Question>, int)> PaginateItems(int page, float pageSize, string? questionText = null)
+    public async Task<(IEnumerable<Question> SearchedQuestions, int QuestionCount)> PaginateItems(int page, float pageSize, string? questionText = null)
     {
         var query = GetBaseQuery(questionText);
 
@@ -23,9 +23,9 @@ public class QuestionRepository : BaseRepository<Question>, IQuestionRepository
         return (items, totalCount);
     }
 
-    public new async Task<bool> Delete(Question entity)
+    public new async Task<bool> Delete(long questionId)
     {
-        Question? question = await GetById(entity.Id);
+        var question = await GetById(questionId);
         if (question != null)
         {
             question.IsDeleted = true;

@@ -1,5 +1,4 @@
-﻿using Konteh.Domain;
-using Konteh.Infrastructure.Repositories;
+﻿using Konteh.Infrastructure.Repositories;
 using MediatR;
 
 namespace Konteh.BackOfficeApi.Features.Questions
@@ -22,7 +21,7 @@ namespace Konteh.BackOfficeApi.Features.Questions
 
             public async Task<bool> Handle(Command request, CancellationToken cancellationToken)
             {
-                return await _repository.Delete(new Question { Id = request.Id });
+                return await _repository.Delete(request.Id);
             }
         }
     }
