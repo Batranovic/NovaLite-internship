@@ -17,23 +17,9 @@ public abstract class BaseRepository<T> : IRepository<T> where T : class
         _context.Set<T>().Add(entity);
     }
 
-    public async Task<bool> Delete(long id)
+    public virtual void Delete(T entity)
     {
-        var entity = await _context.Set<T>().FindAsync(id);
-        if (entity == null)
-        {
-            return false;
-        }
-        try
-        {
-            _context.Set<T>().Remove(entity);
-            await SaveChanges();
-            return true;
-        }
-        catch (DbUpdateException)
-        {
-            return false;
-        }
+        _context.Set<T>().Remove(entity);
     }
 
     public async Task<IEnumerable<T>> GetAll()

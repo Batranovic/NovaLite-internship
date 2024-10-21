@@ -1,6 +1,5 @@
 ﻿using Konteh.Domain;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 namespace Konteh.Infrastructure.Repositories;
 
@@ -10,59 +9,28 @@ public class QuestionRepository : BaseRepository<Question>, IQuestionRepository
     {
     }
 
-    public async Task<(IEnumerable<Question> SearchedQuestions, int QuestionCount)> PaginateItems(int page, float pageSize, string? questionText = null)
+    public async Task<(IEnumerable<Question> SearchedQuestions, int QuestionCount)> PaginateItems(int page, int pageSize, string? questionText)
     {
-        var query = _context.Set<Question>().AsQueryable();
+        var query = _context.Set<Question>().Where(q => q.IsDeleted == false);
 
         if (!string.IsNullOrEmpty(questionText))
         {
             query = query.Where(q => q.Text.Contains(questionText));
         }
 
-        query = query.Where(q => q.IsDeleted == false);
-
         var totalCount = await query.CountAsync();
 
         var items = await query
-            .Skip((page - 1) * (int)pageSize)
-            .Take((int)pageSize)
+            .Skip(page * pageSize)
+            .Take(pageSize)
             .ToListAsync();
+
         return (items, totalCount);
     }
 
 
-    public new async Task<bool> Delete(long questionId)
+    public override void Delete(Question entity)
     {
-        var question = await GetById(questionId);
-        if (question != null)
-        {
-            question.IsDeleted = true;
-            await SaveChanges();
-            return true;
-        }
-        return false;
-    }
-
-    private IQueryable<Question> GetBaseQuery(string? questionText)
-    {
-        var query = _context.Set<Question>().AsQueryable();
-
-        var filter = PrepareFilter(questionText);
-        if (filter != null)
-        {
-            query = query.Where(filter);
-        }
-
-        return query;
-    }
-
-    private Expression<Func<Question, bool>>? PrepareFilter(string? questionText)
-    {
-        if (string.IsNullOrEmpty(questionText))
-        {
-            return null;
-        }
-
-        return q => q.Text.Contains(questionText);
+        entity.IsDeleted = true;
     }
 }

@@ -1,65 +1,39 @@
-import {Component, ViewChild, AfterViewInit, OnInit, inject} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
-import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import {
-  QuestionCategory,
-  QuestionsClient
-} from '../../../api/api-reference';
-import {MatDialog} from '@angular/material/dialog';
-import {ConfirmDialogComponent} from '../../layout/confirm-dialog/confirm-dialog.component';
-import {MatSnackBar} from '@angular/material/snack-bar';
+import { PageEvent } from '@angular/material/paginator';
+import { QuestionsClient } from '../../../api/api-reference';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../../layout/confirm-dialog/confirm-dialog.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-questions-overview',
   templateUrl: './questions-overview.component.html',
   styleUrls: ['./questions-overview.component.css']
 })
-export class QuestionsOverviewComponent implements OnInit, AfterViewInit {
+export class QuestionsOverviewComponent implements OnInit {
   displayedColumns: string[] = ['id', 'text', 'category', 'actions'];
   dataSource = new MatTableDataSource();
-  pageNum: number = 1;
+  pageNumber: number = 0;
   pageSize: number = 5;
   itemCount: number = 5;
-  @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
   private filteredText: string | null = "";
 
-  constructor(private _snackBar : MatSnackBar, private questionService: QuestionsClient, public dialog: MatDialog) {
-  }
+  constructor(private snackBar: MatSnackBar, private questionService: QuestionsClient, public dialog: MatDialog) { }
 
   ngOnInit() {
     this.fetchQuestions();
   }
 
-  ngAfterViewInit() {
-    if (this.paginator) {
-      this.paginator.page.subscribe(() => {
-        if (this.paginator) {
-          this.pageNum = this.paginator.pageIndex + 1;
-          this.pageSize = this.paginator.pageSize;
-          this.fetchQuestions();
-        }
-      });
-    }
-  }
-
   fetchQuestions() {
-    this.questionService.paginate(this.pageNum, this.pageSize, this.filteredText).subscribe({
-      next: (data) => {
-        this.dataSource.data = data;
-        if (data.length !== 0 && data[0].pageCount){
-          this.itemCount = data[0].pageCount;
-        }else{
-          this.itemCount = this.pageSize;
-        }
-      },
-      error: (error) => {
-      },
+    this.questionService.paginate(this.filteredText, this.pageNumber, this.pageSize).subscribe(data => {
+      this.dataSource.data = data.items ?? [];
+      this.itemCount = data.pageCount ?? 0;
     });
   }
 
-  editQuestion(question : any) {
+  editQuestion(question: any) {
     // TO DO: redirect to edit page
   }
 
@@ -77,34 +51,35 @@ export class QuestionsOverviewComponent implements OnInit, AfterViewInit {
     });
   }
 
-  onFilterChanged(filterData: { text: string } | any) {
-    this.filteredText = filterData.text;
+  onFilterChanged(filteredText: string) {
+    this.filteredText = filteredText;
     this.resetPaginator();
   }
 
   resetPaginator = () => {
-    if (this.paginator) {
-      this.paginator.pageIndex = 0;
-      this.pageNum = 1;
-      if (this.dataSource.data.length === 0) {
-        this.paginator.length = this.pageSize;
-      }
-    }
+    this.pageNumber = 0;
+    this.itemCount = 0;
     this.fetchQuestions();
   }
+
+  onPageChange = (_event: PageEvent) => {
+    this.pageNumber = _event.pageIndex;
+    this.pageSize = _event.pageSize;
+    this.fetchQuestions();
+  };
 
   openConfirmDialog(actionToConfirm: Function): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent);
 
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
+    dialogRef.afterClosed()
+      .pipe(filter(result => result === true))
+      .subscribe(_ => {
         actionToConfirm();
-      }
-    });
+      });
   }
 
   openSnackBar(message: string, action: string) {
-    this._snackBar.open(message, action, {
+    this.snackBar.open(message, action, {
       duration: 2000,
       horizontalPosition: 'center',
     });

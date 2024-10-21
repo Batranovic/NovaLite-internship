@@ -8,7 +8,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
   styleUrls: ['./question-filter.component.css']
 })
 export class QuestionFilterComponent implements OnInit {
-  @Output() filterChange = new EventEmitter<{ text: string | null }>();
+  @Output() filterChange = new EventEmitter<string>();
 
   filterForm: FormGroup;
 
@@ -29,7 +29,7 @@ export class QuestionFilterComponent implements OnInit {
         distinctUntilChanged()
       )
       .subscribe((filterText: string) => {
-        this.filterChange.emit({ text: filterText.trim() === '' ? null : filterText });
+        this.filterChange.emit(filterText.trim());
       });
   }
 

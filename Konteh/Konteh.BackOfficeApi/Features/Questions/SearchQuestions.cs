@@ -6,7 +6,7 @@ namespace Konteh.BackOfficeApi.Features.Questions
 {
     public static class SearchQuestions
     {
-        public class Query : IRequest<IEnumerable<Response>>
+        public class Query : IRequest<Response>
         {
             public string? QuestionText { get; set; }
             public int Page { get; set; }
@@ -15,13 +15,18 @@ namespace Konteh.BackOfficeApi.Features.Questions
 
         public class Response
         {
-            public long Id { get; set; }
-            public string Text { get; set; } = string.Empty;
-            public QuestionCategory Category { get; set; }
+            public IEnumerable<ResponseItem> Items { get; set; } = [];
             public int PageCount { get; set; }
         }
 
-        public class RequestHandler : IRequestHandler<Query, IEnumerable<Response>>
+        public class ResponseItem
+        {
+            public long Id { get; set; }
+            public string Text { get; set; } = string.Empty;
+            public QuestionCategory Category { get; set; }
+        }
+
+        public class RequestHandler : IRequestHandler<Query, Response>
         {
             private readonly IQuestionRepository _repository;
 
@@ -30,11 +35,20 @@ namespace Konteh.BackOfficeApi.Features.Questions
                 _repository = repository;
             }
 
-            public async Task<IEnumerable<Response>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<Response> Handle(Query request, CancellationToken cancellationToken)
             {
                 var (items, pageCount) = await _repository.PaginateItems(request.Page, request.PageSize, request.QuestionText);
 
-                return items.Select(q => new Response { Id = q.Id, Category = q.Category, Text = q.Text, PageCount = pageCount });
+                return new Response
+                {
+                    PageCount = pageCount,
+                    Items = items.Select(q => new ResponseItem
+                    {
+                        Id = q.Id,
+                        Category = q.Category,
+                        Text = q.Text,
+                    })
+                };
             }
         }
     }

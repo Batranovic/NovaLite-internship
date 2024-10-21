@@ -7,7 +7,7 @@ public interface IRepository<T>
     Task<IEnumerable<T>> GetAll();
     Task<T?> GetById(long id);
     void Create(T entity);
-    Task<bool> Delete(long entityId);
+    void Delete(T entity);
     Task SaveChanges();
     Task<IEnumerable<T>> Search(Expression<Func<T, bool>> predicate);
 }
