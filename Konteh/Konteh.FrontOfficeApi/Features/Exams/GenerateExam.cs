@@ -75,6 +75,7 @@ namespace Konteh.FrontOfficeApi.Features.Exams
 
                 var examQuestionsDto = randomQuestions.Select(q => new ExamQuestionDto
                 {
+                    Id = q.Id,
                     Question = new QuestionDto
                     {
                         Id = q.Question.Id,
@@ -100,6 +101,7 @@ namespace Konteh.FrontOfficeApi.Features.Exams
 
                 return new Response
                 {
+                    Id = exam.Id,
                     StartTime = exam.StartTime,
                     ExamQuestions = examQuestionsDto,
                 };

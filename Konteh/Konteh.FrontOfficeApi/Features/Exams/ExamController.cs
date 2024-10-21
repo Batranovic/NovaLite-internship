@@ -6,7 +6,6 @@ namespace Konteh.FrontOfficeApi.Features.Exams
 {
     [ApiController]
     [Route("exams")]
-   // [Authorize]
     public class ExamController : Controller
     {
         private readonly IMediator _mediator;
@@ -17,7 +16,7 @@ namespace Konteh.FrontOfficeApi.Features.Exams
         }
 
         [HttpPost]
-        public async Task<ActionResult<GenerateExam.Response>> GenerateExam([FromBody] GenerateExam.Command command)
+        public async Task<ActionResult<GenerateExam.Response>> GenerateExam(GenerateExam.Command command)
         {
             var response = await _mediator.Send(command);
             return Ok(response);

@@ -4,6 +4,8 @@ using Konteh.Domain.Enumerations;
 using Konteh.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using Respawn;
+using System.Net;
 
 namespace Konteh.BackOffice.Api.Tests
 {
@@ -11,10 +13,25 @@ namespace Konteh.BackOffice.Api.Tests
     {
         private readonly CustomWebApplicationFactory<Program> _factory;
         private HttpClient _httpClient;
+        private static Respawner _respawner;
+        private static string _connection = "Server=.;Database=KontehTest;Trusted_Connection=True;TrustServerCertificate=True;";
+
         public GetAllQuestionsIntegrationTests()
         {
             _factory = new CustomWebApplicationFactory<Program>();
+        }
+
+        [SetUp]
+        public async Task InitializeAsync()
+        {
             _httpClient = _factory.CreateClient();
+            _respawner = await Respawner.CreateAsync(_connection, new RespawnerOptions
+            {
+                TablesToIgnore = ["__EFMigrationsHistory"],
+
+
+            });
+            await _respawner.ResetAsync(_connection);
         }
         public void Dispose()
         {
@@ -25,6 +42,8 @@ namespace Konteh.BackOffice.Api.Tests
         [Test]
         public async Task Handle_ShouldGetAllQuestions()
         {
+            await _respawner.ResetAsync(_connection);
+
             using (var scope = _factory.Services.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -33,15 +52,12 @@ namespace Konteh.BackOffice.Api.Tests
             }
 
             var response = await _httpClient.GetAsync("/questions");
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(response, Is.Not.Null);
 
-            if (!response.IsSuccessStatusCode)
-            {
-                var content = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"Error: {content}");
-            }
-            response.EnsureSuccessStatusCode();
-            await Verify(response);
             var jsonContent = await response.Content.ReadAsStringAsync();
+            var questions = JsonConvert.DeserializeObject<IEnumerable<GetAllQuestions.Response>>(jsonContent);
+            await Verify(questions);
 
         }
         private void SeedDatabase(AppDbContext db)

@@ -40,9 +40,7 @@ namespace Konteh.BackOffice.Api.Tests
 
                 using (var scope = serviceProvider.CreateScope())
                 {
-                    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                    db.Database.EnsureDeleted(); 
-                    db.Database.EnsureCreated();  
+                    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>(); 
                     db.Database.Migrate();         
                 }
             });
