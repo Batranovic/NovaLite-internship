@@ -20,17 +20,15 @@ namespace Konteh.FrontOffice.Api.Tests
         public GenerateExamIntegrationTests()
         {
             _factory = new CustomWebApplicationFactory<Program>();
-
         }
+
         [SetUp]
         public async Task InitializeAsync()
         {
             _httpClient = _factory.CreateClient();
             _respawner = await Respawner.CreateAsync(_connection, new RespawnerOptions
             {
-                TablesToIgnore = ["__EFMigrationsHistory"],
-
-
+                TablesToIgnore = ["__EFMigrationsHistory"]
             });
             await _respawner.ResetAsync(_connection);
         }
@@ -44,8 +42,6 @@ namespace Konteh.FrontOffice.Api.Tests
         [Test]
         public async Task Handle_ShouldCreateExam()
         {
-            await _respawner.ResetAsync(_connection);
-
             using (var scope = _factory.Services.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();

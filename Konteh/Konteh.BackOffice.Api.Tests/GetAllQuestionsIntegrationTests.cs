@@ -30,9 +30,7 @@ namespace Konteh.BackOffice.Api.Tests
 
             _respawner = await Respawner.CreateAsync(_connection, new RespawnerOptions
             {
-                TablesToIgnore = ["__EFMigrationsHistory"],
-
-
+                TablesToIgnore = ["__EFMigrationsHistory"]
             });
             await _respawner.ResetAsync(_connection);
         }
@@ -45,8 +43,6 @@ namespace Konteh.BackOffice.Api.Tests
         [Test]
         public async Task Handle_ShouldGetAllQuestions()
         { 
-            await _respawner.ResetAsync(_connection);
-
             using (var scope = _factory.Services.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -61,11 +57,9 @@ namespace Konteh.BackOffice.Api.Tests
             var jsonContent = await response.Content.ReadAsStringAsync();
             var questions = JsonConvert.DeserializeObject<IEnumerable<GetAllQuestions.Response>>(jsonContent);
             await Verify(questions);
-
         }
         private void SeedDatabase(AppDbContext db)
         {
-
             var questions = new List<Question>
             {
                 new Question
