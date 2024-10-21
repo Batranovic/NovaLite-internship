@@ -27,13 +27,13 @@ public class QuestionsController : ControllerBase
     }
 
     [HttpDelete]
-    public async Task<ActionResult<DeleteQuestion.Response>> DeleteById(
+    public async Task<ActionResult<bool>> DeleteById(
     [FromQuery] long questionId)
     {
-        var response = await _mediator.Send(new DeleteQuestion.Query() { Id = questionId });
-        if (response.Success)
+        var response = await _mediator.Send(new DeleteQuestion.Command { Id = questionId });
+        if (response)
         {
-            return Ok(response);
+            return Ok();
         }
         else
         {
