@@ -27,7 +27,6 @@ namespace Konteh.FrontOffice.Api.Tests
                     d => d.ServiceType ==
                         typeof(DbConnection));
 
-
                 if (dbConnectionDescriptor != null) 
                 {
                     services.Remove(dbConnectionDescriptor);

@@ -11,8 +11,6 @@ namespace Konteh.BackOffice.Api.Tests
     {
         private readonly CustomWebApplicationFactory<Program> _factory;
         private HttpClient _httpClient;
-
-
         public GetAllQuestionsIntegrationTests()
         {
             _factory = new CustomWebApplicationFactory<Program>();
@@ -45,15 +43,6 @@ namespace Konteh.BackOffice.Api.Tests
             await Verify(response);
             var jsonContent = await response.Content.ReadAsStringAsync();
 
-            var questions = JsonConvert.DeserializeObject<List<GetAllQuestions.Response>>(jsonContent);
-
-            if (questions != null)
-            {
-                foreach (var question in questions)
-                {
-                    Console.WriteLine($"Id: {question.Id}, Text: {question.Text}, Category: {question.Category}");
-                }
-            }
         }
         private void SeedDatabase(AppDbContext db)
         {
