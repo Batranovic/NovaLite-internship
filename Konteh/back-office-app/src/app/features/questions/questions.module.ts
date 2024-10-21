@@ -12,6 +12,7 @@ import { FormsModule } from '@angular/forms';
 import { DeleteAnswerDialogComponent } from './delete-answer-dialog/delete-answer-dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import {  MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import {  MatSnackBarModule } from '@angular/material/snack-bar';
     BrowserAnimationsModule,
     FormsModule,
     MatDialogModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatButtonModule
   ]
 })
 export class QuestionsModule { }

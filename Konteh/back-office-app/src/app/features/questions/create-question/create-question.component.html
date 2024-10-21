@@ -34,17 +34,17 @@
     <button mat-raised-button color="primary" *ngIf="!showAnswerForm"  (click)="showAnswerForm = true">Add an answer</button>
      
     <div *ngIf="showAnswerForm" class="answer-form-container">
-            <h2 class="answer-form-title">Answer Form</h2>
-            <form [formGroup]="answerForm" (ngSubmit)="onAnswerSubmit()">
-                <mat-checkbox formControlName="isCorrect">Is Correct?</mat-checkbox>
-                <mat-form-field appearance="fill">
-                    <mat-label>Answer Text</mat-label>
-                    <textarea matInput formControlName="text" required></textarea>
-                </mat-form-field>
-                <span *ngIf="answerForm.get('text')?.hasError('required') && (answerForm.get('text')?.dirty || answerForm.get('text')?.touched || isAnswerSubmitted)" class="error">This field is required.</span>
-                <div></div>
-                <button class="form-button" mat-raised-button color="primary" type="submit">Submit answer</button>
-            </form>
+        <h2 class="answer-form-title">Answer Form</h2>
+        <form [formGroup]="answerForm" (ngSubmit)="onAnswerSubmit()">
+            <mat-checkbox formControlName="isCorrect">Is Correct?</mat-checkbox>
+            <mat-form-field appearance="fill">
+                <mat-label>Answer Text</mat-label>
+                <textarea matInput formControlName="text" required></textarea>
+            </mat-form-field>
+            <span *ngIf="answerForm.get('text')?.hasError('required') && (answerForm.get('text')?.dirty || answerForm.get('text')?.touched || isAnswerSubmitted)" class="error">This field is required.</span>
+            <div></div>
+            <button class="form-button" mat-raised-button color="primary" type="submit">Submit answer</button>
+        </form>
     </div>
 </div>
 

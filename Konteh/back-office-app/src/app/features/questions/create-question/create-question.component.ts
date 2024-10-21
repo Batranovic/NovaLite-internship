@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Answer, CreateQuestionCommand, QuestionsClient, UpdateQuestionCommand } from '../../../api/api-reference';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { DeleteAnswerDialogComponent } from '../delete-answer-dialog/delete-answer-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { radioButtonRestriction } from '../../../validators/radioButtonRestriction.validator';
 
 @Component({
   selector: 'app-create-question',
@@ -76,7 +75,7 @@ export class CreateQuestionComponent implements OnInit {
       const hasCorrectAnswer = this.answers.some(answer => answer.isCorrect);
       if (!hasCorrectAnswer) {
         this.snackBar.open('At least one correct answer is required', 'Ok', {
-          duration: 4000,
+          duration: 3000,
           panelClass: 'red-snackbar'
         });
         return;
@@ -99,7 +98,9 @@ export class CreateQuestionComponent implements OnInit {
     command.answers = this.answers;
     this.questionClient.create(command).subscribe({
       next: (response) => {
-        alert('Question successfully created!');
+        this.snackBar.open('Question successfully created', 'Ok', {
+          duration: 2000
+        })
         this.router.navigate(['/question-overview/', response.id]);
       },
       error: (err) => {
@@ -121,7 +122,9 @@ export class CreateQuestionComponent implements OnInit {
     command.answers = this.answers;
     this.questionClient.updateQuestion(command).subscribe({
       next: () => {
-        alert('Question successfully updated!');
+        this.snackBar.open('Question successfully updated', 'Ok', {
+          duration: 2000
+        })
         this.router.navigate(['/question-overview/', this.questionId]);
       },
       error: (err) => {
@@ -141,6 +144,7 @@ export class CreateQuestionComponent implements OnInit {
       this.displayAnswers.push(newAnswer)
       this.answerForm.reset({ text: '', isCorrect: false });
       this.showAnswerForm =  false;
+      this.isAnswerSubmitted = false;
     }
   }
 
@@ -197,14 +201,14 @@ export class CreateQuestionComponent implements OnInit {
           this.displayAnswers = this.displayAnswers.filter((_, i) => i !== index);
           if(!this.isEditMode){
             this.answers = this.answers.filter((_, i) => i !== answerIndexInMainList);
-            this.questionForm.get('type')?.updateValueAndValidity();
           }
+          this.questionForm.get('type')?.updateValueAndValidity();
         }
       });
     }
   }
 
   errorMessage = {
-    multipleCorrect: 'You can only select one correct answer.',
+    multipleCorrect: 'You can only select one correct answer for RadioButton question type.',
   };  
 }
