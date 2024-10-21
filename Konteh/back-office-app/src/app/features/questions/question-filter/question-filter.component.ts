@@ -1,37 +1,36 @@
-import {Component, EventEmitter, Output} from '@angular/core';
-import {QuestionCategory} from '../../../api/api-reference';
-import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
-import {Subject} from 'rxjs';
+import { Component, EventEmitter, Output, OnInit } from '@angular/core';
+import { FormGroup, FormControl } from '@angular/forms';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-question-filter',
   templateUrl: './question-filter.component.html',
-  styleUrl: './question-filter.component.css'
+  styleUrls: ['./question-filter.component.css']
 })
-export class QuestionFilterComponent {
-  @Output() filterChange = new EventEmitter<{ text: string | null; category: QuestionCategory | null }>();
+export class QuestionFilterComponent implements OnInit {
+  @Output() filterChange = new EventEmitter<{ text: string | null }>();
 
-  selectedCategory: QuestionCategory | null = null;
-  questionText: string | null = '';
-  private filterTextChanged: Subject<string | null> = new Subject<string | null>();
+  filterForm: FormGroup;
 
-  ngOnInit() {
+  constructor() {
+    this.filterForm = new FormGroup({
+      questionText: new FormControl(''),
+    });
+  }
+
+  ngOnInit(): void {
     this.initFilterDebouncing();
   }
 
-  onFilterChange() {
-    if(this.questionText && this.questionText.trim() === "") {
-      this.questionText = null;
-    }
-    this.filterTextChanged.next(this.questionText);
+  private initFilterDebouncing(): void {
+    this.filterForm.get('questionText')!.valueChanges
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged()
+      )
+      .subscribe((filterText: string) => {
+        this.filterChange.emit({ text: filterText.trim() === '' ? null : filterText });
+      });
   }
 
-  private initFilterDebouncing() {
-    this.filterTextChanged.pipe(
-      debounceTime(300),
-      distinctUntilChanged()
-    ).subscribe((filterText : string | null) => {
-      this.filterChange.emit({ text: this.questionText, category: this.selectedCategory });
-    });
-  }
 }
