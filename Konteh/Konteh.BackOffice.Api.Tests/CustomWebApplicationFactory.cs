@@ -1,6 +1,8 @@
 ﻿using Konteh.Infrastructure;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Data.Common;
@@ -38,11 +40,15 @@ namespace Konteh.BackOffice.Api.Tests
                 });
                 var serviceProvider = services.BuildServiceProvider();
 
+                services.AddAuthentication("Test").AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", options => { });
+
                 using (var scope = serviceProvider.CreateScope())
                 {
                     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>(); 
                     db.Database.Migrate();         
                 }
+
+             
             });
         }
     }
