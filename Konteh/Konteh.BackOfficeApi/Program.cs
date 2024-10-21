@@ -6,7 +6,7 @@ using System.Reflection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Identity.Web;
 
-internal class Program
+public class Program
 {
     private static void Main(string[] args)
     {

@@ -1,23 +1,23 @@
-﻿using Konteh.Domain;
+﻿using Konteh.BackOfficeApi.Features.Questions;
+using Konteh.Domain;
 using Konteh.Domain.Enumerations;
-using Konteh.FrontOfficeApi.Features.Exams;
 using Konteh.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
-using System.Net.Http.Json;
+using Newtonsoft.Json;
 
-namespace Konteh.FrontOffice.Api.Tests
+namespace Konteh.BackOffice.Api.Tests
 {
-    public class GenerateExamIntegrationTests : IDisposable
+    public class GetAllQuestionsIntegrationTests : IDisposable
     {
         private readonly CustomWebApplicationFactory<Program> _factory;
         private HttpClient _httpClient;
 
-        public GenerateExamIntegrationTests()
+
+        public GetAllQuestionsIntegrationTests()
         {
             _factory = new CustomWebApplicationFactory<Program>();
             _httpClient = _factory.CreateClient();
         }
-
         public void Dispose()
         {
             _httpClient.Dispose();
@@ -25,7 +25,7 @@ namespace Konteh.FrontOffice.Api.Tests
         }
 
         [Test]
-        public async Task Handle_ShouldCreateExam()
+        public async Task Handle_ShouldGetAllQuestions()
         {
             using (var scope = _factory.Services.CreateScope())
             {
@@ -34,9 +34,7 @@ namespace Konteh.FrontOffice.Api.Tests
                 await db.SaveChangesAsync();
             }
 
-            var command = new GenerateExam.Command { QuestionPerCategory = 2 };
-
-            var response = await _httpClient.PostAsJsonAsync("/exams", command);
+            var response = await _httpClient.GetAsync("/questions");
 
             if (!response.IsSuccessStatusCode)
             {
@@ -45,6 +43,17 @@ namespace Konteh.FrontOffice.Api.Tests
             }
             response.EnsureSuccessStatusCode();
             await Verify(response);
+            var jsonContent = await response.Content.ReadAsStringAsync();
+
+            var questions = JsonConvert.DeserializeObject<List<GetAllQuestions.Response>>(jsonContent);
+
+            if (questions != null)
+            {
+                foreach (var question in questions)
+                {
+                    Console.WriteLine($"Id: {question.Id}, Text: {question.Text}, Category: {question.Category}");
+                }
+            }
         }
         private void SeedDatabase(AppDbContext db)
         {

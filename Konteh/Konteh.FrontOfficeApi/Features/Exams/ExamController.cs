@@ -6,6 +6,7 @@ namespace Konteh.FrontOfficeApi.Features.Exams
 {
     [ApiController]
     [Route("exams")]
+   // [Authorize]
     public class ExamController : Controller
     {
         private readonly IMediator _mediator;
