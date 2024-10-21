@@ -24,16 +24,19 @@ namespace Konteh.FrontOfficeApi.Features.Exams
         }
         public class QuestionDto
         {
+            public long Id { get; set; }
             public string Text { get; set; } = string.Empty;
             public QuestionCategory Category { get; set; }
             public List<AnswerDto> Answers { get; set; } = [];
         }
         public class ExamQuestionDto
         {
+            public long Id { get; set; }
             public required QuestionDto Question { get; set; }
         }
         public class Response
         {
+            public long Id { get; set; }
             public DateTime StartTime { get; set; }
             public List<ExamQuestionDto> ExamQuestions { get; set; } = new List<ExamQuestionDto>();
         }
@@ -43,13 +46,11 @@ namespace Konteh.FrontOfficeApi.Features.Exams
             private readonly IRepository<Question> _questionRepository;
             private readonly IRepository<Exam> _examRepository;
             private readonly IRandomGenerator _randomGenerator;
-            private readonly IRepository<ExamQuestion> _examQuestionRepository;
-            public Handler(IRepository<Question> questionRepository, IRepository<Exam> examRepository, IRandomGenerator randomGenerator, IRepository<ExamQuestion> examQuestionRepository)
+            public Handler(IRepository<Question> questionRepository, IRepository<Exam> examRepository, IRandomGenerator randomGenerator)
             {
                 _questionRepository = questionRepository;
                 _examRepository = examRepository;
                 _randomGenerator = randomGenerator;
-                _examQuestionRepository = examQuestionRepository;
             }
 
             public async Task<Response> Handle(Command request, CancellationToken cancellationToken)
@@ -76,6 +77,7 @@ namespace Konteh.FrontOfficeApi.Features.Exams
                 {
                     Question = new QuestionDto
                     {
+                        Id = q.Question.Id,
                         Text = q.Question.Text,
                         Category = q.Question.Category,
                         Answers = q.Question.Answers.Select(a => new AnswerDto
@@ -95,12 +97,6 @@ namespace Konteh.FrontOfficeApi.Features.Exams
 
                 _examRepository.Create(exam);
                 await _examRepository.SaveChanges();
-
-                foreach (var examQuestion in randomQuestions)
-                {
-                    _examQuestionRepository.Create(examQuestion);
-                }
-                await _examQuestionRepository.SaveChanges();
 
                 return new Response
                 {

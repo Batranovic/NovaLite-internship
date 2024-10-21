@@ -14,7 +14,6 @@ namespace Konteh.FrontOffice.Api.Tests
         private IRepository<Exam> _examRepository;
         private GenerateExam.Handler _handler;
         private IRandomGenerator _randomGenerator;
-        private IRepository<ExamQuestion> _examQuestionRepository;
 
         [SetUp]
         public void Setup()
@@ -22,8 +21,7 @@ namespace Konteh.FrontOffice.Api.Tests
             _questionRepository = Substitute.For<IRepository<Question>>();
             _examRepository = Substitute.For<IRepository<Exam>>();
             _randomGenerator = Substitute.For<IRandomGenerator>();
-            _examQuestionRepository = Substitute.For<IRepository<ExamQuestion>>();
-            _handler = new GenerateExam.Handler(_questionRepository, _examRepository, _randomGenerator, _examQuestionRepository);
+            _handler = new GenerateExam.Handler(_questionRepository, _examRepository, _randomGenerator);
         }
 
         [Test]
