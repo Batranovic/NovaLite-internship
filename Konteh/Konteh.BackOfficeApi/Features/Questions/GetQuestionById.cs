@@ -18,7 +18,14 @@ namespace Konteh.BackOfficeApi.Features.Questions
             public string Text { get; set; } = string.Empty;
             public QuestionCategory Category { get; set; }
             public QuestionType Type { get; set; }
-            public List<Answer> Answers { get; set; } = [];
+            public List<AnswerDto> Answers { get; set; } = [];
+        }
+        public class AnswerDto
+        {
+            public long Id { get; set; }
+            public string Text { get; set; } = string.Empty;
+            public bool IsCorrect { get; set; }
+            public bool IsDeleted { get; set; }
         }
 
         public class RequestHandler : IRequestHandler<Query, Response>
@@ -47,7 +54,13 @@ namespace Konteh.BackOfficeApi.Features.Questions
                     Text = question.Text,
                     Category = question.Category,
                     Type = question.Type,
-                    Answers = question.Answers,
+                    Answers = question.Answers.Select(a => new AnswerDto
+                    {
+                        Id = a.Id,
+                        Text = a.Text,
+                        IsCorrect = a.IsCorrect,
+                        IsDeleted = a.IsDeleted,
+                    }).ToList(),
                 };
             }
         }

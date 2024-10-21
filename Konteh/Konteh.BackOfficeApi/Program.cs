@@ -17,9 +17,9 @@ builder.Services.AddScoped<IRepository<Question>, QuestionRepository>();
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("MyCorsPolicy", builder =>
+    options.AddPolicy("MyCorsPolicy", corsBuilder =>
     {
-        builder.AllowAnyOrigin()
+        corsBuilder.AllowAnyOrigin()
                .AllowAnyMethod()
                .AllowAnyHeader();
     });

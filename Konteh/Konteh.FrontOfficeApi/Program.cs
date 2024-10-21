@@ -12,9 +12,9 @@ builder.Services.AddDbContext<AppDbContext>(o => o.UseSqlServer(builder.Configur
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("MyCorsPolicy", builder =>
+    options.AddPolicy("MyCorsPolicy", corsBulder =>
     {
-        builder.AllowAnyOrigin()
+        corsBulder.AllowAnyOrigin()
                .AllowAnyMethod()
                .AllowAnyHeader()
                .AllowCredentials();
