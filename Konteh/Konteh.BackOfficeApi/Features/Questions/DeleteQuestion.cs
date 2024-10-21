@@ -6,17 +6,12 @@ namespace Konteh.BackOfficeApi.Features.Questions
 {
     public static class DeleteQuestion
     {
-        public class Query : IRequest<Response>
+        public class Command : IRequest<bool>
         {
             public long Id { get; set; }
         }
 
-        public class Response
-        {
-            public bool Success { get; set; }
-        }
-
-        public class RequestHandler : IRequestHandler<Query, Response>
+        public class RequestHandler : IRequestHandler<Command, bool>
         {
             private readonly IQuestionRepository _repository;
 
@@ -25,12 +20,10 @@ namespace Konteh.BackOfficeApi.Features.Questions
                 _repository = repository;
             }
 
-            public async Task<Response> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<bool> Handle(Command request, CancellationToken cancellationToken)
             {
-                bool success = await _repository.Delete(new Question { Id = request.Id });
-                return new Response() { Success = success };
+                return await _repository.Delete(new Question { Id = request.Id });
             }
         }
-
     }
 }
