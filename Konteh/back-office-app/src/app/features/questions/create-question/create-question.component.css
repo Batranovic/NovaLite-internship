@@ -62,29 +62,6 @@ mat-list-item {
     margin-right: 10px;
 }
 
-.answers-list-title {
-    font-size: 22px;
-    margin-bottom: 10px;
-    margin-top: 20px;
-    color: #333; 
-    text-align: center;
-}
-
-.answer-form-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    max-width: 300px; 
-    margin: 0 auto; 
-    margin-top: 20px;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    background-color: #e7e7e7; 
-}
-
 .question-form-button{
     margin-top: 10px;
     margin-left: 500px;
@@ -99,35 +76,6 @@ mat-list-item {
     display: flex;
     margin-top: 10px;
     margin-left: 70px;
-}
-
-.answer-form-title {
-    font-size: 19px;
-    margin-bottom: 20px;
-    color: #333; 
-}
-
-.correct-answer {
-    background-color: rgb(102, 177, 102);
-    border-radius: 10px;
-}
-
-.answer-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    min-height: 40px;
-}
-
-.answer-container-edit-mode{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    min-height: 50px;
-    background-color: rgb(224, 224, 224);
-    border-radius: 10px;
 }
 
 .mat-icon-button {
@@ -149,13 +97,5 @@ mat-list-item {
 mat-error{
     bottom: 60px; 
     transform: translateY(120%); 
-    position: relative;
-}
-
-.answer-error {
-    color: red;
-    font-size: 12px;
-    bottom: 100px;
-    transform: translateY(190%); 
     position: relative;
 }

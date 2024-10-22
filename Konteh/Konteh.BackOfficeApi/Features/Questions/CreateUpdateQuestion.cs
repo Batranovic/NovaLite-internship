@@ -53,9 +53,8 @@ namespace Konteh.BackOfficeApi.Features.Questions
 
                 if (existingQuestion == null)
                 {
-                    throw new InvalidOperationException($"Question with ID {request.Id} not found.");
+                    throw new KeyNotFoundException($"Question with ID {request.Id} not found.");
                 }
-
 
                 existingQuestion.Text = request.Text;
                 existingQuestion.Category = request.Category;
