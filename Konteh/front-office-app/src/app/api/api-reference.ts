@@ -15,14 +15,14 @@ import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angula
 
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
-export interface IWeatherForecastClient {
-    get(): Observable<WeatherForecast[]>;
+export interface IExamClient {
+    generateExam(command: GenerateExamCommand): Observable<GenerateExamResponse>;
 }
 
 @Injectable({
     providedIn: 'root'
 })
-export class WeatherForecastClient implements IWeatherForecastClient {
+export class ExamClient implements IExamClient {
     private http: HttpClient;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -32,33 +32,37 @@ export class WeatherForecastClient implements IWeatherForecastClient {
         this.baseUrl = baseUrl ?? "https://localhost:7206";
     }
 
-    get(): Observable<WeatherForecast[]> {
-        let url_ = this.baseUrl + "/WeatherForecast";
+    generateExam(command: GenerateExamCommand): Observable<GenerateExamResponse> {
+        let url_ = this.baseUrl + "/exams";
         url_ = url_.replace(/[?&]$/, "");
 
+        const content_ = JSON.stringify(command);
+
         let options_ : any = {
+            body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
+                "Content-Type": "application/json",
                 "Accept": "application/json"
             })
         };
 
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGet(response_);
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGenerateExam(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGet(response_ as any);
+                    return this.processGenerateExam(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<WeatherForecast[]>;
+                    return _observableThrow(e) as any as Observable<GenerateExamResponse>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<WeatherForecast[]>;
+                return _observableThrow(response_) as any as Observable<GenerateExamResponse>;
         }));
     }
 
-    protected processGet(response: HttpResponseBase): Observable<WeatherForecast[]> {
+    protected processGenerateExam(response: HttpResponseBase): Observable<GenerateExamResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -69,14 +73,7 @@ export class WeatherForecastClient implements IWeatherForecastClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(WeatherForecast.fromJS(item));
-            }
-            else {
-                result200 = <any>null;
-            }
+            result200 = GenerateExamResponse.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -88,13 +85,12 @@ export class WeatherForecastClient implements IWeatherForecastClient {
     }
 }
 
-export class WeatherForecast implements IWeatherForecast {
-    date?: Date;
-    temperatureC?: number;
-    temperatureF?: number;
-    summary?: string | undefined;
+export class GenerateExamResponse implements IGenerateExamResponse {
+    id?: number;
+    startTime?: Date;
+    examQuestions?: GenerateExamExamQuestionDto[];
 
-    constructor(data?: IWeatherForecast) {
+    constructor(data?: IGenerateExamResponse) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -105,41 +101,221 @@ export class WeatherForecast implements IWeatherForecast {
 
     init(_data?: any) {
         if (_data) {
-            this.date = _data["date"] ? new Date(_data["date"].toString()) : <any>undefined;
-            this.temperatureC = _data["temperatureC"];
-            this.temperatureF = _data["temperatureF"];
-            this.summary = _data["summary"];
+            this.id = _data["id"];
+            this.startTime = _data["startTime"] ? new Date(_data["startTime"].toString()) : <any>undefined;
+            if (Array.isArray(_data["examQuestions"])) {
+                this.examQuestions = [] as any;
+                for (let item of _data["examQuestions"])
+                    this.examQuestions!.push(GenerateExamExamQuestionDto.fromJS(item));
+            }
         }
     }
 
-    static fromJS(data: any): WeatherForecast {
+    static fromJS(data: any): GenerateExamResponse {
         data = typeof data === 'object' ? data : {};
-        let result = new WeatherForecast();
+        let result = new GenerateExamResponse();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["date"] = this.date ? formatDate(this.date) : <any>undefined;
-        data["temperatureC"] = this.temperatureC;
-        data["temperatureF"] = this.temperatureF;
-        data["summary"] = this.summary;
+        data["id"] = this.id;
+        data["startTime"] = this.startTime ? this.startTime.toISOString() : <any>undefined;
+        if (Array.isArray(this.examQuestions)) {
+            data["examQuestions"] = [];
+            for (let item of this.examQuestions)
+                data["examQuestions"].push(item.toJSON());
+        }
         return data;
     }
 }
 
-export interface IWeatherForecast {
-    date?: Date;
-    temperatureC?: number;
-    temperatureF?: number;
-    summary?: string | undefined;
+export interface IGenerateExamResponse {
+    id?: number;
+    startTime?: Date;
+    examQuestions?: GenerateExamExamQuestionDto[];
 }
 
-function formatDate(d: Date) {
-    return d.getFullYear() + '-' + 
-        (d.getMonth() < 9 ? ('0' + (d.getMonth()+1)) : (d.getMonth()+1)) + '-' +
-        (d.getDate() < 10 ? ('0' + d.getDate()) : d.getDate());
+export class GenerateExamExamQuestionDto implements IGenerateExamExamQuestionDto {
+    id?: number;
+    question?: GenerateExamQuestionDto;
+
+    constructor(data?: IGenerateExamExamQuestionDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.question = _data["question"] ? GenerateExamQuestionDto.fromJS(_data["question"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): GenerateExamExamQuestionDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new GenerateExamExamQuestionDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["question"] = this.question ? this.question.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IGenerateExamExamQuestionDto {
+    id?: number;
+    question?: GenerateExamQuestionDto;
+}
+
+export class GenerateExamQuestionDto implements IGenerateExamQuestionDto {
+    id?: number;
+    text?: string;
+    category?: QuestionCategory;
+    answers?: GenerateExamAnswerDto[];
+
+    constructor(data?: IGenerateExamQuestionDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.text = _data["text"];
+            this.category = _data["category"];
+            if (Array.isArray(_data["answers"])) {
+                this.answers = [] as any;
+                for (let item of _data["answers"])
+                    this.answers!.push(GenerateExamAnswerDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): GenerateExamQuestionDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new GenerateExamQuestionDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["text"] = this.text;
+        data["category"] = this.category;
+        if (Array.isArray(this.answers)) {
+            data["answers"] = [];
+            for (let item of this.answers)
+                data["answers"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IGenerateExamQuestionDto {
+    id?: number;
+    text?: string;
+    category?: QuestionCategory;
+    answers?: GenerateExamAnswerDto[];
+}
+
+export enum QuestionCategory {
+    OOP = 1,
+    General = 2,
+    Git = 3,
+    Testing = 4,
+    Sql = 5,
+    Csharp = 6,
+}
+
+export class GenerateExamAnswerDto implements IGenerateExamAnswerDto {
+    id?: number;
+    text?: string;
+
+    constructor(data?: IGenerateExamAnswerDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.text = _data["text"];
+        }
+    }
+
+    static fromJS(data: any): GenerateExamAnswerDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new GenerateExamAnswerDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["text"] = this.text;
+        return data;
+    }
+}
+
+export interface IGenerateExamAnswerDto {
+    id?: number;
+    text?: string;
+}
+
+export class GenerateExamCommand implements IGenerateExamCommand {
+    questionPerCategory?: number;
+
+    constructor(data?: IGenerateExamCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.questionPerCategory = _data["questionPerCategory"];
+        }
+    }
+
+    static fromJS(data: any): GenerateExamCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new GenerateExamCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["questionPerCategory"] = this.questionPerCategory;
+        return data;
+    }
+}
+
+export interface IGenerateExamCommand {
+    questionPerCategory?: number;
 }
 
 export class ApiException extends Error {
