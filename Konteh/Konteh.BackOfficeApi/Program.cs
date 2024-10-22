@@ -21,10 +21,9 @@ public class Program
 
         builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
         builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+        builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
         builder.Services.AddScoped<IRepository<Question>, QuestionRepository>();
         builder.Services.AddScoped<IRepository<Exam>, ExamRepository>();
-
-
 
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
@@ -34,8 +33,8 @@ public class Program
             options.AddPolicy("MyCorsPolicy", corsBuilder =>
             {
                 corsBuilder.AllowAnyOrigin()
-                       .AllowAnyMethod()
-                       .AllowAnyHeader();
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
             });
         });
 

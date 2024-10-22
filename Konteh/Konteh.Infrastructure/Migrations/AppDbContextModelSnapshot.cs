@@ -139,6 +139,9 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
                 b.Property<int>("Category")
                     .HasColumnType("int");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                 b.Property<string>("Text")
                     .IsRequired()
                     .HasColumnType("nvarchar(max)");

@@ -16,7 +16,8 @@ import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angula
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 export interface IQuestionsClient {
-    getAll(): Observable<GetAllQuestionsResponse[]>;
+    paginate(questionText: string | null | undefined, page: number | undefined, pageSize: number | undefined): Observable<SearchQuestionsResponse>;
+    deleteById(questionId: number): Observable<boolean>;
 }
 
 @Injectable({
@@ -32,8 +33,18 @@ export class QuestionsClient implements IQuestionsClient {
         this.baseUrl = baseUrl ?? "https://localhost:7184";
     }
 
-    getAll(): Observable<GetAllQuestionsResponse[]> {
-        let url_ = this.baseUrl + "/questions";
+    paginate(questionText: string | null | undefined, page: number | undefined, pageSize: number | undefined): Observable<SearchQuestionsResponse> {
+        let url_ = this.baseUrl + "/questions/search?";
+        if (questionText !== undefined && questionText !== null)
+            url_ += "QuestionText=" + encodeURIComponent("" + questionText) + "&";
+        if (page === null)
+            throw new Error("The parameter 'page' cannot be null.");
+        else if (page !== undefined)
+            url_ += "Page=" + encodeURIComponent("" + page) + "&";
+        if (pageSize === null)
+            throw new Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -45,20 +56,20 @@ export class QuestionsClient implements IQuestionsClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetAll(response_);
+            return this.processPaginate(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetAll(response_ as any);
+                    return this.processPaginate(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<GetAllQuestionsResponse[]>;
+                    return _observableThrow(e) as any as Observable<SearchQuestionsResponse>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<GetAllQuestionsResponse[]>;
+                return _observableThrow(response_) as any as Observable<SearchQuestionsResponse>;
         }));
     }
 
-    protected processGetAll(response: HttpResponseBase): Observable<GetAllQuestionsResponse[]> {
+    protected processPaginate(response: HttpResponseBase): Observable<SearchQuestionsResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -69,14 +80,7 @@ export class QuestionsClient implements IQuestionsClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(GetAllQuestionsResponse.fromJS(item));
-            }
-            else {
-                result200 = <any>null;
-            }
+            result200 = SearchQuestionsResponse.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -86,27 +90,12 @@ export class QuestionsClient implements IQuestionsClient {
         }
         return _observableOf(null as any);
     }
-}
 
-export interface IWeatherForecastClient {
-    get(): Observable<WeatherForecast[]>;
-}
-
-@Injectable({
-    providedIn: 'root'
-})
-export class WeatherForecastClient implements IWeatherForecastClient {
-    private http: HttpClient;
-    private baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
-
-    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
-        this.http = http;
-        this.baseUrl = baseUrl ?? "https://localhost:7184";
-    }
-
-    get(): Observable<WeatherForecast[]> {
-        let url_ = this.baseUrl + "/WeatherForecast";
+    deleteById(questionId: number): Observable<boolean> {
+        let url_ = this.baseUrl + "/questions/{questionId}";
+        if (questionId === undefined || questionId === null)
+            throw new Error("The parameter 'questionId' must be defined.");
+        url_ = url_.replace("{questionId}", encodeURIComponent("" + questionId));
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -117,21 +106,21 @@ export class WeatherForecastClient implements IWeatherForecastClient {
             })
         };
 
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGet(response_);
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeleteById(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGet(response_ as any);
+                    return this.processDeleteById(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<WeatherForecast[]>;
+                    return _observableThrow(e) as any as Observable<boolean>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<WeatherForecast[]>;
+                return _observableThrow(response_) as any as Observable<boolean>;
         }));
     }
 
-    protected processGet(response: HttpResponseBase): Observable<WeatherForecast[]> {
+    protected processDeleteById(response: HttpResponseBase): Observable<boolean> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -142,14 +131,8 @@ export class WeatherForecastClient implements IWeatherForecastClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(WeatherForecast.fromJS(item));
-            }
-            else {
-                result200 = <any>null;
-            }
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -161,12 +144,60 @@ export class WeatherForecastClient implements IWeatherForecastClient {
     }
 }
 
-export class GetAllQuestionsResponse implements IGetAllQuestionsResponse {
+export class SearchQuestionsResponse implements ISearchQuestionsResponse {
+    items?: SearchQuestionsResponseItem[];
+    pageCount?: number;
+
+    constructor(data?: ISearchQuestionsResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(SearchQuestionsResponseItem.fromJS(item));
+            }
+            this.pageCount = _data["pageCount"];
+        }
+    }
+
+    static fromJS(data: any): SearchQuestionsResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new SearchQuestionsResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        data["pageCount"] = this.pageCount;
+        return data;
+    }
+}
+
+export interface ISearchQuestionsResponse {
+    items?: SearchQuestionsResponseItem[];
+    pageCount?: number;
+}
+
+export class SearchQuestionsResponseItem implements ISearchQuestionsResponseItem {
     id?: number;
     text?: string;
     category?: QuestionCategory;
 
-    constructor(data?: IGetAllQuestionsResponse) {
+    constructor(data?: ISearchQuestionsResponseItem) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -183,9 +214,9 @@ export class GetAllQuestionsResponse implements IGetAllQuestionsResponse {
         }
     }
 
-    static fromJS(data: any): GetAllQuestionsResponse {
+    static fromJS(data: any): SearchQuestionsResponseItem {
         data = typeof data === 'object' ? data : {};
-        let result = new GetAllQuestionsResponse();
+        let result = new SearchQuestionsResponseItem();
         result.init(data);
         return result;
     }
@@ -199,7 +230,7 @@ export class GetAllQuestionsResponse implements IGetAllQuestionsResponse {
     }
 }
 
-export interface IGetAllQuestionsResponse {
+export interface ISearchQuestionsResponseItem {
     id?: number;
     text?: string;
     category?: QuestionCategory;
@@ -212,60 +243,6 @@ export enum QuestionCategory {
     Testing = 4,
     Sql = 5,
     Csharp = 6,
-}
-
-export class WeatherForecast implements IWeatherForecast {
-    date?: Date;
-    temperatureC?: number;
-    temperatureF?: number;
-    summary?: string | undefined;
-
-    constructor(data?: IWeatherForecast) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.date = _data["date"] ? new Date(_data["date"].toString()) : <any>undefined;
-            this.temperatureC = _data["temperatureC"];
-            this.temperatureF = _data["temperatureF"];
-            this.summary = _data["summary"];
-        }
-    }
-
-    static fromJS(data: any): WeatherForecast {
-        data = typeof data === 'object' ? data : {};
-        let result = new WeatherForecast();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["date"] = this.date ? formatDate(this.date) : <any>undefined;
-        data["temperatureC"] = this.temperatureC;
-        data["temperatureF"] = this.temperatureF;
-        data["summary"] = this.summary;
-        return data;
-    }
-}
-
-export interface IWeatherForecast {
-    date?: Date;
-    temperatureC?: number;
-    temperatureF?: number;
-    summary?: string | undefined;
-}
-
-function formatDate(d: Date) {
-    return d.getFullYear() + '-' + 
-        (d.getMonth() < 9 ? ('0' + (d.getMonth()+1)) : (d.getMonth()+1)) + '-' +
-        (d.getDate() < 10 ? ('0' + d.getDate()) : d.getDate());
 }
 
 export class ApiException extends Error {
