@@ -1,5 +1,4 @@
-﻿using Konteh.BackOffice.Api.Tests;
-using Konteh.FrontOfficeApi.Features.Exams.RandomGenerator;
+﻿using Konteh.FrontOfficeApi.Features.Exams.RandomGenerator;
 using Konteh.Infrastructure;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
@@ -8,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Data.Common;
 
-namespace Konteh.FrontOffice.Api.Tests
+namespace Konteh.Test.Infrastructure
 {
     public class CustomWebApplicationFactory<TProgram>
     : WebApplicationFactory<TProgram> where TProgram : class

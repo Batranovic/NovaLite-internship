@@ -1,54 +1,13 @@
 ﻿using Konteh.Domain;
 using Konteh.Domain.Enumerations;
-using Konteh.Infrastructure;
-using Microsoft.Extensions.DependencyInjection;
-using Respawn;
-using System.Net.Http.Headers;
 
-namespace Konteh.FrontOffice.Api.Tests
+namespace Konteh.Test.Infrastructure
 {
-    public abstract class BaseIntegrationTest<TProgram> : IDisposable where TProgram : class
+    public static class TestData
     {
-        protected readonly CustomWebApplicationFactory<TProgram> _factory;
-        protected HttpClient _httpClient;
-        protected static Respawner _respawner;
-        protected static string _connection = "Server=.;Database=KontehTest;Trusted_Connection=True;TrustServerCertificate=True;";
-
-        public BaseIntegrationTest()
+        public static List<Question> GetAllQuestions()
         {
-            _factory = new CustomWebApplicationFactory<TProgram>();
-        }
-
-        [SetUp]
-        public virtual async Task InitializeAsync()
-        {
-            _httpClient = _factory.CreateClient();
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test");
-
-            _respawner = await Respawner.CreateAsync(_connection, new RespawnerOptions
-            {
-                TablesToIgnore = ["__EFMigrationsHistory"]
-            });
-            await _respawner.ResetAsync(_connection);
-
-            using (var scope = _factory.Services.CreateScope())
-            {
-                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                SeedDatabase(db);
-                await db.SaveChangesAsync();
-            }
-        }
-
-        [TearDown]
-        public void Dispose()
-        {
-            _httpClient.Dispose();
-            _factory.Dispose();
-        }
-
-        protected static void SeedDatabase(AppDbContext db)
-        {
-            var questions = new List<Question>
+            return new List<Question>
             {
                 new() {
                     Text = "What is an interface?",
@@ -102,7 +61,6 @@ namespace Konteh.FrontOffice.Api.Tests
                     ]
                 },
             };
-            db.Questions.AddRange(questions);
         }
     }
 }

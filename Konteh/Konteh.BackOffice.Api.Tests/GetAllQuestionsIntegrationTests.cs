@@ -1,13 +1,19 @@
 ﻿using Konteh.BackOfficeApi;
 using Konteh.BackOfficeApi.Features.Questions;
-using Konteh.FrontOffice.Api.Tests;
+using Konteh.Test.Infrastructure;
 using Newtonsoft.Json;
 using System.Net;
+using System.Net.Http.Headers;
 
 namespace Konteh.BackOffice.Api.Tests
 {
     public class GetAllQuestionsIntegrationTests : BaseIntegrationTest<Program>
     {
+        protected override void ConfigureHttpClient(HttpClient httpClient)
+        {
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test");
+        }
+
         [Test]
         public async Task Handle_ShouldGetAllQuestions()
         {
@@ -17,8 +23,6 @@ namespace Konteh.BackOffice.Api.Tests
 
             var jsonContent = await response.Content.ReadAsStringAsync();
             var questions = JsonConvert.DeserializeObject<IEnumerable<GetAllQuestions.Response>>(jsonContent);
-            Assert.That(questions, Is.Not.Null);
-            Assert.That(questions.Count(), Is.GreaterThan(0));
             await Verify(questions).IgnoreMembers("Id");
         }
     }

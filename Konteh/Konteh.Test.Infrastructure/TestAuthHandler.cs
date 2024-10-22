@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 
-namespace Konteh.BackOffice.Api.Tests
+namespace Konteh.Test.Infrastructure
 {
     public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {

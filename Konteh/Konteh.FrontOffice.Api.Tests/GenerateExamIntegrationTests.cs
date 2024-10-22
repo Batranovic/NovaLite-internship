@@ -1,5 +1,6 @@
 ﻿using Konteh.FrontOfficeApi;
 using Konteh.FrontOfficeApi.Features.Exams;
+using Konteh.Test.Infrastructure;
 using Newtonsoft.Json;
 using System.Net;
 using System.Net.Http.Json;
@@ -19,8 +20,6 @@ namespace Konteh.FrontOffice.Api.Tests
 
             var jsonContent = await response.Content.ReadAsStringAsync();
             var exam = JsonConvert.DeserializeObject<GenerateExam.Response>(jsonContent);
-            Assert.That(exam, Is.Not.Null);
-            Assert.That(exam.ExamQuestions.Count(), Is.EqualTo(4));
             await Verify(exam).IgnoreMembers("Id");
         }
     }

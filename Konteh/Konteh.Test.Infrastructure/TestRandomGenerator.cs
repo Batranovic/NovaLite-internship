@@ -1,6 +1,6 @@
 ﻿using Konteh.FrontOfficeApi.Features.Exams.RandomGenerator;
 
-namespace Konteh.FrontOffice.Api.Tests
+namespace Konteh.Test.Infrastructure
 {
     public class TestRandomGenerator : IRandomGenerator
     {

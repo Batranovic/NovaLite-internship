@@ -14,7 +14,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.10" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
     <PackageReference Include="NUnit" Version="4.2.2" />
     <PackageReference Include="NUnit.Analyzers" Version="4.3.0">
@@ -22,14 +21,12 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
-    <PackageReference Include="Respawn" Version="6.2.1" />
     <PackageReference Include="Verify.NUnit" Version="27.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Konteh.BackOfficeApi\Konteh.BackOfficeApi.csproj" />
-    <ProjectReference Include="..\Konteh.FrontOffice.Api.Tests\Konteh.FrontOffice.Api.Tests.csproj" />
-    <ProjectReference Include="..\Konteh.Infrastructure\Konteh.Infrastructure.csproj" />
+    <ProjectReference Include="..\Konteh.Test.Infrastructure\Konteh.Test.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
