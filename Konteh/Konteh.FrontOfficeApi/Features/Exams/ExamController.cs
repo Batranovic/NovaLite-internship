@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Konteh.FrontOfficeApi.Features.Exams
@@ -20,6 +19,13 @@ namespace Konteh.FrontOfficeApi.Features.Exams
         {
             var response = await _mediator.Send(new GenerateExam.Command());
             return Ok(response);
+        }
+
+        [HttpPost("notify")]
+        public async Task<ActionResult> Notify(SubmitExam.Command command)
+        {
+            await _mediator.Send(command);
+            return Ok();
         }
     }
 }
