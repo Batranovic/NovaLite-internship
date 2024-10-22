@@ -16,10 +16,9 @@ import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angula
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 export interface IQuestionsClient {
-    getAll(): Observable<GetAllQuestionsResponse[]>;
+    paginate(questionText: string | null | undefined, page: number | undefined, pageSize: number | undefined): Observable<SearchQuestionsResponse>;
     getQuestionById(id: number): Observable<GetQuestionByIdResponse>;
     createOrUpdateQuestion(command: CreateUpdateQuestionCommand): Observable<CreateUpdateQuestionResponse>;
-    paginate(questionText: string | null | undefined, page: number | undefined, pageSize: number | undefined): Observable<SearchQuestionsResponse>;
     deleteById(questionId: number): Observable<boolean>;
 }
 
@@ -146,7 +145,7 @@ export class QuestionsClient implements IQuestionsClient {
     }
 
     createOrUpdateQuestion(command: CreateUpdateQuestionCommand): Observable<CreateUpdateQuestionResponse> {
-        let url_ = this.baseUrl + "/createOrUpdate";
+        let url_ = this.baseUrl + "/questions/createOrUpdate";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -573,7 +572,7 @@ export interface ICreateUpdateQuestionAnswerDto {
 }
 
 export class CreateUpdateQuestionCommand implements ICreateUpdateQuestionCommand {
-    id?: number;
+    id?: number | undefined;
     text?: string;
     category?: QuestionCategory;
     type?: QuestionType;
@@ -625,65 +624,11 @@ export class CreateUpdateQuestionCommand implements ICreateUpdateQuestionCommand
 }
 
 export interface ICreateUpdateQuestionCommand {
-    id?: number;
+    id?: number | undefined;
     text?: string;
     category?: QuestionCategory;
     type?: QuestionType;
     answers?: CreateUpdateQuestionAnswerDto[];
-}
-
-export class WeatherForecast implements IWeatherForecast {
-    date?: Date;
-    temperatureC?: number;
-    temperatureF?: number;
-    summary?: string | undefined;
-
-    constructor(data?: IWeatherForecast) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.date = _data["date"] ? new Date(_data["date"].toString()) : <any>undefined;
-            this.temperatureC = _data["temperatureC"];
-            this.temperatureF = _data["temperatureF"];
-            this.summary = _data["summary"];
-        }
-    }
-
-    static fromJS(data: any): WeatherForecast {
-        data = typeof data === 'object' ? data : {};
-        let result = new WeatherForecast();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["date"] = this.date ? formatDate(this.date) : <any>undefined;
-        data["temperatureC"] = this.temperatureC;
-        data["temperatureF"] = this.temperatureF;
-        data["summary"] = this.summary;
-        return data;
-    }
-}
-
-export interface IWeatherForecast {
-    date?: Date;
-    temperatureC?: number;
-    temperatureF?: number;
-    summary?: string | undefined;
-}
-
-function formatDate(d: Date) {
-    return d.getFullYear() + '-' + 
-        (d.getMonth() < 9 ? ('0' + (d.getMonth()+1)) : (d.getMonth()+1)) + '-' +
-        (d.getDate() < 10 ? ('0' + d.getDate()) : d.getDate());
 }
 
 export class ApiException extends Error {

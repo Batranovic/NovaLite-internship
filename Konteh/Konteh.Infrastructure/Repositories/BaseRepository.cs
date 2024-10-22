@@ -39,10 +39,4 @@ public abstract class BaseRepository<T> : IRepository<T> where T : class
         return await _context.Set<T>().Where(predicate).ToListAsync();
     }
 
-    public IQueryable<T> Query()
-    {
-        return _context.Set<T>().AsQueryable();
-    }
-
-
 }

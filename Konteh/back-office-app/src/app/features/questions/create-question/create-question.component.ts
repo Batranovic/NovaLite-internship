@@ -35,7 +35,21 @@ export class CreateQuestionComponent implements OnInit {
         this.getQuestionById(this.questionId);
       }
     })
+    this.answersArray.valueChanges.subscribe(() => {
+      this.checkForMultipleCorrectAnswers();
+    });
   }
+
+  checkForMultipleCorrectAnswers() {
+    const correctAnswersCount = this.answersArray.controls.filter(control => control.value.isCorrect && !control.value.isDeleted).length;
+    if (correctAnswersCount > 1 && this.questionForm.get('type')?.value === 1) {
+      this.questionForm.get('type')?.setErrors({ multipleCorrect: true });
+    } else {
+      this.questionForm.get('type')?.setErrors(null);
+    }
+    this.cdr.detectChanges();
+  }
+  
 
   openSnackBar(message: string, action: string, duration: number = 2000) {
     this.snackBar.open(message, action)
@@ -43,11 +57,7 @@ export class CreateQuestionComponent implements OnInit {
 
   onSubmit() {
     this.isSubmitted = true;
-    const correctAnswersCount = this.answersArray.controls.filter(control => control.value.isCorrect && !control.value.isDeleted).length;
-    if (correctAnswersCount > 1 && this.questionForm.value.type === 1) {
-      this.questionForm.get('type')?.setErrors({ multipleCorrect: true });
-      return;
-    }
+    this.checkForMultipleCorrectAnswers();
     if (this.questionForm.valid) {
       const hasCorrectAnswer = this.answersArray.controls.some(control => control.value.isCorrect);
       if (!hasCorrectAnswer) {
@@ -70,6 +80,7 @@ export class CreateQuestionComponent implements OnInit {
       });
     });
     const command = new CreateUpdateQuestionCommand({
+      id: this.questionId!,
       text: this.questionForm.value.text,
       category: this.questionForm.value.category,
       type: this.questionForm.value.type,
@@ -77,8 +88,7 @@ export class CreateQuestionComponent implements OnInit {
     });
     this.questionClient.createOrUpdateQuestion(command).subscribe({
       next: (response) => {
-        this.snackBar.open('Question successfully created', 'Ok')
-        this.router.navigate(['/question-overview/', response.id]);
+        this.router.navigate(['/questions-overview']);
       },
       error: (err) => {
         console.error('Error creating question', err);
@@ -140,7 +150,6 @@ export class CreateQuestionComponent implements OnInit {
       text: new FormControl('', Validators.required),
       isDeleted: new FormControl(false) 
     });
-    console.log(answer)
     this.answersArray.push(answer)
   }
 }

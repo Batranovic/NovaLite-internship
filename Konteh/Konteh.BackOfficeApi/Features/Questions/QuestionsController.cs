@@ -30,7 +30,7 @@ public class QuestionsController : ControllerBase
         return Ok(response);
     }
 
-    [HttpPut("/createOrUpdate")]
+    [HttpPut("createOrUpdate")]
     public async Task<ActionResult<CreateUpdateQuestion.Response>> CreateOrUpdateQuestion(CreateUpdateQuestion.Command command)
     {
         var response = await _mediator.Send(command);

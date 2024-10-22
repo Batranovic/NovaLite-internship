@@ -47,4 +47,8 @@ export class NavBarComponent implements OnInit{
     const account = this.msalService.instance.getActiveAccount();
     return account ? account.username : null;
   }
+
+  redirectToCreateQuestion() {
+    this.router.navigate(["create-question"]);
+  }
 }

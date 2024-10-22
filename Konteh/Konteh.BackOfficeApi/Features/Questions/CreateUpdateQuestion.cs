@@ -2,7 +2,6 @@
 using Konteh.Domain.Enumerations;
 using Konteh.Infrastructure.Repositories;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Konteh.BackOfficeApi.Features.Questions
 {
@@ -10,7 +9,7 @@ namespace Konteh.BackOfficeApi.Features.Questions
     {
         public class Command : IRequest<Response>
         {
-            public long Id { get; set; }
+            public long? Id { get; set; } = null;
             public string Text { get; set; } = string.Empty;
             public QuestionCategory Category { get; set; }
             public QuestionType Type { get; set; }
@@ -45,14 +44,18 @@ namespace Konteh.BackOfficeApi.Features.Questions
 
             public async Task<Response> Handle(Command request, CancellationToken cancellationToken)
             {
-                var existingQuestion = await _repository.Query()
-                    .Include(q => q.Answers)
-                    .FirstOrDefaultAsync(q => q.Id == request.Id);
-
-                if (existingQuestion == null)
+                if (request.Id == null)
                 {
                     return await CreateQuestion(request);
                 }
+
+                var existingQuestion = await _repository.GetById((long)request.Id);
+
+                if (existingQuestion == null)
+                {
+                    throw new InvalidOperationException($"Question with ID {request.Id} not found.");
+                }
+
 
                 existingQuestion.Text = request.Text;
                 existingQuestion.Category = request.Category;

@@ -10,5 +10,4 @@ public interface IRepository<T>
     void Delete(T entity);
     Task SaveChanges();
     Task<IEnumerable<T>> Search(Expression<Func<T, bool>> predicate);
-    IQueryable<T> Query();
 }
