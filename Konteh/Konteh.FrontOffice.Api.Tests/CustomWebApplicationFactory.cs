@@ -1,4 +1,7 @@
-﻿using Konteh.Infrastructure;
+﻿using Konteh.BackOffice.Api.Tests;
+using Konteh.FrontOfficeApi.Features.Exams.RandomGenerator;
+using Konteh.Infrastructure;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +21,7 @@ namespace Konteh.FrontOffice.Api.Tests
                     d => d.ServiceType ==
                         typeof(DbContextOptions<AppDbContext>));
 
-                if (dbContextDescriptor != null) 
+                if (dbContextDescriptor != null)
                 {
                     services.Remove(dbContextDescriptor);
                 }
@@ -27,24 +30,28 @@ namespace Konteh.FrontOffice.Api.Tests
                     d => d.ServiceType ==
                         typeof(DbConnection));
 
-                if (dbConnectionDescriptor != null) 
+                if (dbConnectionDescriptor != null)
                 {
                     services.Remove(dbConnectionDescriptor);
                 }
+                var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IRandomGenerator));
+                if (descriptor != null)
+                {
+                    services.Remove(descriptor);
+                }
+
+                services.AddSingleton<IRandomGenerator>(provider => new TestRandomGenerator());
 
                 services.AddDbContext<AppDbContext>(options =>
                 {
                     options.UseSqlServer("Server=.;Database=KontehTest;Trusted_Connection=True;TrustServerCertificate=True;");
                 });
-                var serviceProvider = services.BuildServiceProvider();
+                services.AddAuthentication("Test").AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", options => { });
 
-                using (var scope = serviceProvider.CreateScope())
-                {
-                    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                    db.Database.EnsureDeleted(); 
-                    db.Database.EnsureCreated();  
-                    db.Database.Migrate();         
-                }
+                var serviceProvider = services.BuildServiceProvider();
+                using var scope = serviceProvider.CreateScope();
+                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                db.Database.Migrate();
             });
         }
     }

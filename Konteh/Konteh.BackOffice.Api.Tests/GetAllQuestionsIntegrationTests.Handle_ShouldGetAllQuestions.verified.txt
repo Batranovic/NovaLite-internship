@@ -1,26 +1,21 @@
 ﻿[
   {
-    Id: 1,
     Text: What is an interface?,
     Category: General
   },
   {
-    Id: 2,
     Text: What is abstraction?,
     Category: General
   },
   {
-    Id: 3,
     Text: What is inheritance?,
     Category: OOP
   },
   {
-    Id: 4,
     Text: What is the purpose of a constructor?,
     Category: General
   },
   {
-    Id: 5,
     Text: What is encapsulation?,
     Category: OOP
   }

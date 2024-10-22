@@ -1,32 +1,27 @@
 ﻿{
-  Id: 1,
   StartTime: DateTime_1,
   ExamQuestions: [
-      {
-      Question: {
-        Id: 2,
-        Text: What is abstraction?,
-        Category: General
-      }
-    },
     {
       Question: {
-        Id: 1,
         Text: What is an interface?,
         Category: General
       }
     },
     {
       Question: {
-        Id: 5,
-        Text: What is encapsulation?,
-        Category: OOP
-        }
+        Text: What is abstraction?,
+        Category: General
+      }
     },
     {
       Question: {
-        Id: 3,
         Text: What is inheritance?,
+        Category: OOP
+      }
+    },
+    {
+      Question: {
+        Text: What is encapsulation?,
         Category: OOP
       }
     }
