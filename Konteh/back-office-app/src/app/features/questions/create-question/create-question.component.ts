@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { DeleteAnswerDialogComponent } from '../delete-answer-dialog/delete-answer-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-create-question',
@@ -12,22 +13,20 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styleUrl: './create-question.component.css'
 })
 export class CreateQuestionComponent implements OnInit {
-  questionForm!: FormGroup;
-  showAnswerForm: boolean = false;
+  questionForm = new FormGroup({
+    text: new FormControl('', Validators.required),
+    category: new FormControl(QuestionCategory.Csharp, Validators.required),
+    type: new FormControl(QuestionType.RadioButton, Validators.required),
+    answers: new FormArray<UntypedFormGroup>([])
+  });
   questionId: number | null = null;
-  isSubmitted = false;
   questionCategories: number[] = [1, 2, 3, 4, 5, 6];
   questionTypes: number[] = [1, 2];
 
-  constructor(private questionClient: QuestionsClient, private router: Router, private route: ActivatedRoute, private dialog: MatDialog, private snackBar: MatSnackBar, private cdr: ChangeDetectorRef) { }
+  constructor(private questionClient: QuestionsClient, private router: Router, private route: ActivatedRoute,
+    private dialog: MatDialog, private snackBar: MatSnackBar, private cdr: ChangeDetectorRef) { }
 
   ngOnInit() {
-    this.questionForm = new FormGroup({
-      text: new FormControl('', Validators.required),
-      category: new FormControl(QuestionCategory.Csharp, Validators.required),
-      type: new FormControl(QuestionType.RadioButton, Validators.required),
-      answers: new FormArray<UntypedFormGroup>([])
-    });
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
       if (id) {
@@ -49,14 +48,8 @@ export class CreateQuestionComponent implements OnInit {
     }
     this.cdr.detectChanges();
   }
-  
-
-  openSnackBar(message: string, action: string, duration: number = 2000) {
-    this.snackBar.open(message, action)
-  }
 
   onSubmit() {
-    this.isSubmitted = true;
     this.checkForMultipleCorrectAnswers();
     if (this.questionForm.valid) {
       const hasCorrectAnswer = this.answersArray.controls.some(control => control.value.isCorrect);
@@ -65,8 +58,6 @@ export class CreateQuestionComponent implements OnInit {
         return;
       }
       this.createOrUpdateQuestion();
-    } else {
-      return;
     }
   }
 
@@ -81,15 +72,13 @@ export class CreateQuestionComponent implements OnInit {
     });
     const command = new CreateUpdateQuestionCommand({
       id: this.questionId!,
-      text: this.questionForm.value.text,
-      category: this.questionForm.value.category,
-      type: this.questionForm.value.type,
+      text: this.questionForm.value.text!,
+      category: this.questionForm.value.category!,
+      type: this.questionForm.value.type!,
       answers: answersToSubmit
     });
     this.questionClient.createOrUpdateQuestion(command).subscribe({
-      next: (response) => {
-        this.router.navigate(['/questions-overview']);
-      },
+      next: _ => this.router.navigate(['/questions-overview']),
       error: (err) => {
         console.error('Error creating question', err);
       }
@@ -97,37 +86,32 @@ export class CreateQuestionComponent implements OnInit {
   }
 
   getQuestionById(id: number): void {
-    this.questionClient.getQuestionById(id).subscribe({
-      next: (response) => {
-        this.questionForm.patchValue({
-          text: response.text,
-          category: response.category,
-          type: response.type
-        });
-        response.answers?.map(x => this.answersArray.push(new FormGroup({
-          id: new FormControl(x.id),
-          text: new FormControl(x.text, Validators.required),
-          isCorrect: new FormControl(x.isCorrect),
-          isDeleted: new FormControl(x.isDeleted)
-        })));
-      },
-      error: (err) => {
-        console.error('Error loading question', err);
-      }
+    this.questionClient.getQuestionById(id).subscribe(response => {
+      this.questionForm.patchValue({
+        text: response.text,
+        category: response.category,
+        type: response.type
+      });
+      response.answers?.map(x => this.answersArray.push(new FormGroup({
+        id: new FormControl(x.id),
+        text: new FormControl(x.text, Validators.required),
+        isCorrect: new FormControl(x.isCorrect),
+        isDeleted: new FormControl(x.isDeleted)
+      })));
     });
   }
-  
+
   onDeleteAnswer(index: number) {
     const confirmDialog = this.dialog.open(DeleteAnswerDialogComponent);
-    confirmDialog.afterClosed().subscribe(result => {
-      if (result) {
+    confirmDialog.afterClosed()
+      .pipe(filter(result => result === true))
+      .subscribe(_ => {
         const answerGroup = this.answersArray.at(index);
         answerGroup.patchValue({ isDeleted: true });
         this.cdr.detectChanges();
-      }
-    });
+      });
   }
-  
+
   errorMessage = {
     multipleCorrect: 'You can only select one correct answer for RadioButton question type.',
   };
@@ -148,7 +132,7 @@ export class CreateQuestionComponent implements OnInit {
     const answer = new FormGroup({
       isCorrect: new FormControl(false),
       text: new FormControl('', Validators.required),
-      isDeleted: new FormControl(false) 
+      isDeleted: new FormControl(false)
     });
     this.answersArray.push(answer)
   }
