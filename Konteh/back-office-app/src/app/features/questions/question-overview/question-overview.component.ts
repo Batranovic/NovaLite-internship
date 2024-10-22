@@ -33,35 +33,13 @@ export class QuestionOverviewComponent {
   }
 
   getCategoryText(categoryId: any): string {
-    switch (categoryId) {
-      case QuestionCategory.OOP:
-        return 'OOP';
-      case QuestionCategory.General:
-        return 'General';
-      case QuestionCategory.Git:
-        return 'Git';
-      case QuestionCategory.Testing:
-        return 'Testing';
-      case QuestionCategory.Sql:
-        return 'Sql';
-      case QuestionCategory.Csharp:
-        return 'Csharp';
-      default:
-        return 'Unknown Category';
-    }
+    return QuestionCategory[categoryId] || 'Unknown Category';
   }
-
+  
   getTypeText(typeId: any): string {
-    switch (typeId) {
-      case QuestionType.RadioButton:
-        return 'RadioButton';
-      case QuestionType.CheckBox:
-        return 'CheckBox';
-      default:
-        return 'Unknown Category';
-    }
+    return QuestionType[typeId] || 'Unknown Type';
   }
-
+  
   editQuestion(): void {
     this.router.navigate(['/edit-question', this.question?.id])
   }

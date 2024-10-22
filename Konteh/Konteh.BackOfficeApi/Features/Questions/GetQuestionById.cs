@@ -6,12 +6,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Konteh.BackOfficeApi.Features.Questions
 {
-    public class GetQuestionById
+    public static class GetQuestionById
     {
         public class Query : IRequest<Response>
         {
             public long Id { get; set; }
         }
+
         public class Response
         {
             public long Id { get; set; }
@@ -20,6 +21,7 @@ namespace Konteh.BackOfficeApi.Features.Questions
             public QuestionType Type { get; set; }
             public List<AnswerDto> Answers { get; set; } = [];
         }
+
         public class AnswerDto
         {
             public long Id { get; set; }

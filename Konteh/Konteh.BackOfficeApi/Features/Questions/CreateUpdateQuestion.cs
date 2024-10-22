@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Konteh.BackOfficeApi.Features.Questions
 {
-    public class UpdateQuestion
+    public static class CreateUpdateQuestion
     {
         public class Command : IRequest<Response>
         {
@@ -25,6 +25,7 @@ namespace Konteh.BackOfficeApi.Features.Questions
             public QuestionType Type { get; set; }
             public List<AnswerDto> Answers { get; set; } = [];
         }
+
         public class AnswerDto
         {
             public long Id { get; set; }
@@ -32,6 +33,7 @@ namespace Konteh.BackOfficeApi.Features.Questions
             public bool IsCorrect { get; set; }
             public bool IsDeleted { get; set; }
         }
+
         public class RequestHandler : IRequestHandler<Command, Response>
         {
             private readonly IRepository<Question> _repository;
@@ -49,12 +51,13 @@ namespace Konteh.BackOfficeApi.Features.Questions
 
                 if (existingQuestion == null)
                 {
-                    throw new Exception("Question not found.");
+                    return await CreateQuestion(request);
                 }
 
                 existingQuestion.Text = request.Text;
                 existingQuestion.Category = request.Category;
                 existingQuestion.Type = request.Type;
+
                 foreach (var answer in request.Answers)
                 {
                     var existingAnswer = existingQuestion.Answers
@@ -85,6 +88,38 @@ namespace Konteh.BackOfficeApi.Features.Questions
                     Text = existingQuestion.Text,
                     Type = existingQuestion.Type,
                     Answers = existingQuestion.Answers.Select(a => new AnswerDto
+                    {
+                        Id = a.Id,
+                        Text = a.Text,
+                        IsCorrect = a.IsCorrect,
+                        IsDeleted = a.IsDeleted,
+                    }).ToList(),
+                };
+            }
+
+            private async Task<Response> CreateQuestion(Command request)
+            {
+                var question = new Question
+                {
+                    Text = request.Text,
+                    Category = request.Category,
+                    Type = request.Type,
+                    Answers = request.Answers.Select(a => new Answer
+                    {
+                        Text = a.Text,
+                        IsCorrect = a.IsCorrect,
+                        IsDeleted = false,
+                    }).ToList()
+                };
+
+                _repository.Create(question);
+                await _repository.SaveChanges();
+                return new Response
+                {
+                    Id = question.Id,
+                    Text = question.Text,
+                    Type = question.Type,
+                    Answers = question.Answers.Select(a => new AnswerDto
                     {
                         Id = a.Id,
                         Text = a.Text,

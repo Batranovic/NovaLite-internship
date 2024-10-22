@@ -24,7 +24,6 @@ import { QuestionsModule } from './features/questions/questions.module';
 @NgModule({
   declarations: [
     AppComponent,
-    CreateQuestionComponent,
   ],
   imports: [
     BrowserAnimationsModule,

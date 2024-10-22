@@ -17,9 +17,8 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 export interface IQuestionsClient {
     getAll(): Observable<GetAllQuestionsResponse[]>;
-    create(command: CreateQuestionCommand): Observable<GetAllQuestionsResponse>;
-    updateQuestion(command: UpdateQuestionCommand): Observable<UpdateQuestionResponse>;
     getQuestionById(id: number): Observable<GetQuestionByIdResponse>;
+    createOrUpdateQuestion(command: CreateUpdateQuestionCommand): Observable<CreateUpdateQuestionResponse>;
 }
 
 @Injectable({
@@ -90,110 +89,6 @@ export class QuestionsClient implements IQuestionsClient {
         return _observableOf(null as any);
     }
 
-    create(command: CreateQuestionCommand): Observable<GetAllQuestionsResponse> {
-        let url_ = this.baseUrl + "/questions";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(command);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processCreate(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processCreate(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<GetAllQuestionsResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<GetAllQuestionsResponse>;
-        }));
-    }
-
-    protected processCreate(response: HttpResponseBase): Observable<GetAllQuestionsResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = GetAllQuestionsResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-
-    updateQuestion(command: UpdateQuestionCommand): Observable<UpdateQuestionResponse> {
-        let url_ = this.baseUrl + "/questions";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(command);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processUpdateQuestion(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processUpdateQuestion(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<UpdateQuestionResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<UpdateQuestionResponse>;
-        }));
-    }
-
-    protected processUpdateQuestion(response: HttpResponseBase): Observable<UpdateQuestionResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = UpdateQuestionResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-
     getQuestionById(id: number): Observable<GetQuestionByIdResponse> {
         let url_ = this.baseUrl + "/questions/{id}";
         if (id === undefined || id === null)
@@ -235,6 +130,58 @@ export class QuestionsClient implements IQuestionsClient {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = GetQuestionByIdResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    createOrUpdateQuestion(command: CreateUpdateQuestionCommand): Observable<CreateUpdateQuestionResponse> {
+        let url_ = this.baseUrl + "/createOrUpdate";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreateOrUpdateQuestion(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreateOrUpdateQuestion(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<CreateUpdateQuestionResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<CreateUpdateQuestionResponse>;
+        }));
+    }
+
+    protected processCreateOrUpdateQuestion(response: HttpResponseBase): Observable<CreateUpdateQuestionResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = CreateUpdateQuestionResponse.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -372,121 +319,12 @@ export enum QuestionCategory {
     Csharp = 6,
 }
 
-export class CreateQuestionCommand implements ICreateQuestionCommand {
-    text?: string;
-    category?: QuestionCategory;
-    questionType?: QuestionType;
-    answers?: Answer[];
-
-    constructor(data?: ICreateQuestionCommand) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.text = _data["text"];
-            this.category = _data["category"];
-            this.questionType = _data["questionType"];
-            if (Array.isArray(_data["answers"])) {
-                this.answers = [] as any;
-                for (let item of _data["answers"])
-                    this.answers!.push(Answer.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): CreateQuestionCommand {
-        data = typeof data === 'object' ? data : {};
-        let result = new CreateQuestionCommand();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["text"] = this.text;
-        data["category"] = this.category;
-        data["questionType"] = this.questionType;
-        if (Array.isArray(this.answers)) {
-            data["answers"] = [];
-            for (let item of this.answers)
-                data["answers"].push(item.toJSON());
-        }
-        return data;
-    }
-}
-
-export interface ICreateQuestionCommand {
-    text?: string;
-    category?: QuestionCategory;
-    questionType?: QuestionType;
-    answers?: Answer[];
-}
-
-export enum QuestionType {
-    RadioButton = 1,
-    CheckBox = 2,
-}
-
-export class Answer implements IAnswer {
-    id?: number;
-    text?: string;
-    isCorrect?: boolean;
-    isDeleted?: boolean;
-
-    constructor(data?: IAnswer) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.text = _data["text"];
-            this.isCorrect = _data["isCorrect"];
-            this.isDeleted = _data["isDeleted"];
-        }
-    }
-
-    static fromJS(data: any): Answer {
-        data = typeof data === 'object' ? data : {};
-        let result = new Answer();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["text"] = this.text;
-        data["isCorrect"] = this.isCorrect;
-        data["isDeleted"] = this.isDeleted;
-        return data;
-    }
-}
-
-export interface IAnswer {
-    id?: number;
-    text?: string;
-    isCorrect?: boolean;
-    isDeleted?: boolean;
-}
-
 export class GetQuestionByIdResponse implements IGetQuestionByIdResponse {
     id?: number;
     text?: string;
     category?: QuestionCategory;
     type?: QuestionType;
-    answers?: Answer[];
+    answers?: GetQuestionByIdAnswerDto[];
 
     constructor(data?: IGetQuestionByIdResponse) {
         if (data) {
@@ -506,7 +344,7 @@ export class GetQuestionByIdResponse implements IGetQuestionByIdResponse {
             if (Array.isArray(_data["answers"])) {
                 this.answers = [] as any;
                 for (let item of _data["answers"])
-                    this.answers!.push(Answer.fromJS(item));
+                    this.answers!.push(GetQuestionByIdAnswerDto.fromJS(item));
             }
         }
     }
@@ -538,17 +376,70 @@ export interface IGetQuestionByIdResponse {
     text?: string;
     category?: QuestionCategory;
     type?: QuestionType;
-    answers?: Answer[];
+    answers?: GetQuestionByIdAnswerDto[];
 }
 
-export class UpdateQuestionResponse implements IUpdateQuestionResponse {
+export enum QuestionType {
+    RadioButton = 1,
+    CheckBox = 2,
+}
+
+export class GetQuestionByIdAnswerDto implements IGetQuestionByIdAnswerDto {
+    id?: number;
+    text?: string;
+    isCorrect?: boolean;
+    isDeleted?: boolean;
+
+    constructor(data?: IGetQuestionByIdAnswerDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.text = _data["text"];
+            this.isCorrect = _data["isCorrect"];
+            this.isDeleted = _data["isDeleted"];
+        }
+    }
+
+    static fromJS(data: any): GetQuestionByIdAnswerDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetQuestionByIdAnswerDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["text"] = this.text;
+        data["isCorrect"] = this.isCorrect;
+        data["isDeleted"] = this.isDeleted;
+        return data;
+    }
+}
+
+export interface IGetQuestionByIdAnswerDto {
+    id?: number;
+    text?: string;
+    isCorrect?: boolean;
+    isDeleted?: boolean;
+}
+
+export class CreateUpdateQuestionResponse implements ICreateUpdateQuestionResponse {
     id?: number;
     text?: string;
     category?: QuestionCategory;
     type?: QuestionType;
-    answers?: Answer[];
+    answers?: CreateUpdateQuestionAnswerDto[];
 
-    constructor(data?: IUpdateQuestionResponse) {
+    constructor(data?: ICreateUpdateQuestionResponse) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -566,14 +457,14 @@ export class UpdateQuestionResponse implements IUpdateQuestionResponse {
             if (Array.isArray(_data["answers"])) {
                 this.answers = [] as any;
                 for (let item of _data["answers"])
-                    this.answers!.push(Answer.fromJS(item));
+                    this.answers!.push(CreateUpdateQuestionAnswerDto.fromJS(item));
             }
         }
     }
 
-    static fromJS(data: any): UpdateQuestionResponse {
+    static fromJS(data: any): CreateUpdateQuestionResponse {
         data = typeof data === 'object' ? data : {};
-        let result = new UpdateQuestionResponse();
+        let result = new CreateUpdateQuestionResponse();
         result.init(data);
         return result;
     }
@@ -593,22 +484,70 @@ export class UpdateQuestionResponse implements IUpdateQuestionResponse {
     }
 }
 
-export interface IUpdateQuestionResponse {
+export interface ICreateUpdateQuestionResponse {
     id?: number;
     text?: string;
     category?: QuestionCategory;
     type?: QuestionType;
-    answers?: Answer[];
+    answers?: CreateUpdateQuestionAnswerDto[];
 }
 
-export class UpdateQuestionCommand implements IUpdateQuestionCommand {
+export class CreateUpdateQuestionAnswerDto implements ICreateUpdateQuestionAnswerDto {
+    id?: number;
+    text?: string;
+    isCorrect?: boolean;
+    isDeleted?: boolean;
+
+    constructor(data?: ICreateUpdateQuestionAnswerDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.text = _data["text"];
+            this.isCorrect = _data["isCorrect"];
+            this.isDeleted = _data["isDeleted"];
+        }
+    }
+
+    static fromJS(data: any): CreateUpdateQuestionAnswerDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateUpdateQuestionAnswerDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["text"] = this.text;
+        data["isCorrect"] = this.isCorrect;
+        data["isDeleted"] = this.isDeleted;
+        return data;
+    }
+}
+
+export interface ICreateUpdateQuestionAnswerDto {
+    id?: number;
+    text?: string;
+    isCorrect?: boolean;
+    isDeleted?: boolean;
+}
+
+export class CreateUpdateQuestionCommand implements ICreateUpdateQuestionCommand {
     id?: number;
     text?: string;
     category?: QuestionCategory;
     type?: QuestionType;
-    answers?: Answer[];
+    answers?: CreateUpdateQuestionAnswerDto[];
 
-    constructor(data?: IUpdateQuestionCommand) {
+    constructor(data?: ICreateUpdateQuestionCommand) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -626,14 +565,14 @@ export class UpdateQuestionCommand implements IUpdateQuestionCommand {
             if (Array.isArray(_data["answers"])) {
                 this.answers = [] as any;
                 for (let item of _data["answers"])
-                    this.answers!.push(Answer.fromJS(item));
+                    this.answers!.push(CreateUpdateQuestionAnswerDto.fromJS(item));
             }
         }
     }
 
-    static fromJS(data: any): UpdateQuestionCommand {
+    static fromJS(data: any): CreateUpdateQuestionCommand {
         data = typeof data === 'object' ? data : {};
-        let result = new UpdateQuestionCommand();
+        let result = new CreateUpdateQuestionCommand();
         result.init(data);
         return result;
     }
@@ -653,12 +592,12 @@ export class UpdateQuestionCommand implements IUpdateQuestionCommand {
     }
 }
 
-export interface IUpdateQuestionCommand {
+export interface ICreateUpdateQuestionCommand {
     id?: number;
     text?: string;
     category?: QuestionCategory;
     type?: QuestionType;
-    answers?: Answer[];
+    answers?: CreateUpdateQuestionAnswerDto[];
 }
 
 export class WeatherForecast implements IWeatherForecast {
