@@ -2,21 +2,20 @@
 
 #nullable disable
 
-namespace Konteh.Infrastructure.Migrations
+namespace Konteh.Infrastructure.Migrations;
+
+/// <inheritdoc />
+public partial class newMig : Migration
 {
     /// <inheritdoc />
-    public partial class newMig : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
 
-        }
+    }
 
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
 
-        }
     }
 }

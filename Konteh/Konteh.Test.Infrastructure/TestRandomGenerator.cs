@@ -1,10 +1,9 @@
 ﻿using Konteh.FrontOfficeApi.Features.Exams.RandomGenerator;
 
-namespace Konteh.Test.Infrastructure
+namespace Konteh.Test.Infrastructure;
+
+public class TestRandomGenerator : IRandomGenerator
 {
-    public class TestRandomGenerator : IRandomGenerator
-    {
-        private int _random;
-        public int Next() => _random++;
-    }
+    private int _random;
+    public int Next() => _random++;
 }
