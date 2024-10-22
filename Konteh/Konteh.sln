@@ -11,7 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Konteh.Domain", "Konteh.Dom
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Konteh.Infrastructure", "Konteh.Infrastructure\Konteh.Infrastructure.csproj", "{EC04FAE7-AADC-4822-888C-BA16E6BD0284}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Konteh.FrontOffice.Api.Tests", "Konteh.FrontOffice.Api.Tests\Konteh.FrontOffice.Api.Tests.csproj", "{F870045F-9B98-4E0F-A59B-E1FE6A5362FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Konteh.FrontOffice.Api.Tests", "Konteh.FrontOffice.Api.Tests\Konteh.FrontOffice.Api.Tests.csproj", "{F870045F-9B98-4E0F-A59B-E1FE6A5362FA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Konteh.BackOffice.Api.Tests", "Konteh.BackOffice.Api.Tests\Konteh.BackOffice.Api.Tests.csproj", "{8562C7C4-A632-4022-9AD5-148956C32A5C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Konteh.Test.Infrastructure", "Konteh.Test.Infrastructure\Konteh.Test.Infrastructure.csproj", "{5BD38417-C4F2-4AA0-AB0C-CE1356B01FA9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +43,14 @@ Global
 		{F870045F-9B98-4E0F-A59B-E1FE6A5362FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F870045F-9B98-4E0F-A59B-E1FE6A5362FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F870045F-9B98-4E0F-A59B-E1FE6A5362FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8562C7C4-A632-4022-9AD5-148956C32A5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8562C7C4-A632-4022-9AD5-148956C32A5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8562C7C4-A632-4022-9AD5-148956C32A5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8562C7C4-A632-4022-9AD5-148956C32A5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BD38417-C4F2-4AA0-AB0C-CE1356B01FA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BD38417-C4F2-4AA0-AB0C-CE1356B01FA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BD38417-C4F2-4AA0-AB0C-CE1356B01FA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BD38417-C4F2-4AA0-AB0C-CE1356B01FA9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
