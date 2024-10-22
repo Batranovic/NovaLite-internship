@@ -23,5 +23,4 @@ namespace Konteh.BackOffice.Api.Tests
             return Task.FromResult(AuthenticateResult.Success(ticket));
         }
     }
-
 }
