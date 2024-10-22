@@ -19,7 +19,11 @@ import { CreateQuestionComponent } from './create-question/create-question.compo
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { NgArrayPipesModule } from 'ngx-pipes';
+import { QuestionFilterComponent } from './question-filter/question-filter.component';
+import { CategoryNamePipe } from './category-name.pipe';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -27,7 +31,14 @@ import { NgArrayPipesModule } from 'ngx-pipes';
     QuestionsOverviewComponent,
     QuestionOverviewComponent,
     DeleteAnswerDialogComponent,
-    AnswerFormComponent
+    AnswerFormComponent,
+    QuestionFilterComponent,
+    QuestionsOverviewComponent,
+    CategoryNamePipe
+  ],
+  exports: [
+    QuestionFilterComponent,
+    QuestionsOverviewComponent
   ],
   imports: [
     CommonModule,
@@ -47,8 +58,9 @@ import { NgArrayPipesModule } from 'ngx-pipes';
     MatSelectModule,
     MatInputModule,
     MatCheckboxModule,
-    MatIconModule,
-    NgArrayPipesModule
+    HttpClientModule,
+    MatTableModule,
+    MatPaginatorModule,
   ]
 })
 export class QuestionsModule { }

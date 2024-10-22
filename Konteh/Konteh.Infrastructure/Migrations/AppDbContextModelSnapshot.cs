@@ -95,7 +95,7 @@ namespace Konteh.Infrastructure.Migrations
                     b.Property<long>("CandiateId")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTime>("EndTime")
+                    b.Property<DateTime?>("EndTime")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("StartTime")
@@ -141,6 +141,9 @@ namespace Konteh.Infrastructure.Migrations
 
                     b.Property<int>("Category")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Text")
                         .IsRequired()
