@@ -1,0 +1,2 @@
+dotnet ef migrations add YOUR_MIGRATION_NAME --project Konteh.Infrastructure --startup-project Konteh.BackOfficeApi
+dotnet ef database update --project Konteh.Infrastructure --startup-project Konteh.BackOfficeApi

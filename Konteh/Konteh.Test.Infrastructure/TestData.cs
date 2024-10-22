@@ -18,7 +18,7 @@ public static class TestData
                     new() { Text = "A reference type used to define a contract for classes"},
                     new() { Text = "A class with no constructors"},
                     new() { Text = "A static class" }
-                ]
+                ],
             },
             new() {
                 Text = "What is abstraction?",
