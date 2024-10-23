@@ -3,6 +3,7 @@ using Konteh.Domain.Enumerations;
 using Konteh.FrontOfficeApi.Features.Exams.RandomGenerator;
 using Konteh.Infrastructure.Repositories;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Konteh.FrontOfficeApi.Features.Exams;
 
@@ -30,6 +31,7 @@ public static class GenerateExam
         public long Id { get; set; }
         public string Text { get; set; } = string.Empty;
         public QuestionCategory Category { get; set; }
+        public QuestionType Type { get; set; }
         public List<AnswerDto> Answers { get; set; } = [];
     }
     public class ExamQuestionDto
@@ -46,11 +48,11 @@ public static class GenerateExam
 
     public class Handler : IRequestHandler<Command, Response>
     {
-        private readonly IRepository<Question> _questionRepository;
+        private readonly IQuestionRepository _questionRepository;
         private readonly IRepository<Exam> _examRepository;
         private readonly IRandomGenerator _randomGenerator;
         private readonly IRepository<Candidate> _candidateRepository;
-        public Handler(IRepository<Question> questionRepository, IRepository<Exam> examRepository, IRandomGenerator randomGenerator, IRepository<Candidate> candidateRepository)
+        public Handler(IQuestionRepository questionRepository, IRepository<Exam> examRepository, IRandomGenerator randomGenerator, IRepository<Candidate> candidateRepository)
         {
             _questionRepository = questionRepository;
             _examRepository = examRepository;
@@ -69,7 +71,7 @@ public static class GenerateExam
                 throw new InvalidOperationException("Candidate has already taken the exam.");
             }
 
-            var questions = await _questionRepository.Search(x => Categories.Contains(x.Category));
+            var questions = await _questionRepository.SearchIQueryable(x => Categories.Contains(x.Category)).Include(q => q.Answers).ToListAsync();
             var randomQuestions = new List<ExamQuestion>();
 
             foreach (var category in Categories)
@@ -87,22 +89,6 @@ public static class GenerateExam
                 randomQuestions.AddRange(selectedQuestions);
             }
 
-            var examQuestionsDto = randomQuestions.Select(q => new ExamQuestionDto
-            {
-                Id = q.Id,
-                Question = new QuestionDto
-                {
-                    Id = q.Question.Id,
-                    Text = q.Question.Text,
-                    Category = q.Question.Category,
-                    Answers = q.Question.Answers.Select(a => new AnswerDto
-                    {
-                        Id = a.Id,
-                        Text = a.Text
-                    }).ToList()
-                }
-            }).ToList();
-
             var exam = new Exam
             {
                 StartTime = DateTime.UtcNow,
@@ -117,7 +103,26 @@ public static class GenerateExam
             {
                 Id = exam.Id,
                 StartTime = exam.StartTime,
-                ExamQuestions = examQuestionsDto,
+                ExamQuestions = exam.ExamQuestions.Select(q => new ExamQuestionDto
+                {
+
+                    Id = q.Id,
+                    Question = new QuestionDto
+                    {
+                        Id = q.Question.Id,
+                        Text = q.Question.Text,
+                        Category = q.Question.Category,
+                        Type = q.Question.Type,
+                        Answers = q.Question.Answers
+                        .Where(a => !a.IsDeleted)
+                        .Select(a => new AnswerDto
+                        {
+                            Id = a.Id,
+                            Text = a.Text
+                        }).ToList()
+                    }
+                }).ToList(),
+
             };
         }
 

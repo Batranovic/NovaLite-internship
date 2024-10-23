@@ -1,1 +1,27 @@
-<div class="exam-table-container"></div>
+<div class="container">
+    <div class="form-container">
+        <h2 class="exam-title">NovaLite Quiz</h2>
+        <div *ngIf="examResponse">
+            <div *ngFor="let examQuestion of examResponse.examQuestions" class="question-container">
+                <h6 class="question-text">{{ examQuestion.question?.text }}</h6>
+                <ul class="answer-list">
+                    <li *ngFor="let answer of examQuestion.question?.answers" class="answer-item">
+                        <input *ngIf="examQuestion.question?.type === QuestionType.RadioButton" 
+                               type="radio" 
+                               [name]="'question' + examQuestion.question?.id" 
+                               [value]="answer.id" 
+                               class="answer-input">
+                        <input *ngIf="examQuestion.question?.type === QuestionType.CheckBox" 
+                               type="checkbox" 
+                               [name]="'question' + examQuestion.question?.id" 
+                               [value]="answer.id" 
+                               class="answer-input">
+                        <label>{{ answer.text }}</label>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <button class="submit-button">Submit Answers</button>
+    </div>
+</div>

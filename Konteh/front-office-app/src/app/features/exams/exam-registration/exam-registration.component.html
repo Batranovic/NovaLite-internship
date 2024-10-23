@@ -1,0 +1,24 @@
+<div class="container">
+    <div class="form-container">
+        <h2 class="form-title">Take an exam</h2>
+        <form [formGroup]="examForm" (ngSubmit)="onSubmit()">
+            <mat-form-field>
+                <mat-label>Name</mat-label>
+                <textarea matInput formControlName="candidateName"></textarea>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Surname</mat-label>
+                <textarea matInput formControlName="candidateSurname"></textarea>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Email</mat-label>
+                <textarea matInput formControlName="candidateEmail"></textarea>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Faculty</mat-label>
+                <textarea matInput formControlName="candidateFaculty"></textarea>
+            </mat-form-field>
+            <button class="exam-form-button" mat-flat-button color="primary" type="submit">Submit</button>
+        </form>
+    </div>
+</div>

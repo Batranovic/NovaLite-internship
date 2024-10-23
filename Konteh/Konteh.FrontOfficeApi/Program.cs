@@ -23,19 +23,20 @@ public class Program
         builder.Services.AddScoped<IRepository<Question>, QuestionRepository>();
         builder.Services.AddScoped<IRepository<Exam>, ExamRepository>();
         builder.Services.AddScoped<IRepository<Candidate>, CandidateRepository>();
+        builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
 
-        var app = builder.Build();
+
 
         builder.Services.AddCors(options =>
         {
-            options.AddPolicy("MyCorsPolicy", corsBulder =>
+            options.AddPolicy("MyCorsPolicy", corsBuilder =>
             {
-                corsBulder.AllowAnyOrigin()
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials();
+                corsBuilder.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
             });
         });
+        var app = builder.Build();
 
 
         // Configure the HTTP request pipeline.
@@ -44,7 +45,7 @@ public class Program
         app.UseHttpsRedirection();
 
         app.UseAuthorization();
-
+        app.UseCors("MyCorsPolicy");
         app.MapControllers();
 
         app.Run();

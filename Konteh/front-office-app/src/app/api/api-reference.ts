@@ -181,6 +181,7 @@ export class GenerateExamQuestionDto implements IGenerateExamQuestionDto {
     id?: number;
     text?: string;
     category?: QuestionCategory;
+    type?: QuestionType;
     answers?: GenerateExamAnswerDto[];
 
     constructor(data?: IGenerateExamQuestionDto) {
@@ -197,6 +198,7 @@ export class GenerateExamQuestionDto implements IGenerateExamQuestionDto {
             this.id = _data["id"];
             this.text = _data["text"];
             this.category = _data["category"];
+            this.type = _data["type"];
             if (Array.isArray(_data["answers"])) {
                 this.answers = [] as any;
                 for (let item of _data["answers"])
@@ -217,6 +219,7 @@ export class GenerateExamQuestionDto implements IGenerateExamQuestionDto {
         data["id"] = this.id;
         data["text"] = this.text;
         data["category"] = this.category;
+        data["type"] = this.type;
         if (Array.isArray(this.answers)) {
             data["answers"] = [];
             for (let item of this.answers)
@@ -230,6 +233,7 @@ export interface IGenerateExamQuestionDto {
     id?: number;
     text?: string;
     category?: QuestionCategory;
+    type?: QuestionType;
     answers?: GenerateExamAnswerDto[];
 }
 
@@ -240,6 +244,11 @@ export enum QuestionCategory {
     Testing = 4,
     Sql = 5,
     Csharp = 6,
+}
+
+export enum QuestionType {
+    RadioButton = 1,
+    CheckBox = 2,
 }
 
 export class GenerateExamAnswerDto implements IGenerateExamAnswerDto {

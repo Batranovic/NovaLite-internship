@@ -97,6 +97,7 @@ namespace Konteh.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Text = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsCorrect = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     ExamQuestionId = table.Column<long>(type: "bigint", nullable: true),
                     QuestionId = table.Column<long>(type: "bigint", nullable: true)
                 },

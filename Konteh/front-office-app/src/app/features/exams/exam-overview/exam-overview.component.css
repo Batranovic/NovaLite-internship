@@ -1,13 +1,78 @@
-.exam-table-container{
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    padding: 4vh;
+.container {
+    min-height: 950px;
+    padding: 20px;
+    background: linear-gradient(135deg, #f9f76a, #f1cc38, #e4a36b); /* Balayage effect using yellows */
+
 }
-.mat-elevation-z8 {
-    width: 80%;
-    border-radius: 25px 25px 0 0;
-    overflow: hidden;
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 600px; 
+    margin: 0 auto; 
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff; 
+}
+
+.exam-title {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.exam-instructions {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.question-container {
+    margin-bottom: 20px;
+    padding: 15px;
+    border-radius: 5px;
+    background-color: #f8f8e8fd
+
+}
+
+.question-text {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.answer-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.answer-item {
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+}
+
+.answer-input {
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.submit-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #007bff; /* Bootstrap primary color */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.submit-button:hover {
+    background-color: #0056b3; /* Darker shade for hover effect */
 }
