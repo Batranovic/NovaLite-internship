@@ -1,4 +1,3 @@
-
 using Konteh.Domain;
 using Konteh.FrontOfficeApi.Features.Exams.RandomGenerator;
 using Konteh.Infrastructure;
@@ -7,40 +6,62 @@ using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
-var builder = WebApplication.CreateBuilder(args);
+namespace Konteh.FrontOfficeApi;
 
-// Add services to the container.
-
-builder.Services.AddControllers();
-builder.Services.AddOpenApiDocument(o => o.SchemaSettings.SchemaNameGenerator = new CustomSwaggerSchemaNameGenerator());
-builder.Services.AddDbContext<AppDbContext>(o => o.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
-builder.Services.AddScoped<IRandomGenerator, RandomGenerator>();
-builder.Services.AddScoped<IRepository<Question>, QuestionRepository>();
-builder.Services.AddScoped<IRepository<Exam>, ExamRepository>();
-builder.Services.AddMassTransit(x =>
+public class Program
 {
-    x.UsingRabbitMq((context, cfg) =>
+    private static void Main(string[] args)
     {
-        cfg.Host("localhost", "/", h =>
+        var builder = WebApplication.CreateBuilder(args);
+
+        builder.Services.AddControllers();
+        builder.Services.AddOpenApiDocument(o => o.SchemaSettings.SchemaNameGenerator = new CustomSwaggerSchemaNameGenerator());
+        builder.Services.AddDbContext<AppDbContext>(o => o.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+        builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+        builder.Services.AddScoped<IRandomGenerator, RandomGenerator>();
+        builder.Services.AddScoped<IRepository<Question>, QuestionRepository>();
+        builder.Services.AddScoped<IRepository<Exam>, ExamRepository>();
+        builder.Services.AddMassTransit(x =>
         {
-            h.Username("admin");
-            h.Password("admin");
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.Host("localhost", "/", h =>
+                {
+                    h.Username("admin");
+                    h.Password("admin");
+                });
+
+                cfg.ConfigureEndpoints(context);
+            });
         });
 
-        cfg.ConfigureEndpoints(context);
-    });
-});
+        builder.Services.AddControllers();
+        builder.Services.AddOpenApiDocument(o => o.SchemaSettings.SchemaNameGenerator = new CustomSwaggerSchemaNameGenerator());
+        builder.Services.AddDbContext<AppDbContext>(o => o.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-var app = builder.Build();
+        var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-app.UseOpenApi();
-app.UseSwaggerUi();
-app.UseHttpsRedirection();
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("MyCorsPolicy", corsBulder =>
+            {
+                corsBulder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials();
+            });
+        });
 
-app.UseAuthorization();
 
-app.MapControllers();
+        // Configure the HTTP request pipeline.
+        app.UseOpenApi();
+        app.UseSwaggerUi();
+        app.UseHttpsRedirection();
 
-app.Run();
+        app.UseAuthorization();
+
+        app.MapControllers();
+
+        app.Run();
+    }
+}

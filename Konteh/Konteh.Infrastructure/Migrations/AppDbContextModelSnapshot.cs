@@ -36,6 +36,9 @@ namespace Konteh.Infrastructure.Migrations
                     b.Property<bool>("IsCorrect")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<long?>("QuestionId")
                         .HasColumnType("bigint");
 

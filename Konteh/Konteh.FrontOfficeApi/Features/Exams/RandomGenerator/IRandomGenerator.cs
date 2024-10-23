@@ -1,7 +1,6 @@
-﻿namespace Konteh.FrontOfficeApi.Features.Exams.RandomGenerator
+﻿namespace Konteh.FrontOfficeApi.Features.Exams.RandomGenerator;
+
+public interface IRandomGenerator
 {
-    public interface IRandomGenerator
-    {
-        int Next();
-    }
+    int Next();
 }

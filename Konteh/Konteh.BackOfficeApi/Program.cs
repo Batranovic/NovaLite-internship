@@ -8,7 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
 using System.Reflection;
 
-internal class Program
+namespace Konteh.BackOfficeApi;
+
+public class Program
 {
     private static void Main(string[] args)
     {
@@ -77,12 +79,10 @@ internal class Program
 
         app.MapHub<ExamHub>("/examhub");
 
-
         app.UseCors("MyCorsPolicy");
 
         app.MapControllers();
 
         app.Run();
     }
-
 }

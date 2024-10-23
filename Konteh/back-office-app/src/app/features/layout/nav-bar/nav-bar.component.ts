@@ -52,4 +52,8 @@ export class NavBarComponent implements OnInit{
     this.router.navigate(["exam-notifications"]);
 
   }
+
+  redirectToCreateQuestion() {
+    this.router.navigate(["create-question"]);
+  }
 }

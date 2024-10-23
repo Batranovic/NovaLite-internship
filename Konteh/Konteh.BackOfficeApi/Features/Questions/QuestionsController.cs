@@ -23,10 +23,31 @@ public class QuestionsController : ControllerBase
         return Ok(response);
     }
 
+    [HttpGet("{id}")]
+    public async Task<ActionResult<GetQuestionById.Response>> GetQuestionById(long id)
+    {
+        var response = await _mediator.Send(new GetQuestionById.Query { Id = id });
+        return Ok(response);
+    }
+
+    [HttpPost("createOrUpdate")]
+    public async Task<ActionResult> CreateOrUpdateQuestion(CreateUpdateQuestion.Command command)
+    {
+        await _mediator.Send(command);
+        return Ok();
+    }
+
     [HttpDelete("{questionId:long}")]
     public async Task<ActionResult<bool>> DeleteById(long questionId)
     {
         await _mediator.Send(new DeleteQuestion.Command { Id = questionId });
         return Ok();
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<GetAllQuestions.Response>>> GetAll()
+    {
+        var response = await _mediator.Send(new GetAllQuestions.Query());
+        return Ok(response);
     }
 }

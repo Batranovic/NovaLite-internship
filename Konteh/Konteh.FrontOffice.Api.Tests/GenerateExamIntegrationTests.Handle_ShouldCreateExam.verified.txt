@@ -1,0 +1,29 @@
+﻿{
+  StartTime: DateTime_1,
+  ExamQuestions: [
+    {
+      Question: {
+        Text: What is an interface?,
+        Category: General
+      }
+    },
+    {
+      Question: {
+        Text: What is abstraction?,
+        Category: General
+      }
+    },
+    {
+      Question: {
+        Text: What is inheritance?,
+        Category: OOP
+      }
+    },
+    {
+      Question: {
+        Text: What is encapsulation?,
+        Category: OOP
+      }
+    }
+  ]
+}

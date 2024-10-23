@@ -33,4 +33,11 @@ public class QuestionRepository : BaseRepository<Question>, IQuestionRepository
     {
         entity.IsDeleted = true;
     }
+
+    public override async Task<Question?> GetById(long id)
+    {
+        return await _context.Set<Question>().AsQueryable()
+            .Include(q => q.Answers.Where(a => !a.IsDeleted))
+            .FirstOrDefaultAsync(q => q.Id == id);
+    }
 }
