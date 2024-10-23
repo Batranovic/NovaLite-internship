@@ -22,6 +22,7 @@ public class Program
         builder.Services.AddScoped<IRandomGenerator, RandomGenerator>();
         builder.Services.AddScoped<IRepository<Question>, QuestionRepository>();
         builder.Services.AddScoped<IRepository<Exam>, ExamRepository>();
+        builder.Services.AddScoped<IRepository<Candidate>, CandidateRepository>();
 
         var app = builder.Build();
 

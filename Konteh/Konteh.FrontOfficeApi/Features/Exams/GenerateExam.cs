@@ -15,7 +15,10 @@ public static class GenerateExam
     ];
     public class Command : IRequest<Response>
     {
-        public int QuestionPerCategory { get; set; }
+        public required string CandidateName { get; set; }
+        public required string CandidateSurname { get; set; }
+        public required string CandidateEmail { get; set; }
+        public required string CandidateFaculty { get; set; }
     }
     public class AnswerDto
     {
@@ -46,15 +49,26 @@ public static class GenerateExam
         private readonly IRepository<Question> _questionRepository;
         private readonly IRepository<Exam> _examRepository;
         private readonly IRandomGenerator _randomGenerator;
-        public Handler(IRepository<Question> questionRepository, IRepository<Exam> examRepository, IRandomGenerator randomGenerator)
+        private readonly IRepository<Candidate> _candidateRepository;
+        public Handler(IRepository<Question> questionRepository, IRepository<Exam> examRepository, IRandomGenerator randomGenerator, IRepository<Candidate> candidateRepository)
         {
             _questionRepository = questionRepository;
             _examRepository = examRepository;
             _randomGenerator = randomGenerator;
+            _candidateRepository = candidateRepository;
         }
 
         public async Task<Response> Handle(Command request, CancellationToken cancellationToken)
         {
+            var candidate = await HasCandidateTakenATestAsync(request);
+
+            var existingExam = await _examRepository.Search(e => e.Candiate.Email == candidate.Email);
+
+            if (existingExam.Count() != 0)
+            {
+                throw new InvalidOperationException("Candidate has already taken the exam.");
+            }
+
             var questions = await _questionRepository.Search(x => Categories.Contains(x.Category));
             var randomQuestions = new List<ExamQuestion>();
 
@@ -62,13 +76,13 @@ public static class GenerateExam
             {
                 var questionsInCategory = questions.Where(q => q.Category == category).ToList();
 
-                if (questionsInCategory.Count() < request.QuestionPerCategory)
+                if (questionsInCategory.Count() < 2)
                 {
                     throw new InvalidOperationException($"Not enough questions available in category '{category}'.");
                 }
 
                 var selectedQuestions = questionsInCategory.OrderBy(q => _randomGenerator.Next())
-                    .Take(request.QuestionPerCategory)
+                    .Take(2)
                     .Select(x => new ExamQuestion { Question = x });
                 randomQuestions.AddRange(selectedQuestions);
             }
@@ -93,7 +107,7 @@ public static class GenerateExam
             {
                 StartTime = DateTime.UtcNow,
                 ExamQuestions = randomQuestions,
-                Candiate = new Candidate { Email = "candidate@gmail.com", Faculty = "FTN", Name = "N", Surname = "B" }
+                Candiate = candidate
             };
 
             _examRepository.Create(exam);
@@ -105,6 +119,24 @@ public static class GenerateExam
                 StartTime = exam.StartTime,
                 ExamQuestions = examQuestionsDto,
             };
+        }
+
+        private async Task<Candidate> HasCandidateTakenATestAsync(Command request)
+        {
+            var candidate = (await _candidateRepository.Search(x => x.Email == request.CandidateEmail)).FirstOrDefault();
+            if (candidate == null)
+            {
+                candidate = new Candidate
+                {
+                    Name = request.CandidateName,
+                    Surname = request.CandidateSurname,
+                    Email = request.CandidateEmail,
+                    Faculty = request.CandidateFaculty
+                };
+                _candidateRepository.Create(candidate);
+                await _candidateRepository.SaveChanges();
+            }
+            return candidate;
         }
     }
 }

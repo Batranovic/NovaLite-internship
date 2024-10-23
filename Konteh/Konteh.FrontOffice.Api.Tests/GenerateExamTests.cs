@@ -15,6 +15,7 @@ public class GenerateExamTests
     private IRepository<Exam> _examRepository;
     private GenerateExam.Handler _handler;
     private IRandomGenerator _randomGenerator;
+    private IRepository<Candidate> _candidateRepository;
 
     [SetUp]
     public void Setup()
@@ -22,17 +23,17 @@ public class GenerateExamTests
         _questionRepository = Substitute.For<IRepository<Question>>();
         _examRepository = Substitute.For<IRepository<Exam>>();
         _randomGenerator = Substitute.For<IRandomGenerator>();
-        _handler = new GenerateExam.Handler(_questionRepository, _examRepository, _randomGenerator);
+        _candidateRepository = Substitute.For<IRepository<Candidate>>();
+        _handler = new GenerateExam.Handler(_questionRepository, _examRepository, _randomGenerator, _candidateRepository);
     }
 
     [Test]
     public async Task Handle_ShouldThrowException_WhenNotEnoughQuestionsInCategory()
     {
-        var command = new GenerateExam.Command { QuestionPerCategory = 3 };
+        var command = new GenerateExam.Command { CandidateName = "Milica", CandidateSurname = "Milic", CandidateEmail = "milica@gmail.com", CandidateFaculty = "Ftn" };
         var questions = new List<Question>
         {
-            new Question {Id = 1, Category = QuestionCategory.General},
-            new Question {Id = 3, Category = QuestionCategory.General}
+            new Question {Id = 1, Category = QuestionCategory.General}
         };
 
         _questionRepository.Search(Arg.Any<Expression<Func<Question, bool>>>()).Returns(questions);
@@ -47,7 +48,7 @@ public class GenerateExamTests
     [Test]
     public async Task Handle_ShouldCreateExam_WithTwoQuestionsPerCategory()
     {
-        var command = new GenerateExam.Command { QuestionPerCategory = 2 };
+        var command = new GenerateExam.Command { CandidateName = "Milica", CandidateSurname = "Milic", CandidateEmail = "milica@gmail.com", CandidateFaculty = "Ftn" };
         var questions = TestData.GetAllQuestions();
 
         _questionRepository.Search(Arg.Any<Expression<Func<Question, bool>>>()).Returns(questions);

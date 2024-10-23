@@ -6,3 +6,8 @@
     flex-direction: column;
     padding: 4vh;
 }
+.mat-elevation-z8 {
+    width: 80%;
+    border-radius: 25px 25px 0 0;
+    overflow: hidden;
+}

@@ -283,7 +283,10 @@ export interface IGenerateExamAnswerDto {
 }
 
 export class GenerateExamCommand implements IGenerateExamCommand {
-    questionPerCategory?: number;
+    candidateName?: string;
+    candidateSurname?: string;
+    candidateEmail?: string;
+    candidateFaculty?: string;
 
     constructor(data?: IGenerateExamCommand) {
         if (data) {
@@ -296,7 +299,10 @@ export class GenerateExamCommand implements IGenerateExamCommand {
 
     init(_data?: any) {
         if (_data) {
-            this.questionPerCategory = _data["questionPerCategory"];
+            this.candidateName = _data["candidateName"];
+            this.candidateSurname = _data["candidateSurname"];
+            this.candidateEmail = _data["candidateEmail"];
+            this.candidateFaculty = _data["candidateFaculty"];
         }
     }
 
@@ -309,13 +315,19 @@ export class GenerateExamCommand implements IGenerateExamCommand {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["questionPerCategory"] = this.questionPerCategory;
+        data["candidateName"] = this.candidateName;
+        data["candidateSurname"] = this.candidateSurname;
+        data["candidateEmail"] = this.candidateEmail;
+        data["candidateFaculty"] = this.candidateFaculty;
         return data;
     }
 }
 
 export interface IGenerateExamCommand {
-    questionPerCategory?: number;
+    candidateName?: string;
+    candidateSurname?: string;
+    candidateEmail?: string;
+    candidateFaculty?: string;
 }
 
 export class ApiException extends Error {

@@ -10,7 +10,7 @@ public class GenerateExamIntegrationTests : FrontOfficeIntegrationTest
     [Test]
     public async Task Handle_ShouldCreateExam()
     {
-        var command = new GenerateExam.Command { QuestionPerCategory = 2 };
+        var command = new GenerateExam.Command { CandidateName = "Milica", CandidateSurname = "Milic", CandidateEmail = "milica@gmail.com", CandidateFaculty = "Ftn" };
 
         var response = await _httpClient.PostAsJsonAsync("/exams", command);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
