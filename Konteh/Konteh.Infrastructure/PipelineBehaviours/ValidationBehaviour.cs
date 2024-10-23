@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Konteh.Infrastructure.PipelineBehaviours;
 public class ValidationBehaviour<TRequst, TResponse> : IPipelineBehavior<TRequst, TResponse>
-    where TRequst : IRequest
+    where TRequst : IRequest<TResponse>
 {
     private readonly IEnumerable<IValidator<TRequst>> _validators;
 

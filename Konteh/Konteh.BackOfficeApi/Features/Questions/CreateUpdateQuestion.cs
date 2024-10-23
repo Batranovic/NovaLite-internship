@@ -1,4 +1,5 @@
-﻿using Konteh.Domain;
+﻿using FluentValidation;
+using Konteh.Domain;
 using Konteh.Domain.Enumerations;
 using Konteh.Infrastructure.Repositories;
 using MediatR;
@@ -27,14 +28,17 @@ public static class CreateUpdateQuestion
     public class RequestHandler : IRequestHandler<Command, Unit>
     {
         private readonly IRepository<Question> _repository;
+        private readonly IValidator<Command> _validator;
 
-        public RequestHandler(IRepository<Question> repository)
+        public RequestHandler(IRepository<Question> repository, IValidator<Command> validator)
         {
             _repository = repository;
+            _validator = validator;
         }
 
         public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
         {
+            _validator.ValidateAndThrow(request);
             if (request.Id == null)
             {
                 CreateQuestion(request);

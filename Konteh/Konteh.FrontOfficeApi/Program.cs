@@ -1,7 +1,6 @@
 using Konteh.Domain;
 using Konteh.FrontOfficeApi.Features.Exams.RandomGenerator;
 using Konteh.Infrastructure;
-using Konteh.Infrastructure.PipelineBehaviours;
 using Konteh.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
@@ -16,12 +15,7 @@ public class Program
 
 
         builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
-        builder.Services.AddMediatR(cfg =>
-        {
-            cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-
-            cfg.AddOpenBehavior(typeof(ValidationBehaviour<,>));
-        });
+        builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
         builder.Services.AddScoped<IRandomGenerator, RandomGenerator>();
         builder.Services.AddScoped<IRepository<Question>, QuestionRepository>();
         builder.Services.AddScoped<IRepository<Exam>, ExamRepository>();
