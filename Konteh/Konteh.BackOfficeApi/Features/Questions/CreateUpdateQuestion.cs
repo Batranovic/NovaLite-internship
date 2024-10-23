@@ -7,7 +7,7 @@ namespace Konteh.BackOfficeApi.Features.Questions;
 
 public static class CreateUpdateQuestion
 {
-    public class Command : IRequest
+    public class Command : IRequest<Unit>
     {
         public long? Id { get; set; } = null;
         public string Text { get; set; } = string.Empty;
@@ -24,7 +24,7 @@ public static class CreateUpdateQuestion
         public bool IsDeleted { get; set; }
     }
 
-    public class RequestHandler : IRequestHandler<Command>
+    public class RequestHandler : IRequestHandler<Command, Unit>
     {
         private readonly IRepository<Question> _repository;
 
@@ -33,7 +33,7 @@ public static class CreateUpdateQuestion
             _repository = repository;
         }
 
-        public async Task Handle(Command request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
         {
             if (request.Id == null)
             {
@@ -45,6 +45,7 @@ public static class CreateUpdateQuestion
             }
 
             await _repository.SaveChanges();
+            return Unit.Value;
         }
 
         private async Task UpdateQuestion(Command request)

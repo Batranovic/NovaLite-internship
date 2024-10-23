@@ -18,7 +18,6 @@ public class Program
 
         builder.Services.AddControllers();
         builder.Services.AddOpenApiDocument(o => o.SchemaSettings.SchemaNameGenerator = new CustomSwaggerSchemaNameGenerator());
-
         builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
         builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
         builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
@@ -27,6 +26,7 @@ public class Program
 
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
+
 
         builder.Services.AddCors(options =>
         {
