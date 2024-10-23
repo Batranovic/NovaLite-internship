@@ -30,11 +30,11 @@ public class QuestionsController : ControllerBase
         return Ok(response);
     }
 
-    [HttpPut("createOrUpdate")]
-    public async Task<ActionResult<CreateUpdateQuestion.Response>> CreateOrUpdateQuestion(CreateUpdateQuestion.Command command)
+    [HttpPost("createOrUpdate")]
+    public async Task<ActionResult> CreateOrUpdateQuestion(CreateUpdateQuestion.Command command)
     {
-        var response = await _mediator.Send(command);
-        return Ok(response);
+        await _mediator.Send(command);
+        return Ok();
     }
 
     [HttpDelete("{questionId:long}")]
