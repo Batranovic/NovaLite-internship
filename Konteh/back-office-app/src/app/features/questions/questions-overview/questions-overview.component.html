@@ -27,7 +27,7 @@
             <mat-icon>more_vert</mat-icon>
           </button>
           <mat-menu #menu="matMenu">
-            <button mat-menu-item (click)="editQuestion(question)" >Edit</button>
+            <button mat-menu-item (click)="editQuestion(question.id)" >Edit</button>
             <button class="delete-button" mat-menu-item (click)="deleteQuestion(question.id)">Delete</button>
           </mat-menu>
         </td>

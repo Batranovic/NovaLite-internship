@@ -26,6 +26,18 @@ public class Program
 
         var app = builder.Build();
 
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("MyCorsPolicy", corsBulder =>
+            {
+                corsBulder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials();
+            });
+        });
+
+
         // Configure the HTTP request pipeline.
         app.UseOpenApi();
         app.UseSwaggerUi();

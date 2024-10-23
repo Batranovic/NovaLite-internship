@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../layout/confirm-dialog/confirm-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { filter } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-questions-overview',
@@ -20,7 +21,7 @@ export class QuestionsOverviewComponent implements OnInit {
   itemCount: number = 5;
   private filteredText: string | null = "";
 
-  constructor(private snackBar: MatSnackBar, private questionService: QuestionsClient, public dialog: MatDialog) { }
+  constructor(private snackBar: MatSnackBar, private questionService: QuestionsClient, public dialog: MatDialog, private router: Router) { }
 
   ngOnInit() {
     this.fetchQuestions();
@@ -33,8 +34,8 @@ export class QuestionsOverviewComponent implements OnInit {
     });
   }
 
-  editQuestion(question: any) {
-    // TO DO: redirect to edit page
+  editQuestion(id: number): void {
+    this.router.navigate(['/edit-question', id])
   }
 
   deleteQuestion(id: number) {
@@ -84,4 +85,5 @@ export class QuestionsOverviewComponent implements OnInit {
       horizontalPosition: 'center',
     });
   }
+
 }
