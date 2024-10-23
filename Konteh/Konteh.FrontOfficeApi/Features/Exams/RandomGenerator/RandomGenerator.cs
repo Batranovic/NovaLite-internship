@@ -1,12 +1,11 @@
-﻿namespace Konteh.FrontOfficeApi.Features.Exams.RandomGenerator
-{
-    public class RandomGenerator : IRandomGenerator
-    {
-        private readonly Random _random = new Random();
+﻿namespace Konteh.FrontOfficeApi.Features.Exams.RandomGenerator;
 
-        public int Next()
-        {
-            return _random.Next();
-        }
+public class RandomGenerator : IRandomGenerator
+{
+    private readonly Random _random = new Random();
+
+    public int Next()
+    {
+        return _random.Next();
     }
 }

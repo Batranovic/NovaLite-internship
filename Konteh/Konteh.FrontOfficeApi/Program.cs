@@ -1,4 +1,3 @@
-
 using Konteh.Domain;
 using Konteh.FrontOfficeApi.Features.Exams.RandomGenerator;
 using Konteh.Infrastructure;
@@ -6,47 +5,48 @@ using Konteh.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
-var builder = WebApplication.CreateBuilder(args);
+namespace Konteh.FrontOfficeApi;
 
-// Add services to the container.
-
-builder.Services.AddControllers();
-builder.Services.AddOpenApiDocument(o => o.SchemaSettings.SchemaNameGenerator = new CustomSwaggerSchemaNameGenerator());
-builder.Services.AddDbContext<AppDbContext>(o => o.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-builder.Services.AddCors(options =>
+public class Program
 {
-    options.AddPolicy("MyCorsPolicy", corsBulder =>
+    private static void Main(string[] args)
     {
-        corsBulder.AllowAnyOrigin()
-               .AllowAnyMethod()
-               .AllowAnyHeader()
-               .AllowCredentials();
-    });
-});
+        var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
-builder.Services.AddScoped<IRandomGenerator, RandomGenerator>();
-builder.Services.AddScoped<IRepository<Question>, QuestionRepository>();
-builder.Services.AddScoped<IRepository<Exam>, ExamRepository>();
+    
+        builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+        builder.Services.AddScoped<IRandomGenerator, RandomGenerator>();
+        builder.Services.AddScoped<IRepository<Question>, QuestionRepository>();
+        builder.Services.AddScoped<IRepository<Exam>, ExamRepository>();
+        // Add services to the container.
 
-var app = builder.Build();
+        builder.Services.AddControllers();
+        builder.Services.AddOpenApiDocument(o => o.SchemaSettings.SchemaNameGenerator = new CustomSwaggerSchemaNameGenerator());
+        builder.Services.AddDbContext<AppDbContext>(o => o.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Configure the HTTP request pipeline.
+        var app = builder.Build();
 
-app.UseOpenApi();
-
-app.UseSwaggerUi();
-
-app.UseHttpsRedirection();
-
-app.UseCors("MyCorsPolicy");
-
-app.UseAuthorization();
-
-
-
-app.MapControllers();
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("MyCorsPolicy", corsBulder =>
+            {
+                corsBulder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials();
+            });
+        });
 
 
-app.Run();
+        // Configure the HTTP request pipeline.
+        app.UseOpenApi();
+        app.UseSwaggerUi();
+        app.UseHttpsRedirection();
+
+        app.UseAuthorization();
+
+        app.MapControllers();
+
+        app.Run();
+    }
+}

@@ -43,4 +43,11 @@ public class QuestionsController : ControllerBase
         await _mediator.Send(new DeleteQuestion.Command { Id = questionId });
         return Ok();
     }
+
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<GetAllQuestions.Response>>> GetAll()
+    {
+        var response = await _mediator.Send(new GetAllQuestions.Query());
+        return Ok(response);
+    }
 }

@@ -1,0 +1,22 @@
+﻿[
+  {
+    Text: What is an interface?,
+    Category: General
+  },
+  {
+    Text: What is abstraction?,
+    Category: General
+  },
+  {
+    Text: What is inheritance?,
+    Category: OOP
+  },
+  {
+    Text: What is the purpose of a constructor?,
+    Category: General
+  },
+  {
+    Text: What is encapsulation?,
+    Category: OOP
+  }
+]
