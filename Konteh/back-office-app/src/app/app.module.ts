@@ -2,6 +2,21 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { CreateQuestionComponent } from './features/questions/create-question/create-question.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatOptionModule } from '@angular/material/core';
+import { RouterOutlet } from '@angular/router';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatListModule } from '@angular/material/list';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { QuestionsModule } from './features/questions/questions.module';
 import { MSAL_INSTANCE, MSAL_INTERCEPTOR_CONFIG, MsalInterceptor, MsalInterceptorConfiguration, MsalModule, MsalService } from '@azure/msal-angular'
 import { InteractionType, IPublicClientApplication, PublicClientApplication } from '@azure/msal-browser';
@@ -32,15 +47,30 @@ export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
     AppComponent
   ],
   imports: [
+    BrowserAnimationsModule,
     BrowserModule,
     AppRoutingModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatOptionModule,
+    MatButtonModule,
+    ReactiveFormsModule,
+    HttpClientModule,
+    RouterOutlet,
+    MatRadioModule,
+    MatListModule,
+    MatCheckboxModule,
+    QuestionsModule,
+    FormsModule,
+    MatMenuModule,
+    MatIconModule,
     MsalModule,
     LayoutModule,
     FeaturesModule,
-    HttpClientModule,
-    QuestionsModule
   ],
   providers: [
+    provideAnimationsAsync(), HttpClientModule,
     {
       provide: MSAL_INSTANCE,
       useFactory: MSALInstanceFactory
