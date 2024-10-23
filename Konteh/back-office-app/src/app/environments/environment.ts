@@ -15,5 +15,6 @@ export const environment = {
             ]
           ]
         ])
-      }
-  };
+    },
+    signalrHubUrl: 'https://localhost:7184/examhub',
+};

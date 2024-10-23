@@ -1,3 +1,4 @@
+using Konteh.BackOfficeApi.Features.Notifications.Hubs;
 using Konteh.Domain;
 using Konteh.Infrastructure;
 using Konteh.Infrastructure.Repositories;
@@ -16,6 +17,8 @@ internal class Program
         // Add services to the container
         builder.Services.AddControllers();
         builder.Services.AddOpenApiDocument(o => o.SchemaSettings.SchemaNameGenerator = new CustomSwaggerSchemaNameGenerator());
+
+        builder.Services.AddSignalR();
 
         builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
         builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
@@ -71,6 +74,9 @@ internal class Program
         app.UseCors("MyCorsPolicy");
         app.UseAuthentication();
         app.UseAuthorization();
+
+        app.MapHub<ExamHub>("/examhub");
+
 
         app.UseCors("MyCorsPolicy");
 

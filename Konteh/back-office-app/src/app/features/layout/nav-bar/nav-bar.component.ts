@@ -47,4 +47,9 @@ export class NavBarComponent implements OnInit{
     const account = this.msalService.instance.getActiveAccount();
     return account ? account.username : null;
   }
+
+  redirectToExamOverview() {
+    this.router.navigate(["exam-notifications"]);
+
+  }
 }
