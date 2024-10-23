@@ -6,7 +6,6 @@ import {NotificationsService} from '../../../infrastructure/notifications.servic
 @Component({
   selector: 'app-exam-notifications',
   templateUrl: './exam-notifications.component.html',
-  styleUrl: './exam-notifications.component.css'
 })
 export class ExamNotificationsComponent {
   receivedMessage: string = "test";
