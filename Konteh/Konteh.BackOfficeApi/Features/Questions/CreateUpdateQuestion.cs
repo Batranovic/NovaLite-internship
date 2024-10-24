@@ -1,5 +1,6 @@
 ﻿using Konteh.Domain;
 using Konteh.Domain.Enumerations;
+using Konteh.Infrastructure.ExceptionHandlers.Exceptions;
 using Konteh.Infrastructure.Repositories;
 using MediatR;
 
@@ -7,7 +8,7 @@ namespace Konteh.BackOfficeApi.Features.Questions;
 
 public static class CreateUpdateQuestion
 {
-    public class Command : IRequest
+    public class Command : IRequest<Unit>
     {
         public long? Id { get; set; } = null;
         public string Text { get; set; } = string.Empty;
@@ -24,7 +25,7 @@ public static class CreateUpdateQuestion
         public bool IsDeleted { get; set; }
     }
 
-    public class RequestHandler : IRequestHandler<Command>
+    public class RequestHandler : IRequestHandler<Command, Unit>
     {
         private readonly IRepository<Question> _repository;
 
@@ -33,7 +34,7 @@ public static class CreateUpdateQuestion
             _repository = repository;
         }
 
-        public async Task Handle(Command request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
         {
             if (request.Id == null)
             {
@@ -45,12 +46,12 @@ public static class CreateUpdateQuestion
             }
 
             await _repository.SaveChanges();
+            return Unit.Value;
         }
 
         private async Task UpdateQuestion(Command request)
         {
-            var existingQuestion = await _repository.GetById(request.Id!.Value)
-                ?? throw new KeyNotFoundException($"Question with ID {request.Id} not found.");
+            var existingQuestion = await _repository.GetById(request.Id!.Value) ?? throw new NotFoundException();
             existingQuestion.Text = request.Text;
             existingQuestion.Category = request.Category;
             existingQuestion.Type = request.Type;
@@ -71,8 +72,7 @@ public static class CreateUpdateQuestion
                     existingQuestion.Answers.Add(new Answer
                     {
                         Text = answer.Text,
-                        IsCorrect = answer.IsCorrect,
-                        IsDeleted = answer.IsDeleted
+                        IsCorrect = answer.IsCorrect
                     });
                 }
             }

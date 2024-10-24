@@ -24,6 +24,7 @@ import { LayoutModule } from "./features/layout/layout.module";
 import { FeaturesModule } from './features/features.module';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { environment } from './environments/environment';
+import { FormErrorsComponent } from './shared/form-errors.component';
 
 export function MSALInstanceFactory(): IPublicClientApplication {
   return new PublicClientApplication({
@@ -68,6 +69,7 @@ export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
     MsalModule,
     LayoutModule,
     FeaturesModule,
+    FormErrorsComponent
   ],
   providers: [
     provideAnimationsAsync(), HttpClientModule,
