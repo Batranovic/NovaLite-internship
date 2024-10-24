@@ -18,7 +18,6 @@ namespace Konteh.BackOfficeApi.Features.Notifications.Consumers
 
         public async Task Consume(ConsumeContext<Candidate> context)
         {
-            _logger.LogInformation("Candidate Name: " + context.Message.Name + " Faculty: " + context.Message.Faculty);
             await _examHubContext.Clients.All.SendAsync("ReceiveMessage", context.Message.Name);
         }
     }

@@ -23,12 +23,10 @@ export class NotificationsService {
       this.hubConnection
         .start()
         .then(() => {
-          console.log('Connection established with SignalR hub');
           observer.next();
           observer.complete();
         })
         .catch((error) => {
-          console.error('Error connecting to SignalR hub:', error);
           observer.error(error);
         });
     });

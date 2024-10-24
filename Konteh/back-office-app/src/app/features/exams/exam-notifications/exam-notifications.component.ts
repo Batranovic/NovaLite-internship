@@ -16,7 +16,6 @@ export class ExamNotificationsComponent {
     this.signalRService.startConnection().subscribe(() => {
       this.signalRService.receiveMessage().subscribe((message) => {
         this.receivedMessage = message;
-        console.log(message);
       });
     });
   }

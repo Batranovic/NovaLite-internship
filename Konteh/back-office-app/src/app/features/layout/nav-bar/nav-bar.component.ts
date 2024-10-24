@@ -50,7 +50,6 @@ export class NavBarComponent implements OnInit{
 
   redirectToExamOverview() {
     this.router.navigate(["exam-notifications"]);
-
   }
 
   redirectToCreateQuestion() {
