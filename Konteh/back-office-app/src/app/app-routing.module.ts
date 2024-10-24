@@ -4,13 +4,15 @@ import { QuestionsOverviewComponent } from './features/questions/questions-overv
 import { HomeComponent } from './features/home/home.component';
 import { CreateQuestionComponent } from './features/questions/create-question/create-question.component';
 import { AuthGuard } from './authorization/auth.guard';
+import {ExamNotificationsComponent} from './features/exams/exam-notifications/exam-notifications.component';
 
 const routes: Routes = [
-  { path: '', component: HomeComponent },
-  { path: 'questions-overview', component: QuestionsOverviewComponent, canActivate: [AuthGuard] },
+  { path: '', component: HomeComponent},
+  { path: 'questions-overview', component: QuestionsOverviewComponent, canActivate:[AuthGuard]},
+  { path: 'exam-notifications', component: ExamNotificationsComponent, canActivate:[AuthGuard]},
   { path: 'create-question', component: CreateQuestionComponent, canActivate: [AuthGuard] },
   { path: 'edit-question/:id', component: CreateQuestionComponent, canActivate: [AuthGuard] }
-]
+];
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]

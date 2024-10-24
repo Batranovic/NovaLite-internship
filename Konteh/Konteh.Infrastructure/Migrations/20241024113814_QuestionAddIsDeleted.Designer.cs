@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Konteh.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241022130924_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20241024113814_QuestionAddIsDeleted")]
+    partial class QuestionAddIsDeleted
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,6 +37,9 @@ namespace Konteh.Infrastructure.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<bool>("IsCorrect")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
                     b.Property<long?>("QuestionId")

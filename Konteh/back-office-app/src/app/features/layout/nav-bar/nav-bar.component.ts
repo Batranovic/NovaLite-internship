@@ -48,6 +48,10 @@ export class NavBarComponent implements OnInit{
     return account ? account.username : null;
   }
 
+  redirectToExamOverview() {
+    this.router.navigate(["exam-notifications"]);
+  }
+
   redirectToCreateQuestion() {
     this.router.navigate(["create-question"]);
   }
