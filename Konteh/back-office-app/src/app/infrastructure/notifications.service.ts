@@ -1,40 +1,34 @@
-import { Injectable } from '@angular/core';
+import {EventEmitter, Injectable} from '@angular/core';
 import * as signalR from '@microsoft/signalr';
-import { Observable } from 'rxjs';
-import { environment } from '../environments/environment';
+import {HttpTransportType} from '@microsoft/signalr';
+import {environment} from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NotificationsService {
   private hubConnection: signalR.HubConnection;
+  public messageReceived: EventEmitter<string> = new EventEmitter<string>();
 
   constructor() {
     this.hubConnection = new signalR.HubConnectionBuilder()
       .withUrl(environment.hubUrl, {
-          skipNegotiation: true
-        }).build();
+        skipNegotiation: true,
+        transport: HttpTransportType.WebSockets
+      }).build();
   }
 
-  startConnection(): Observable<void> {
-    return new Observable<void>((observer) => {
-      this.hubConnection
-        .start()
-        .then(() => {
-          observer.next();
-          observer.complete();
-        })
-        .catch((error) => {
-          observer.error(error);
-        });
-    });
+  startConnection(): Promise<void> {
+    return this.hubConnection.start()
+      .then(() => {
+        this.setupListeners();
+      })
+      .catch();
   }
 
-  receiveMessage(): Observable<string> {
-    return new Observable<string>((observer) => {
-      this.hubConnection.on('ReceiveMessage', (message: string) => {
-        observer.next(message);
-      });
+  private setupListeners(): void {
+    this.hubConnection.on('ReceiveMessage', (message: string) => {
+      this.messageReceived.emit(message);
     });
   }
 }

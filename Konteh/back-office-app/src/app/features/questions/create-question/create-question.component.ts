@@ -78,10 +78,7 @@ export class CreateQuestionComponent implements OnInit {
       answers: answersToSubmit
     });
     this.questionClient.createOrUpdateQuestion(command).subscribe({
-      next: _ => this.router.navigate(['/questions-overview']),
-      error: (err) => {
-        console.error('Error creating question', err);
-      }
+      next: _ => this.router.navigate(['/questions-overview'])
     });
   }
 
