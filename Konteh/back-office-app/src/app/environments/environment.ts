@@ -16,5 +16,5 @@ export const environment = {
           ]
         ])
     },
-    signalrHubUrl: 'https://localhost:7184/examhub',
+    hubUrl: 'https://localhost:7184/examhub',
 };

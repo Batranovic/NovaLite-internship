@@ -10,17 +10,13 @@ import {NotificationsService} from '../../../infrastructure/notifications.servic
 export class ExamNotificationsComponent {
   receivedMessage: string = "test";
 
-  constructor(private signalRService: NotificationsService) {}
+  constructor(private notificationsService: NotificationsService) {}
 
   ngOnInit(): void {
-    this.signalRService.startConnection().subscribe(() => {
-      this.signalRService.receiveMessage().subscribe((message) => {
+    this.notificationsService.startConnection().subscribe(() => {
+      this.notificationsService.receiveMessage().subscribe((message) => {
         this.receivedMessage = message;
       });
     });
-  }
-
-  sendMessage(message: string): void {
-    this.signalRService.sendMessage(message);
   }
 }

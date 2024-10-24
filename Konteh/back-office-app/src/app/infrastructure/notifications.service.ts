@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { Observable } from 'rxjs';
-import {environment} from '../environments/environment';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -11,11 +11,9 @@ export class NotificationsService {
 
   constructor() {
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl(environment.signalrHubUrl, {
-        skipNegotiation: true,
-        transport: signalR.HttpTransportType.WebSockets
-      })
-      .build();
+      .withUrl(environment.hubUrl, {
+          skipNegotiation: true
+        }).build();
   }
 
   startConnection(): Observable<void> {
@@ -38,9 +36,5 @@ export class NotificationsService {
         observer.next(message);
       });
     });
-  }
-
-  sendMessage(message: string): void {
-    this.hubConnection.invoke('SendMessage', message);
   }
 }
