@@ -24,6 +24,8 @@ public class Program
         builder.Services.AddScoped<IRepository<Exam>, ExamRepository>();
         builder.Services.AddScoped<IRepository<Candidate>, CandidateRepository>();
         builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
+        builder.Services.AddScoped<IRepository<ExamQuestion>, ExamQuestionRepository>();
+        builder.Services.AddScoped<IRepository<Answer>, AnswerRepository>();
 
 
 

@@ -15,5 +15,6 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<Answer> Answers { get; set; }
     public virtual DbSet<Exam> Exams { get; set; }
     public virtual DbSet<ExamQuestion> ExamQuestions { get; set; }
+    public virtual DbSet<SubmittedAnswer> SubmittedAnswers { get; set; }
 
 }

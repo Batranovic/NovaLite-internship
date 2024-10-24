@@ -1,5 +1,5 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Authorization;
+﻿using Konteh.FrontOfficeApi.Features.Exams.RandomGenerator;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Konteh.FrontOfficeApi.Features.Exams;
@@ -21,4 +21,13 @@ public class ExamController : Controller
         var response = await _mediator.Send(command);
         return Ok(response);
     }
+
+    [HttpPut]
+    public async Task<ActionResult> ExamSubmission(ExamSubmission.Command command)
+    {
+        await _mediator.Send(command);
+        return Ok();
+    }
+
+
 }
