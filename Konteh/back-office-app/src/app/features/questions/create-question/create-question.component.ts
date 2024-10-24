@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { DeleteAnswerDialogComponent } from '../delete-answer-dialog/delete-answer-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { filter } from 'rxjs';
+import { setServerSideValidationErrors } from '../../../shared/validation';
 
 @Component({
   selector: 'app-create-question',
@@ -34,34 +35,9 @@ export class CreateQuestionComponent implements OnInit {
         this.getQuestionById(this.questionId);
       }
     })
-    this.answersArray.valueChanges.subscribe(() => {
-      this.checkForMultipleCorrectAnswers();
-    });
-  }
-
-  checkForMultipleCorrectAnswers() {
-    const correctAnswersCount = this.answersArray.controls.filter(control => control.value.isCorrect && !control.value.isDeleted).length;
-    if (correctAnswersCount > 1 && this.questionForm.get('type')?.value === 1) {
-      this.questionForm.get('type')?.setErrors({ multipleCorrect: true });
-    } else {
-      this.questionForm.get('type')?.setErrors(null);
-    }
-    this.cdr.detectChanges();
   }
 
   onSubmit() {
-    this.checkForMultipleCorrectAnswers();
-    if (this.questionForm.valid) {
-      const hasCorrectAnswer = this.answersArray.controls.some(control => control.value.isCorrect);
-      if (!hasCorrectAnswer) {
-        this.snackBar.open('At least one correct answer is required', 'Ok', { panelClass: 'red-snackbar' });
-        return;
-      }
-      this.createOrUpdateQuestion();
-    }
-  }
-
-  private createOrUpdateQuestion() {
     const answersToSubmit: CreateUpdateQuestionAnswerDto[] = this.answersArray.controls.map(control => {
       return new CreateUpdateQuestionAnswerDto({
         id: control.value.id,
@@ -78,7 +54,8 @@ export class CreateQuestionComponent implements OnInit {
       answers: answersToSubmit
     });
     this.questionClient.createOrUpdateQuestion(command).subscribe({
-      next: _ => this.router.navigate(['/questions-overview'])
+      next: _ => this.router.navigate(['/questions-overview']),
+      error: errors => setServerSideValidationErrors(errors, this.questionForm)
     });
   }
 
@@ -108,10 +85,6 @@ export class CreateQuestionComponent implements OnInit {
         this.cdr.detectChanges();
       });
   }
-
-  errorMessage = {
-    multipleCorrect: 'You can only select one correct answer for RadioButton question type.',
-  };
 
   getCategoryText(categoryId: any): string {
     return QuestionCategory[categoryId] || 'Unknown Category';

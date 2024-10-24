@@ -9,6 +9,8 @@
             <mat-label>Answer Text</mat-label>
             <textarea matInput formControlName="text" required></textarea>
         </mat-form-field>
-        <mat-error *ngIf="answerForm.get('text')?.hasError('required') && (answerForm.get('text')?.dirty || answerForm.get('text')?.touched)">This field is required.</mat-error>
+        <mat-error *ngIf="answerForm.get('text')?.hasError('formServer')">
+            {{ answerForm.get('text')?.getError('formServer') }}
+        </mat-error>
     </form>
 </div>

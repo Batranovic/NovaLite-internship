@@ -60,6 +60,7 @@ mat-list-item {
 
 .question-form-button{
     margin-top: 10px;
+    margin-bottom: 10px;
     margin-left: 500px;
 }
 
@@ -83,4 +84,8 @@ mat-error{
     bottom: 60px; 
     transform: translateY(120%); 
     position: relative;
+}
+
+.add-answer-button{
+    margin-top: 50px;
 }
