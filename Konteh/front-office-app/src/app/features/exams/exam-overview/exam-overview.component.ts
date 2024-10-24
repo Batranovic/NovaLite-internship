@@ -10,12 +10,32 @@ import { Router } from '@angular/router';
 })
 export class ExamOverviewComponent {
   QuestionType = QuestionType; 
-  examResponse: GenerateExamResponse | undefined;
+  examResponse: Partial<GenerateExamResponse> = {examQuestions: []};
+  currentQuestionIndex = 0;
 
   constructor(private router: Router) {
     const navigation = this.router.getCurrentNavigation();
     if (navigation?.extras.state) {
       this.examResponse = navigation.extras.state['examResponse'];
+    }
+  }
+
+  get isFirstQuestion(): boolean {
+    return this.currentQuestionIndex === 0;
+  }
+
+  get isLastQuestion(): boolean {
+    return !!this.examResponse?.examQuestions && this.currentQuestionIndex === (this.examResponse?.examQuestions?.length ?? 0) - 1;
+  }
+  nextQuestion() {
+    if (!this.isLastQuestion){
+      this.currentQuestionIndex++;
+    }
+  }
+
+  previousQuestion(){
+    if(!this.isFirstQuestion){
+      this.currentQuestionIndex--;
     }
   }
 }

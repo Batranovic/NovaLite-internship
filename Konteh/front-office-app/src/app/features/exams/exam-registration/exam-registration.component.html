@@ -1,24 +1,27 @@
 <div class="container">
     <div class="form-container">
-        <h2 class="form-title">Take an exam</h2>
+        <h2 class="form-title">Register for NovaLite Quiz</h2>
         <form [formGroup]="examForm" (ngSubmit)="onSubmit()">
-            <mat-form-field>
+            <mat-form-field appearance="outline">
                 <mat-label>Name</mat-label>
-                <textarea matInput formControlName="candidateName"></textarea>
+                <input matInput formControlName="candidateName" placeholder="Enter your first name">
             </mat-form-field>
-            <mat-form-field>
+            <mat-form-field appearance="outline">
                 <mat-label>Surname</mat-label>
-                <textarea matInput formControlName="candidateSurname"></textarea>
+                <input matInput formControlName="candidateSurname" placeholder="Enter your last name">
             </mat-form-field>
-            <mat-form-field>
+            <mat-form-field appearance="outline">
                 <mat-label>Email</mat-label>
-                <textarea matInput formControlName="candidateEmail"></textarea>
+                <input matInput formControlName="candidateEmail" type="email" placeholder="Enter your email">
             </mat-form-field>
-            <mat-form-field>
+            <mat-form-field appearance="outline">
                 <mat-label>Faculty</mat-label>
-                <textarea matInput formControlName="candidateFaculty"></textarea>
+                <input matInput formControlName="candidateFaculty" placeholder="Enter your faculty name">
             </mat-form-field>
-            <button class="exam-form-button" mat-flat-button color="primary" type="submit">Submit</button>
+            <div *ngIf="errorMessage" class="error-message">
+                {{ errorMessage }}
+              </div>
+            <button class="exam-form-button" mat-flat-button type="submit">Submit</button>
         </form>
     </div>
 </div>

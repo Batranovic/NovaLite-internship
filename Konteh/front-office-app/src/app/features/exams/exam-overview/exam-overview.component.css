@@ -1,8 +1,10 @@
 .container {
-    min-height: 950px;
-    padding: 20px;
-    background: linear-gradient(135deg, #f9f76a, #f1cc38, #e4a36b); /* Balayage effect using yellows */
-
+    min-height: 640px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f9f9f9; 
+    background: linear-gradient(135deg, #f9f76a, #f1cc38, #e4a36b);
 }
 
 .form-container {
@@ -11,41 +13,27 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-    max-width: 600px; 
-    margin: 0 auto; 
-    margin-top: 20px;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    background-color: #ffffff; 
+    max-width: 650px;
+    margin: 10px auto;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); 
+    background-color: #fff;
 }
-
 .exam-title {
-    font-size: 24px;
+    font-size: 27px;
     margin-bottom: 10px;
     color: #333;
 }
 
-.exam-instructions {
-    font-size: 16px;
-    color: #666;
-    margin-bottom: 20px;
-}
-
-.question-container {
-    margin-bottom: 20px;
-    padding: 15px;
-    border-radius: 5px;
-    background-color: #f8f8e8fd
-
-}
-
 .question-text {
+    font-size: 23px;
     color: #333;
     margin-bottom: 10px;
 }
 
 .answer-list {
+    margin-top: 30px;
     list-style-type: none;
     padding: 0;
 }
@@ -66,13 +54,55 @@
     padding: 10px 20px;
     font-size: 16px;
     color: #fff;
-    background-color: #007bff; /* Bootstrap primary color */
+    background-color: #f9f76a; 
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
 }
 
-.submit-button:hover {
-    background-color: #0056b3; /* Darker shade for hover effect */
+
+.logo {
+    max-width: 100%; 
+    height: auto; 
 }
+
+
+.exam-form-button {
+    width: 30%;
+    margin-top: 20px;
+    padding: 12px 0;
+    background-color: #e4a36b !important; 
+    color: #fff;
+    font-size: 16px;
+    color: #000 !important;
+}
+
+.exam-form-button:hover {
+    background-color: #f9f76a !important; 
+}
+
+.pagination-controls {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px; 
+}
+
+.arrow-button {
+  background: none; 
+  border: none; 
+  cursor: pointer; 
+  font-size: 24px; 
+  color: #e4a36b; 
+  transition: color 0.3s; 
+}
+
+.arrow-button:disabled {
+  color: #ccc; 
+  cursor: not-allowed; 
+}
+
+.arrow-button:hover:not(:disabled) {
+  color: #f9f76a; 
+}
+

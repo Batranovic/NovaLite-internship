@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ExamClient, GenerateExamCommand, GenerateExamResponse } from '../../../api/api-reference';
 import { Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-exam-registration',
@@ -9,7 +10,7 @@ import { Router } from '@angular/router';
   styleUrl: './exam-registration.component.css'
 })
 export class ExamRegistrationComponent {
-
+  errorMessage: string | null = null;
   constructor(private examClient: ExamClient, private router: Router){}
   examForm = new FormGroup({
     candidateName: new FormControl('', Validators.required),
@@ -26,10 +27,19 @@ export class ExamRegistrationComponent {
         candidateFaculty: this.examForm.value.candidateFaculty ?? ''  
       });
   
+     
       this.examClient.generateExam(command).subscribe(
         (response: GenerateExamResponse) => {
-          this.router.navigate(['exam-overview'], {state: {examResponse: response}})
-        }, 
+          this.router.navigate(['exam-overview'], { state: { examResponse: response } });
+        },
+        (error: HttpErrorResponse) => {
+          
+          if (error.status === 400 || error.status === 500) {
+            this.errorMessage = "An error occurred while processing your request.";
+          } else {
+            this.errorMessage = "An unexpected error occurred.";
+          }
+        }
       );
     } 
   }

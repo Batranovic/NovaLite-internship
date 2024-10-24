@@ -64,13 +64,6 @@ public static class GenerateExam
         {
             var candidate = await HasCandidateTakenATestAsync(request);
 
-            var existingExam = await _examRepository.Search(e => e.Candiate.Email == candidate.Email);
-
-            if (existingExam.Count() != 0)
-            {
-                throw new InvalidOperationException("Candidate has already taken the exam.");
-            }
-
             var questions = await _questionRepository.SearchIQueryable(x => Categories.Contains(x.Category)).Include(q => q.Answers).ToListAsync();
             var randomQuestions = new List<ExamQuestion>();
 
@@ -140,6 +133,13 @@ public static class GenerateExam
                 };
                 _candidateRepository.Create(candidate);
                 await _candidateRepository.SaveChanges();
+            }
+
+            var existingExam = await _examRepository.Search(e => e.Candiate.Email == candidate.Email);
+
+            if (existingExam.Any())
+            {
+                throw new InvalidOperationException("Candidate has already taken the exam.");
             }
             return candidate;
         }
