@@ -5,7 +5,7 @@
 namespace Konteh.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class migration01 : Migration
+    public partial class QuestionAddIsDeleted : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
