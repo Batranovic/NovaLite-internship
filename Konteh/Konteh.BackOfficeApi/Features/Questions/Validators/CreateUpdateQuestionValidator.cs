@@ -21,8 +21,16 @@ public class CreateUpdateQuestionValidator : AbstractValidator<Command>
             .WithMessage("Question type must be valid value.");
 
         RuleFor(x => x)
-            .Must(command => ValidateCorrectAnswers(command.Type, command.Answers, out var errorMessage))
-            .WithMessage(command => GetErrorMessage(command.Type, command.Answers));
+            .Must(command => ValidateCorrectAnswers(command.Type, command.Answers))
+            .WithMessage(command =>
+            {
+                if (command.Type == QuestionType.RadioButton)
+                {
+                    return "RadioButton question must have one correct answer.";
+                }
+
+                return "Question must have at least one correct answer.";
+            });
 
         RuleForEach(x => x.Answers).ChildRules(a =>
         {
@@ -33,29 +41,15 @@ public class CreateUpdateQuestionValidator : AbstractValidator<Command>
 
     }
 
-    private static bool ValidateCorrectAnswers(QuestionType type, List<AnswerDto> answers, out string errorMessage)
+    private static bool ValidateCorrectAnswers(QuestionType type, List<AnswerDto> answers)
     {
         var correctAnswers = answers.Count(a => a.IsCorrect);
 
-        if (type == QuestionType.RadioButton && correctAnswers > 1)
+        if ((type == QuestionType.RadioButton && correctAnswers > 1) || correctAnswers < 1)
         {
-            errorMessage = "RadioButton question type can only have one correct answer.";
             return false;
         }
 
-        if (correctAnswers < 1)
-        {
-            errorMessage = "Question must have at least one correct answer.";
-            return false;
-        }
-
-        errorMessage = string.Empty;
         return true;
-    }
-
-    private static string GetErrorMessage(QuestionType type, List<AnswerDto> answers)
-    {
-        ValidateCorrectAnswers(type, answers, out var errorMessage);
-        return errorMessage;
     }
 }
