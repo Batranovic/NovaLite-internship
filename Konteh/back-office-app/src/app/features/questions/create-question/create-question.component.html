@@ -6,6 +6,9 @@
                 <mat-label>Text</mat-label>
                 <textarea matInput formControlName="text"></textarea>
             </mat-form-field>
+            <mat-error *ngIf="questionForm.get('text')?.hasError('formServer')">
+                {{ questionForm.get('text')?.getError('formServer') }}
+            </mat-error>
             <mat-form-field appearance="fill">
                 <mat-label>Category</mat-label>
                 <mat-select formControlName="category">
@@ -14,6 +17,9 @@
                     </mat-option>
                 </mat-select>
             </mat-form-field>
+            <mat-error *ngIf="questionForm.get('category')?.hasError('formServer')">
+                {{ questionForm.get('category')?.getError('formServer') }}
+            </mat-error>
             <mat-form-field appearance="fill">
                 <mat-label>Type</mat-label>
                 <mat-select formControlName="type">
@@ -22,12 +28,10 @@
                     </mat-option>
                 </mat-select>
             </mat-form-field>
-            <mat-error *ngIf="questionForm.get('type')?.hasError('multipleCorrect')">{{ errorMessage.multipleCorrect
-                }}</mat-error>
-            <button class="question-form-button" mat-flat-button color="primary" type="submit">Submit</button>
+            <button class="question-form-button" mat-flat-button color="primary" type="submit" [disabled]="!questionForm.valid">Submit</button>
         </form>
-
-        <button mat-raised-button color="primary" type="button" (click)="addAnswer()">Add an answer</button>
+        <form-errors [form]="questionForm"></form-errors>
+        <button class="add-answer-button" mat-raised-button color="primary" type="button" (click)="addAnswer()">Add an answer</button>
         <ng-container *ngFor="let group of answersArray.controls; let i = index">
             <app-answer-form *ngIf="!group.value.isDeleted" [answerForm]="group" (delete)="onDeleteAnswer(i)">
             </app-answer-form>

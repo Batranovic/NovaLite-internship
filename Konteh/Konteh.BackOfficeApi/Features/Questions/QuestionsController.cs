@@ -29,7 +29,9 @@ public class QuestionsController : ControllerBase
         return Ok(response);
     }
 
-    [HttpPost("createOrUpdate")]
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> CreateOrUpdateQuestion(CreateUpdateQuestion.Command command)
     {
         await _mediator.Send(command);

@@ -23,6 +23,7 @@ import { CategoryNamePipe } from './category-name.pipe';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { HttpClientModule } from '@angular/common/http';
+import { EntryFormErrorsComponent } from "../../shared/form-errors.component";
 
 @NgModule({
   declarations: [
@@ -59,6 +60,7 @@ import { HttpClientModule } from '@angular/common/http';
     HttpClientModule,
     MatTableModule,
     MatPaginatorModule,
-  ]
+    EntryFormErrorsComponent
+]
 })
 export class QuestionsModule { }
