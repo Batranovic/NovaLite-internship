@@ -14,6 +14,7 @@ public class ExamController : Controller
         _mediator = mediator;
     }
 
+    // TODO: Remove this when notification using features are implemented
     [HttpPost("notify")]
     public async Task<ActionResult> Notify(SubmitExam.Command command)
     {

@@ -18,19 +18,8 @@ public class Program
         builder.Services.AddScoped<IRandomGenerator, RandomGenerator>();
         builder.Services.AddScoped<IRepository<Question>, QuestionRepository>();
         builder.Services.AddScoped<IRepository<Exam>, ExamRepository>();
-        builder.Services.AddMassTransit(x =>
-        {
-            x.UsingRabbitMq((context, cfg) =>
-            {
-                cfg.Host("localhost", "/", h =>
-                {
-                    h.Username("admin");
-                    h.Password("admin");
-                });
 
-                cfg.ConfigureEndpoints(context);
-            });
-        });
+        rabbitMqSetup(builder);
 
         builder.Services.AddControllers();
         builder.Services.AddOpenApiDocument(o => o.SchemaSettings.SchemaNameGenerator = new CustomSwaggerSchemaNameGenerator());
@@ -59,5 +48,27 @@ public class Program
         app.MapControllers();
 
         app.Run();
+    }
+
+    private static void rabbitMqSetup(WebApplicationBuilder builder)
+    {
+        var rabbitMqSettings = builder.Configuration.GetSection("RabbitMQ");
+        builder.Services.AddMassTransit(conf =>
+        {
+            conf.SetKebabCaseEndpointNameFormatter();
+            conf.SetInMemorySagaRepositoryProvider();
+            conf.AddConsumers(typeof(Program).Assembly);
+
+            conf.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.Host(rabbitMqSettings["Host"], "/", h =>
+                {
+                    h.Username(rabbitMqSettings["Username"] ?? "");
+                    h.Password(rabbitMqSettings["Password"] ?? "");
+                });
+
+                cfg.ConfigureEndpoints(context);
+            });
+        });
     }
 }
