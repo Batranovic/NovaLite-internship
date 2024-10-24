@@ -11,11 +11,8 @@ export class ExamNotificationsComponent implements OnInit {
   constructor(private notificationsService: NotificationsService) {}
 
   ngOnInit(): void {
-    this.notificationsService.startConnection()
-      .then(() => {
-        this.notificationsService.messageReceived.subscribe((message) => {
-          this.receivedMessage = message;
-        });
-      });
+    this.notificationsService.messageReceived.subscribe((message) => {
+      this.receivedMessage = message;
+    });
   }
 }

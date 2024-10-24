@@ -1,7 +1,7 @@
-import {EventEmitter, Injectable} from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
-import {HttpTransportType} from '@microsoft/signalr';
-import {environment} from '../environments/environment';
+import { HttpTransportType } from '@microsoft/signalr';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -16,10 +16,11 @@ export class NotificationsService {
         skipNegotiation: true,
         transport: HttpTransportType.WebSockets
       }).build();
+    this.startConnection();
   }
 
-  startConnection(): Promise<void> {
-    return this.hubConnection.start()
+  private startConnection(): void {
+    this.hubConnection.start()
       .then(() => {
         this.setupListeners();
       })

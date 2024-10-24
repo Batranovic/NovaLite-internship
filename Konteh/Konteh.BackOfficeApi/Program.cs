@@ -1,8 +1,8 @@
+using Konteh.BackOfficeApi.Extensions;
 using Konteh.BackOfficeApi.Features.Notifications.Hubs;
 using Konteh.Domain;
 using Konteh.Infrastructure;
 using Konteh.Infrastructure.Repositories;
-using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
@@ -42,7 +42,7 @@ public class Program
             });
         });
 
-        rabbitMqSetup(builder);
+        builder.AddRabbitMq();
 
         var app = builder.Build();
 
@@ -61,27 +61,5 @@ public class Program
         app.MapControllers();
 
         app.Run();
-    }
-
-    private static void rabbitMqSetup(WebApplicationBuilder builder)
-    {
-        var rabbitMqSettings = builder.Configuration.GetSection("RabbitMQ");
-        builder.Services.AddMassTransit(conf =>
-        {
-            conf.SetKebabCaseEndpointNameFormatter();
-            conf.SetInMemorySagaRepositoryProvider();
-            conf.AddConsumers(typeof(Program).Assembly);
-
-            conf.UsingRabbitMq((context, cfg) =>
-            {
-                cfg.Host(rabbitMqSettings["Host"], "/", h =>
-                {
-                    h.Username(rabbitMqSettings["Username"] ?? "");
-                    h.Password(rabbitMqSettings["Password"] ?? "");
-                });
-
-                cfg.ConfigureEndpoints(context);
-            });
-        });
     }
 }
