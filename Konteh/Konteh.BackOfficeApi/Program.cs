@@ -46,13 +46,7 @@ public class Program
         {
             conf.SetKebabCaseEndpointNameFormatter();
             conf.SetInMemorySagaRepositoryProvider();
-
-            var asb = typeof(Program).Assembly;
-
-            conf.AddConsumers(asb);
-            conf.AddSagaStateMachines(asb);
-            conf.AddSagas(asb);
-            conf.AddActivities(asb);
+            conf.AddConsumers(typeof(Program).Assembly);
 
             conf.UsingRabbitMq((context, cfg) =>
             {
