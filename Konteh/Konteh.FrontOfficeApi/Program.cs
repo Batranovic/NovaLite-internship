@@ -1,9 +1,9 @@
 using FluentValidation;
 using Konteh.Domain;
-using Konteh.FrontOfficeApi.Extensions;
 using Konteh.FrontOfficeApi.Features.Exams.RandomGenerator;
 using Konteh.Infrastructure;
 using Konteh.Infrastructure.ExceptionHandlers;
+using Konteh.Infrastructure.Extensions;
 using Konteh.Infrastructure.PipelineBehaviours;
 using Konteh.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -29,7 +29,7 @@ public class Program
         builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
         // Add services to the container.
 
-        builder.AddRabbitMq();
+        builder.AddRabbitMq(Assembly.GetExecutingAssembly());
         builder.Services.AddControllers();
         builder.Services.AddOpenApiDocument(o => o.SchemaSettings.SchemaNameGenerator = new CustomSwaggerSchemaNameGenerator());
         builder.Services.AddDbContext<AppDbContext>(o => o.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

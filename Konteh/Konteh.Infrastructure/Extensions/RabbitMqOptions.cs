@@ -1,8 +1,8 @@
-﻿namespace Konteh.BackOfficeApi.Extensions;
+﻿namespace Konteh.Infrastructure.Extensions;
 
 class RabbitMqOptions
 {
-    public const string RabbitMq = "RabbitMq";
+    public static string RabbitMq = "RabbitMq";
 
     public string Host { get; set; }
     public string Username { get; set; }

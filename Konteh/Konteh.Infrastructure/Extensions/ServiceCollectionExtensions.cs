@@ -1,19 +1,22 @@
 ﻿using MassTransit;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using System.Reflection;
 
-namespace Konteh.BackOfficeApi.Extensions;
+namespace Konteh.Infrastructure.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static void AddRabbitMq(this WebApplicationBuilder builder)
+    public static void AddRabbitMq(this WebApplicationBuilder builder, Assembly assembly)
     {
         builder.Services.Configure<RabbitMqOptions>(
-            builder.Configuration.GetSection(nameof(RabbitMQ)));
+            builder.Configuration.GetSection(RabbitMqOptions.RabbitMq));
 
         builder.Services.AddMassTransit(conf =>
         {
             conf.SetKebabCaseEndpointNameFormatter();
-            conf.AddConsumers(typeof(Program).Assembly);
+            conf.AddConsumers(assembly);
 
             conf.UsingRabbitMq((context, cfg) =>
             {

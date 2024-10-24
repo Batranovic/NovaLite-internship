@@ -1,9 +1,9 @@
-using Konteh.BackOfficeApi.Extensions;
-using Konteh.BackOfficeApi.Features.Notifications.Hubs;
 using FluentValidation;
+using Konteh.BackOfficeApi.Features.Notifications.Hubs;
 using Konteh.Domain;
 using Konteh.Infrastructure;
 using Konteh.Infrastructure.ExceptionHandlers;
+using Konteh.Infrastructure.Extensions;
 using Konteh.Infrastructure.PipelineBehaviours;
 using Konteh.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -53,7 +53,7 @@ public class Program
             });
         });
 
-        builder.AddRabbitMq();
+        builder.AddRabbitMq(Assembly.GetExecutingAssembly());
 
         var app = builder.Build();
 

@@ -23,8 +23,7 @@ export class NotificationsService {
     this.hubConnection.start()
       .then(() => {
         this.setupListeners();
-      })
-      .catch();
+      });
   }
 
   private setupListeners(): void {
