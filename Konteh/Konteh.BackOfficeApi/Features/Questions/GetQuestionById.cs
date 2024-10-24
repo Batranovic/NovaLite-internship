@@ -1,5 +1,6 @@
 ﻿using Konteh.Domain;
 using Konteh.Domain.Enumerations;
+using Konteh.Infrastructure.ExceptionHandlers.Exceptions;
 using Konteh.Infrastructure.Repositories;
 using MediatR;
 
@@ -40,13 +41,7 @@ public static class GetQuestionById
 
         public async Task<Response> Handle(Query request, CancellationToken cancellationToken)
         {
-            var question = await _repository.GetById(request.Id);
-
-            if (question == null)
-            {
-                throw new Exception("Question not found.");
-            }
-
+            var question = await _repository.GetById(request.Id) ?? throw new NotFoundException();
             return new Response
             {
                 Id = question.Id,
