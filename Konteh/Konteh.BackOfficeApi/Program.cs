@@ -73,7 +73,6 @@ public class Program
         app.UseSwaggerUi();
         app.UseHttpsRedirection();
 
-        app.UseCors("MyCorsPolicy");
         app.UseAuthentication();
         app.UseAuthorization();
 

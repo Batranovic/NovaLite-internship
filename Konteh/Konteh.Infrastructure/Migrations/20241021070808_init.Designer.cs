@@ -12,13 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Konteh.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-<<<<<<<< HEAD:Konteh/Konteh.Infrastructure/Migrations/20241023105528_InitialMigration.Designer.cs
-    [Migration("20241023105528_InitialMigration")]
-    partial class InitialMigration
-========
     [Migration("20241021070808_init")]
     partial class init
->>>>>>>> master:Konteh/Konteh.Infrastructure/Migrations/20241021070808_init.Designer.cs
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

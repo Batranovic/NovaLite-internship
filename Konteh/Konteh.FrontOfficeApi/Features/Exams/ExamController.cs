@@ -14,18 +14,13 @@ public class ExamController : Controller
         _mediator = mediator;
     }
 
-    public ExamController(IMediator mediator)
-    {
-        _mediator = mediator;
-    }
-
     [HttpPost("notify")]
     public async Task<ActionResult> Notify(SubmitExam.Command command)
     {
         await _mediator.Send(command);
         return Ok();
     }
-    
+
     [HttpPost]
     public async Task<ActionResult<GenerateExam.Response>> GenerateExam(GenerateExam.Command command)
     {
