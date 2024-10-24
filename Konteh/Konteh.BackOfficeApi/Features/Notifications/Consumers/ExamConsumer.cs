@@ -1,4 +1,5 @@
-﻿using Konteh.Domain;
+﻿using Konteh.BackOfficeApi.Features.Notifications.Hubs;
+using Konteh.Domain;
 using MassTransit;
 using Microsoft.AspNetCore.SignalR;
 
@@ -6,9 +7,9 @@ namespace Konteh.BackOfficeApi.Features.Notifications.Consumers;
 
 public class ExamConsumer : IConsumer<Candidate>
 {
-    private readonly IHubContext<Hub> _examHubContext;
+    private readonly IHubContext<ExamHub> _examHubContext;
 
-    public ExamConsumer(IHubContext<Hub> examHubContext)
+    public ExamConsumer(IHubContext<ExamHub> examHubContext)
     {
         _examHubContext = examHubContext;
     }

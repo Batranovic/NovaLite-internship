@@ -1,9 +1,9 @@
+using Konteh.BackOfficeApi.Features.Notifications.Hubs;
 using Konteh.Domain;
 using Konteh.Infrastructure;
 using Konteh.Infrastructure.Repositories;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
 using System.Reflection;
@@ -76,7 +76,7 @@ public class Program
         app.UseAuthentication();
         app.UseAuthorization();
 
-        app.MapHub<Hub>("/examhub");
+        app.MapHub<ExamHub>("/examhub");
 
         app.UseCors("MyCorsPolicy");
 
