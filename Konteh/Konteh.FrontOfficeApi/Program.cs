@@ -36,7 +36,6 @@ public class Program
         builder.Services.AddOpenApiDocument(o => o.SchemaSettings.SchemaNameGenerator = new CustomSwaggerSchemaNameGenerator());
         builder.Services.AddDbContext<AppDbContext>(o => o.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-        var app = builder.Build();
 
         builder.Services.AddCors(options =>
         {
@@ -48,6 +47,8 @@ public class Program
                     .AllowCredentials();
             });
         });
+
+        var app = builder.Build();
 
 
         // Configure the HTTP request pipeline.
