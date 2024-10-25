@@ -44,10 +44,7 @@ export class QuestionsOverviewComponent implements OnInit {
         next: () => {
           this.resetPaginator();
           this.openSnackBar('Successfully deleted the question.', 'Close');
-        },
-        error: () => {
-          this.openSnackBar('Unsuccessfully deleted the question.', 'Close');
-        },
+        }
       });
     });
   }
