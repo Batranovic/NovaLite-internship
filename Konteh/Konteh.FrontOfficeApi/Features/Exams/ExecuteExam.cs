@@ -26,9 +26,9 @@ public static class ExecuteExam
         public class RequestHandler : IRequestHandler<Command>
         {
             private readonly IRepository<Exam> _examRepository;
-            private readonly IRepository<ExamQuestion> _examQuestionRepository;
+            private readonly IExamQuestionRepository _examQuestionRepository;
 
-            public RequestHandler(IRepository<Exam> examRepository, IRepository<ExamQuestion> examQuestionRepository)
+            public RequestHandler(IRepository<Exam> examRepository, IExamQuestionRepository examQuestionRepository)
             {
                 _examRepository = examRepository;
                 _examQuestionRepository = examQuestionRepository;
@@ -41,12 +41,19 @@ public static class ExecuteExam
 
                 exam.EndTime = DateTime.UtcNow;
 
-                var selectedAnswers = request.ExamQuestions.ToDictionary(e => e.ExamQuestionId, e => e.SubmittedAnswers.Select(a => a.Id).ToHashSet());
+                var selectedAnswersIds = request.ExamQuestions.ToDictionary(e => e.ExamQuestionId, e => e.SubmittedAnswers.Select(a => a.Id).ToHashSet());
 
+                var examQuestions = _examQuestionRepository.GetByIds(request.ExamQuestions.Select(e => e.ExamQuestionId).ToList());
 
+                /* foreach(var examQuestion in examQuestions)
+                 {
+                     var answersIds = selectedAnswersIds[examQuestion.Id];
+
+                 }*/
 
                 await _examRepository.SaveChanges();
             }
         }
+
     }
 }

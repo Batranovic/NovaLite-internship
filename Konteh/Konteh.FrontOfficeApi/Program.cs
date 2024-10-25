@@ -31,6 +31,7 @@ public class Program
         builder.Services.AddScoped<IRepository<Candidate>, CandidateRepository>();
         builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
         builder.Services.AddScoped<IRepository<ExamQuestion>, ExamQuestionRepository>();
+        builder.Services.AddScoped<IExamQuestionRepository, ExamQuestionRepository>();
 
         builder.Services.AddMediatR(cfg =>
       {

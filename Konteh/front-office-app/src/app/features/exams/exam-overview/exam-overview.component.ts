@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ExamClient,ExecuteExamCommand,ExecuteExamExamQuestionDto,GenerateExamResponse,  QuestionType } from '../../../api/api-reference';
+import { ExamClient, ExecuteExamAnswerDto, ExecuteExamCommand, ExecuteExamExamQuestionDto, GenerateExamResponse,  QuestionType } from '../../../api/api-reference';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatRadioChange } from '@angular/material/radio';
@@ -87,15 +87,15 @@ export class ExamOverviewComponent {
     return this.selectedAnswers[questionId]?.includes(answerId) || false;
   }
   
- submitExam() {
+ async submitExam() {
     const examQuestions = this.examResponse.examQuestions?.map(question => {
-    //  const submittedAnswers = this.selectedAnswers[question.id!]?.map(answerId => 
-        //new ExecuteSubmissionAnswerDto({ id: answerId })
-    //  ) || [];
+      const submittedAnswers = this.selectedAnswers[question.id!]?.map(answerId => 
+        new ExecuteExamAnswerDto({ id: answerId })
+      ) || [];
 
       return new ExecuteExamExamQuestionDto({
         examQuestionId: question.id,
-      //  submittedAnswers
+        submittedAnswers
       });
     }) || [];
 
