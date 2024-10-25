@@ -1,12 +1,10 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Konteh.BackOfficeApi.Features.Questions;
 
 [ApiController]
 [Route("questions")]
-[Authorize]
 public class QuestionsController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -47,6 +45,7 @@ public class QuestionsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteById(long questionId)
     {
+        return NotFound();
         await _mediator.Send(new DeleteQuestion.Command { Id = questionId });
         return Ok();
     }

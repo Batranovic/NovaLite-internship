@@ -25,6 +25,7 @@ import { FeaturesModule } from './features/features.module';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { environment } from './environments/environment';
 import { FormErrorsComponent } from './shared/form-errors.component';
+import {HttpErrorInterceptor} from './shared/http-error-interceptor';
 
 export function MSALInstanceFactory(): IPublicClientApplication {
   return new PublicClientApplication({
@@ -45,7 +46,7 @@ export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
   ],
   imports: [
     BrowserAnimationsModule,
@@ -78,10 +79,14 @@ export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
       useFactory: MSALInstanceFactory
     },
     MsalService,
-
     {
       provide: HTTP_INTERCEPTORS,
       useClass: MsalInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpErrorInterceptor,
       multi: true
     },
     {
