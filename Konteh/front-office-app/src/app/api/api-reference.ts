@@ -446,7 +446,7 @@ export interface IExamSubmissionCommand {
 
 export class ExamSubmissionExamQuestionDto implements IExamSubmissionExamQuestionDto {
     examQuestionId?: number;
-    submittedAnswers?: ExamSubmissionSubmittedAnswerDto[];
+    submittedAnswers?: ExamSubmissionAnswerDto[];
 
     constructor(data?: IExamSubmissionExamQuestionDto) {
         if (data) {
@@ -463,7 +463,7 @@ export class ExamSubmissionExamQuestionDto implements IExamSubmissionExamQuestio
             if (Array.isArray(_data["submittedAnswers"])) {
                 this.submittedAnswers = [] as any;
                 for (let item of _data["submittedAnswers"])
-                    this.submittedAnswers!.push(ExamSubmissionSubmittedAnswerDto.fromJS(item));
+                    this.submittedAnswers!.push(ExamSubmissionAnswerDto.fromJS(item));
             }
         }
     }
@@ -489,13 +489,13 @@ export class ExamSubmissionExamQuestionDto implements IExamSubmissionExamQuestio
 
 export interface IExamSubmissionExamQuestionDto {
     examQuestionId?: number;
-    submittedAnswers?: ExamSubmissionSubmittedAnswerDto[];
+    submittedAnswers?: ExamSubmissionAnswerDto[];
 }
 
-export class ExamSubmissionSubmittedAnswerDto implements IExamSubmissionSubmittedAnswerDto {
+export class ExamSubmissionAnswerDto implements IExamSubmissionAnswerDto {
     id?: number;
 
-    constructor(data?: IExamSubmissionSubmittedAnswerDto) {
+    constructor(data?: IExamSubmissionAnswerDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -510,9 +510,9 @@ export class ExamSubmissionSubmittedAnswerDto implements IExamSubmissionSubmitte
         }
     }
 
-    static fromJS(data: any): ExamSubmissionSubmittedAnswerDto {
+    static fromJS(data: any): ExamSubmissionAnswerDto {
         data = typeof data === 'object' ? data : {};
-        let result = new ExamSubmissionSubmittedAnswerDto();
+        let result = new ExamSubmissionAnswerDto();
         result.init(data);
         return result;
     }
@@ -524,7 +524,7 @@ export class ExamSubmissionSubmittedAnswerDto implements IExamSubmissionSubmitte
     }
 }
 
-export interface IExamSubmissionSubmittedAnswerDto {
+export interface IExamSubmissionAnswerDto {
     id?: number;
 }
 

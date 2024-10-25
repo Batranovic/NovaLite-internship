@@ -14,9 +14,9 @@ public static class ExamSubmission
     public class ExamQuestionDto
     {
         public long ExamQuestionId { get; set; }
-        public List<SubmittedAnswerDto> SubmittedAnswers { get; set; } = [];
+        public List<AnswerDto> SubmittedAnswers { get; set; } = [];
     }
-    public class SubmittedAnswerDto
+    public class AnswerDto
     {
         public long Id { get; set; }
 
@@ -36,31 +36,32 @@ public static class ExamSubmission
 
         public async Task Handle(Command request, CancellationToken cancellationToken)
         {
-
-            var exam = await _examRepository.GetById(request.ExamId) ?? throw new InvalidOperationException($"No exam with id:{request.ExamId}.");
+            var exam = await _examRepository.GetById(request.ExamId)
+                        ?? throw new InvalidOperationException($"No exam with id:{request.ExamId}.");
             exam.EndTime = DateTime.UtcNow;
 
-            foreach (var question in request.ExamQuestions)
+            foreach (var questionDto in request.ExamQuestions)
             {
-                var submittedAnswers = new List<SubmittedAnswer>();
+                var examQuestion = await _examQuestionRepository.GetById(questionDto.ExamQuestionId)
+                                   ?? throw new InvalidOperationException($"No exam question with id:{questionDto.ExamQuestionId}.");
 
-                foreach (var answerDto in question.SubmittedAnswers)
+                examQuestion.SubmmitedAnswers.Clear();
+
+                var submittedAnswers = new List<Answer>();
+
+                foreach (var answerDto in questionDto.SubmittedAnswers)
                 {
-                    var answer = await _answerRepository.GetById(answerDto.Id);
-                    var submittedAnswer = new SubmittedAnswer
-                    {
-                        Answer = answer!
-                    };
-                    submittedAnswers.Add(submittedAnswer);
+                    var answer = await _answerRepository.GetById(answerDto.Id)
+                                 ?? throw new InvalidOperationException($"No answer with id:{answerDto.Id}.");
+                    submittedAnswers.Add(answer);
                 }
-                var examQuestion = await _examQuestionRepository.GetById(question.ExamQuestionId);
-                examQuestion?.SubmmitedAnswers.AddRange(submittedAnswers);
 
-                await _examQuestionRepository.SaveChanges();
+                examQuestion.SubmmitedAnswers.AddRange(submittedAnswers);
             }
 
+            await _examQuestionRepository.SaveChanges();
             await _examRepository.SaveChanges();
-
         }
     }
+
 }

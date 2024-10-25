@@ -1,5 +1,4 @@
-﻿using Konteh.FrontOfficeApi.Features.Exams.RandomGenerator;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Konteh.FrontOfficeApi.Features.Exams;
@@ -28,6 +27,5 @@ public class ExamController : Controller
         await _mediator.Send(command);
         return Ok();
     }
-
 
 }

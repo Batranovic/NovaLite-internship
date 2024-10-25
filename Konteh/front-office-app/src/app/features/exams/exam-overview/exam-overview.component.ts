@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { ExamClient, ExamSubmissionCommand, ExamSubmissionExamQuestionDto, ExamSubmissionSubmittedAnswerDto, GenerateExamResponse,  QuestionType } from '../../../api/api-reference';
+import { ExamClient, ExamSubmissionAnswerDto, ExamSubmissionCommand, ExamSubmissionExamQuestionDto,  GenerateExamResponse,  QuestionType } from '../../../api/api-reference';
 import { Router } from '@angular/router';
-
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-exam-overview',
@@ -15,7 +15,7 @@ export class ExamOverviewComponent {
   currentQuestionIndex = 0
   selectedAnswers : { [questionId: number]: number[]} = {}
 
-  constructor(private router: Router, private examClient: ExamClient) {
+  constructor(private router: Router, private examClient: ExamClient, private snackBar: MatSnackBar) {
     const navigation = this.router.getCurrentNavigation();
     if (navigation?.extras.state) {
       this.examResponse = navigation.extras.state['examResponse'];
@@ -29,6 +29,7 @@ export class ExamOverviewComponent {
   get isLastQuestion(): boolean {
     return !!this.examResponse?.examQuestions && this.currentQuestionIndex === (this.examResponse?.examQuestions?.length ?? 0) - 1;
   }
+
   nextQuestion() {
     if (!this.isLastQuestion){
       this.currentQuestionIndex++;
@@ -43,41 +44,43 @@ export class ExamOverviewComponent {
 
   onAnswerChange(event: Event, answerId: number, questionId: number) {
     const inputElement = event.target as HTMLInputElement;
+    const isChecked = inputElement.checked;
   
-    if (inputElement.type === 'checkbox' || inputElement.type === 'radio') {
-      const isChecked = inputElement.checked;
+    if (!this.selectedAnswers[questionId]) {
+      this.selectedAnswers[questionId] = [];
+    }
   
-      if (isChecked) {
-        this.addAnswer(questionId, answerId);
-      } else {
-        this.removeAnswer(questionId, answerId);
-      }
+    if (isChecked) {
+      this.addAnswer(questionId, answerId);
+    } else {
+      this.removeAnswer(questionId, answerId);
     }
   }
-  addAnswer(questionId: number, answerId: number) {
-    const examQuestion = this.examResponse.examQuestions?.find(q => q.id === questionId);
-   
-    
-  }
   
+  addAnswer(questionId: number, answerId: number) {
+    if (!this.selectedAnswers[questionId]) {
+      this.selectedAnswers[questionId] = [];
+    }
+  
+    if (!this.selectedAnswers[questionId].includes(answerId)) {
+      this.selectedAnswers[questionId].push(answerId);
+    }
+  }
   
   removeAnswer(questionId: number, answerId: number) {
-    const examQuestion = this.examResponse.examQuestions?.find(q => q.id === questionId) as ExamSubmissionExamQuestionDto;
-  
-    if (examQuestion && examQuestion.submittedAnswers) {
-      examQuestion.submittedAnswers = examQuestion.submittedAnswers.filter(ans => ans.id !== answerId);
+    if (this.selectedAnswers[questionId]) {
+      this.selectedAnswers[questionId] = this.selectedAnswers[questionId].filter(id => id !== answerId);
     }
   }
-  
 
   isAnswerSelected(answerId: number, questionId: number): boolean {
     return this.selectedAnswers[questionId]?.includes(answerId) || false;
   }
-
+  
   async submitExam() {
     const examQuestions = this.examResponse.examQuestions?.map(question => {
       const submittedAnswers = this.selectedAnswers[question.id!]?.map(answerId => 
-        new ExamSubmissionSubmittedAnswerDto({ id: answerId })
+        new ExamSubmissionAnswerDto({ id: answerId })
       ) || [];
 
       return new ExamSubmissionExamQuestionDto({
@@ -92,13 +95,15 @@ export class ExamOverviewComponent {
     });
 
     this.examClient.examSubmission(command).subscribe({
-      next: _ => this.router.navigate(['/']),
+      next: _ => {
+        this.snackBar.open('Exam submitted successfully', 'Ok', {
+          duration: 3000,
+        });
+        this.router.navigate(['/']);
+      },
       error: (err) => {
         console.error('Error submitting exam', err);
       }
     });
   }
-  
-
-
 }

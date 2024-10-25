@@ -8,15 +8,11 @@
           <li *ngFor="let answer of examResponse?.examQuestions?.[currentQuestionIndex]?.question?.answers" class="answer-item">
             <input *ngIf="examResponse?.examQuestions?.[currentQuestionIndex]?.question?.type === QuestionType.RadioButton"
                    type="radio"
-                   [name]="'question' + examResponse.examQuestions?.[currentQuestionIndex]?.question?.id"
-                   [value]="answer.id"
                    class="answer-input"
                    [checked]="isAnswerSelected(answer.id!, examResponse.examQuestions?.[currentQuestionIndex]?.id!)"
                    (change)="onAnswerChange($event, answer.id ?? 0, examResponse.examQuestions?.[currentQuestionIndex]?.id ?? 0)">
                    <input *ngIf="examResponse?.examQuestions?.[currentQuestionIndex]?.question?.type === QuestionType.CheckBox"
                    type="checkbox"
-                   [name]="'question' + examResponse.examQuestions?.[currentQuestionIndex]?.question?.id"
-                   [value]="answer.id"
                    class="answer-input"
                    [checked]="isAnswerSelected(answer.id!, examResponse.examQuestions?.[currentQuestionIndex]?.id!)"
                    (change)="onAnswerChange($event, answer.id ?? 0, examResponse.examQuestions?.[currentQuestionIndex]?.id ?? 0)">
