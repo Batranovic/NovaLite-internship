@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Konteh.FrontOfficeApi.Features.Exams;
@@ -13,6 +12,14 @@ public class ExamController : Controller
     public ExamController(IMediator mediator)
     {
         _mediator = mediator;
+    }
+
+    // TODO: Remove this when notification using features are implemented
+    [HttpPost("notify")]
+    public async Task<ActionResult> Notify(SubmitExam.Command command)
+    {
+        await _mediator.Send(command);
+        return Ok();
     }
 
     [HttpPost]
