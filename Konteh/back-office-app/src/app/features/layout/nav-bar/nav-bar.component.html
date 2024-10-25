@@ -1,5 +1,6 @@
 <mat-toolbar color="primary">
-      <span>Back Office</span>
+  
+  <img src="/logo.png" alt="image" class="logo">
       <span class="menu-spacer"></span>
       <a mat-button (click)="redirectToHome()">Home</a>
       <a mat-button (click)="redirectToQuestionsOverview()">Questions Overview</a>
@@ -12,7 +13,7 @@
         <mat-menu #userMenu="matMenu">
           <span class="account-username">{{ getAccountUsername() }}</span>
           <br>
-          <button class="logout-button" mat-menu-item (click)="logout()" >Logout</button>
+          <button  class="logout-button" mat-menu-item (click)="logout()" >Logout</button>
         </mat-menu>
 </mat-toolbar>
     

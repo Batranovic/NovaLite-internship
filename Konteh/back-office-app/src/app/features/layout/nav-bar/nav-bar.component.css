@@ -18,6 +18,10 @@
     width: 100%; 
     text-align: center; 
     margin-top: 12px;
-  }
+}
 
-
+.logo {
+  width: 55px;  
+  height: auto;    
+  display: block;
+}
