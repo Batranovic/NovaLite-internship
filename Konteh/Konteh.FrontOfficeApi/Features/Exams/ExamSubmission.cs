@@ -1,4 +1,5 @@
 ﻿using Konteh.Domain;
+using Konteh.Infrastructure.ExceptionHandlers.Exceptions;
 using Konteh.Infrastructure.Repositories;
 using MediatR;
 
@@ -37,13 +38,13 @@ public static class ExamSubmission
         public async Task Handle(Command request, CancellationToken cancellationToken)
         {
             var exam = await _examRepository.GetById(request.ExamId)
-                        ?? throw new InvalidOperationException($"No exam with id:{request.ExamId}.");
+                        ?? throw new NotFoundException();
             exam.EndTime = DateTime.UtcNow;
 
             foreach (var questionDto in request.ExamQuestions)
             {
                 var examQuestion = await _examQuestionRepository.GetById(questionDto.ExamQuestionId)
-                                   ?? throw new InvalidOperationException($"No exam question with id:{questionDto.ExamQuestionId}.");
+                                   ?? throw new NotFoundException();
 
                 examQuestion.SubmmitedAnswers.Clear();
 
@@ -52,7 +53,7 @@ public static class ExamSubmission
                 foreach (var answerDto in questionDto.SubmittedAnswers)
                 {
                     var answer = await _answerRepository.GetById(answerDto.Id)
-                                 ?? throw new InvalidOperationException($"No answer with id:{answerDto.Id}.");
+                                 ?? throw new NotFoundException();
                     submittedAnswers.Add(answer);
                 }
 

@@ -21,7 +21,6 @@ import { MatRadioButton, MatRadioGroup } from '@angular/material/radio';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ExamOverviewComponent } from './exam-overview/exam-overview.component';
 
-
 @NgModule({
   declarations: [
     ExamRegistrationComponent,

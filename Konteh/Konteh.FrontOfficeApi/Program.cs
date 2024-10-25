@@ -18,14 +18,13 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
 
-      
+
         // Add services to the container.
 
         builder.AddRabbitMq(Assembly.GetExecutingAssembly());
         builder.Services.AddControllers();
         builder.Services.AddOpenApiDocument(o => o.SchemaSettings.SchemaNameGenerator = new CustomSwaggerSchemaNameGenerator());
         builder.Services.AddDbContext<AppDbContext>(o => o.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-        builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
         builder.Services.AddScoped<IRandomGenerator, RandomGenerator>();
         builder.Services.AddScoped<IRepository<Question>, QuestionRepository>();
         builder.Services.AddScoped<IRepository<Exam>, ExamRepository>();
@@ -33,12 +32,12 @@ public class Program
         builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
         builder.Services.AddScoped<IRepository<ExamQuestion>, ExamQuestionRepository>();
         builder.Services.AddScoped<IRepository<Answer>, AnswerRepository>();
-        
-          builder.Services.AddMediatR(cfg =>
-        {
-            cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-            cfg.AddOpenBehavior(typeof(ValidationBehaviour<,>));
-        });
+
+        builder.Services.AddMediatR(cfg =>
+      {
+          cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+          cfg.AddOpenBehavior(typeof(ValidationBehaviour<,>));
+      });
         builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
 
@@ -50,18 +49,15 @@ public class Program
         {
             options.AddPolicy("MyCorsPolicy", corsBuilder =>
             {
-                corsBulder.AllowAnyOrigin()
+                corsBuilder.AllowAnyOrigin()
                     .AllowAnyMethod()
                     .AllowAnyHeader();
             });
         });
         var app = builder.Build();
 
-        var app = builder.Build();
-
         // Configure the HTTP request pipeline.
         app.UseHttpsRedirection();
-        app.UseCors("MyCorsPolicy");
         app.UseExceptionHandler();
         app.UseOpenApi();
         app.UseSwaggerUi();
