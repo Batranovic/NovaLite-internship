@@ -3,7 +3,6 @@ using Konteh.Domain.Enumerations;
 using Konteh.FrontOfficeApi.Features.Exams.RandomGenerator;
 using Konteh.Infrastructure.Repositories;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Konteh.FrontOfficeApi.Features.Exams;
 
@@ -46,13 +45,13 @@ public static class GenerateExam
         public List<ExamQuestionDto> ExamQuestions { get; set; } = new List<ExamQuestionDto>();
     }
 
-    public class Handler : IRequestHandler<Command, Response>
+    public class RequestHandler : IRequestHandler<Command, Response>
     {
         private readonly IQuestionRepository _questionRepository;
         private readonly IRepository<Exam> _examRepository;
         private readonly IRandomGenerator _randomGenerator;
         private readonly IRepository<Candidate> _candidateRepository;
-        public Handler(IQuestionRepository questionRepository, IRepository<Exam> examRepository, IRandomGenerator randomGenerator, IRepository<Candidate> candidateRepository)
+        public RequestHandler(IQuestionRepository questionRepository, IRepository<Exam> examRepository, IRandomGenerator randomGenerator, IRepository<Candidate> candidateRepository)
         {
             _questionRepository = questionRepository;
             _examRepository = examRepository;
@@ -64,7 +63,10 @@ public static class GenerateExam
         {
             var candidate = await HasCandidateTakenATestAsync(request);
 
-            var questions = await _questionRepository.SearchIQueryable(x => Categories.Contains(x.Category)).Include(q => q.Answers).ToListAsync();
+            var questions = (await _questionRepository.GetAll())
+                .Where(x => Categories.Contains(x.Category))
+                .ToList();
+
             var randomQuestions = new List<ExamQuestion>();
 
             foreach (var category in Categories)

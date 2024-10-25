@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
-import { ExamClient, ExamSubmissionAnswerDto, ExamSubmissionCommand, ExamSubmissionExamQuestionDto,  GenerateExamResponse,  QuestionType } from '../../../api/api-reference';
+import { ExamClient,ExecuteExamCommand,ExecuteExamExamQuestionDto,GenerateExamResponse,  QuestionType } from '../../../api/api-reference';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatRadioChange } from '@angular/material/radio';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-exam-overview',
@@ -11,7 +13,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class ExamOverviewComponent {
   QuestionType = QuestionType
   examResponse: Partial<GenerateExamResponse> = {examQuestions: []}
-  examQuestion : ExamSubmissionExamQuestionDto | undefined 
+  examQuestion : ExecuteExamExamQuestionDto | undefined 
   currentQuestionIndex = 0
   selectedAnswers : { [questionId: number]: number[]} = {}
 
@@ -30,6 +32,9 @@ export class ExamOverviewComponent {
     return !!this.examResponse?.examQuestions && this.currentQuestionIndex === (this.examResponse?.examQuestions?.length ?? 0) - 1;
   }
 
+  get currentQuestion() {
+    return this.examResponse?.examQuestions?.[this.currentQuestionIndex];
+  }
   nextQuestion() {
     if (!this.isLastQuestion){
       this.currentQuestionIndex++;
@@ -42,14 +47,19 @@ export class ExamOverviewComponent {
     }
   }
 
-  onAnswerChange(event: Event, answerId: number, questionId: number) {
-    const inputElement = event.target as HTMLInputElement;
-    const isChecked = inputElement.checked;
-  
+  onAnswerChange(event: MatRadioChange | MatCheckboxChange, answerId: number, questionId: number) {
+    let isChecked: boolean;
+
+    if ('checked' in event) {
+      isChecked = event.checked; 
+    } else {
+      isChecked = true; 
+    }
+
     if (!this.selectedAnswers[questionId]) {
       this.selectedAnswers[questionId] = [];
     }
-  
+
     if (isChecked) {
       this.addAnswer(questionId, answerId);
     } else {
@@ -77,24 +87,24 @@ export class ExamOverviewComponent {
     return this.selectedAnswers[questionId]?.includes(answerId) || false;
   }
   
-  async submitExam() {
+ submitExam() {
     const examQuestions = this.examResponse.examQuestions?.map(question => {
-      const submittedAnswers = this.selectedAnswers[question.id!]?.map(answerId => 
-        new ExamSubmissionAnswerDto({ id: answerId })
-      ) || [];
+    //  const submittedAnswers = this.selectedAnswers[question.id!]?.map(answerId => 
+        //new ExecuteSubmissionAnswerDto({ id: answerId })
+    //  ) || [];
 
-      return new ExamSubmissionExamQuestionDto({
+      return new ExecuteExamExamQuestionDto({
         examQuestionId: question.id,
-        submittedAnswers
+      //  submittedAnswers
       });
     }) || [];
 
-    const command = new ExamSubmissionCommand({
+    const command = new ExecuteExamCommand({
       examId: this.examResponse.id,
       examQuestions
     });
 
-    this.examClient.examSubmission(command).subscribe({
+    this.examClient.executeExam(command).subscribe({
       next: _ => {
         this.snackBar.open('Exam submitted successfully', 'Ok', {
           duration: 3000,

@@ -30,7 +30,7 @@ public class ExamController : Controller
     }
 
     [HttpPut]
-    public async Task<ActionResult> ExamSubmission(ExamSubmission.Command command)
+    public async Task<ActionResult> ExecuteExam(ExecuteExam.Command command)
     {
         await _mediator.Send(command);
         return Ok();

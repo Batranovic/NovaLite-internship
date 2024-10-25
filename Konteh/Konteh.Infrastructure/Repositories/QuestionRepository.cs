@@ -1,6 +1,5 @@
 ﻿using Konteh.Domain;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 namespace Konteh.Infrastructure.Repositories;
 
@@ -41,8 +40,13 @@ public class QuestionRepository : BaseRepository<Question>, IQuestionRepository
             .Include(q => q.Answers.Where(a => !a.IsDeleted))
             .FirstOrDefaultAsync(q => q.Id == id);
     }
-    public IQueryable<Question> SearchIQueryable(Expression<Func<Question, bool>> predicate)
+
+    public override async Task<IEnumerable<Question>> GetAll()
     {
-        return _context.Set<Question>().Where(predicate);
+        return await _context.Set<Question>()
+            .Include(q => q.Answers.Where(a => !a.IsDeleted))
+            .ToListAsync();
     }
+
+
 }

@@ -16,8 +16,9 @@ import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angula
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 export interface IExamClient {
+    notify(command: SubmitExamCommand): Observable<FileResponse>;
     generateExam(command: GenerateExamCommand): Observable<GenerateExamResponse>;
-    examSubmission(command: ExamSubmissionCommand): Observable<FileResponse>;
+    executeExam(command: ExecuteExamCommand): Observable<FileResponse>;
 }
 
 @Injectable({
@@ -31,6 +32,62 @@ export class ExamClient implements IExamClient {
     constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
         this.http = http;
         this.baseUrl = baseUrl ?? "https://localhost:7206";
+    }
+
+    notify(command: SubmitExamCommand): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/exams/notify";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processNotify(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processNotify(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<FileResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<FileResponse>;
+        }));
+    }
+
+    protected processNotify(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
     }
 
     generateExam(command: GenerateExamCommand): Observable<GenerateExamResponse> {
@@ -85,7 +142,7 @@ export class ExamClient implements IExamClient {
         return _observableOf(null as any);
     }
 
-    examSubmission(command: ExamSubmissionCommand): Observable<FileResponse> {
+    executeExam(command: ExecuteExamCommand): Observable<FileResponse> {
         let url_ = this.baseUrl + "/exams";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -102,11 +159,11 @@ export class ExamClient implements IExamClient {
         };
 
         return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processExamSubmission(response_);
+            return this.processExecuteExam(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processExamSubmission(response_ as any);
+                    return this.processExecuteExam(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<FileResponse>;
                 }
@@ -115,7 +172,7 @@ export class ExamClient implements IExamClient {
         }));
     }
 
-    protected processExamSubmission(response: HttpResponseBase): Observable<FileResponse> {
+    protected processExecuteExam(response: HttpResponseBase): Observable<FileResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -140,6 +197,46 @@ export class ExamClient implements IExamClient {
         }
         return _observableOf(null as any);
     }
+}
+
+export class SubmitExamCommand implements ISubmitExamCommand {
+    name?: string;
+    test?: string;
+
+    constructor(data?: ISubmitExamCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.name = _data["name"];
+            this.test = _data["test"];
+        }
+    }
+
+    static fromJS(data: any): SubmitExamCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new SubmitExamCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        data["test"] = this.test;
+        return data;
+    }
+}
+
+export interface ISubmitExamCommand {
+    name?: string;
+    test?: string;
 }
 
 export class GenerateExamResponse implements IGenerateExamResponse {
@@ -396,11 +493,11 @@ export interface IGenerateExamCommand {
     candidateFaculty?: string;
 }
 
-export class ExamSubmissionCommand implements IExamSubmissionCommand {
+export class ExecuteExamCommand implements IExecuteExamCommand {
     examId?: number;
-    examQuestions?: ExamSubmissionExamQuestionDto[];
+    examQuestions?: ExecuteExamExamQuestionDto[];
 
-    constructor(data?: IExamSubmissionCommand) {
+    constructor(data?: IExecuteExamCommand) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -415,14 +512,14 @@ export class ExamSubmissionCommand implements IExamSubmissionCommand {
             if (Array.isArray(_data["examQuestions"])) {
                 this.examQuestions = [] as any;
                 for (let item of _data["examQuestions"])
-                    this.examQuestions!.push(ExamSubmissionExamQuestionDto.fromJS(item));
+                    this.examQuestions!.push(ExecuteExamExamQuestionDto.fromJS(item));
             }
         }
     }
 
-    static fromJS(data: any): ExamSubmissionCommand {
+    static fromJS(data: any): ExecuteExamCommand {
         data = typeof data === 'object' ? data : {};
-        let result = new ExamSubmissionCommand();
+        let result = new ExecuteExamCommand();
         result.init(data);
         return result;
     }
@@ -439,16 +536,16 @@ export class ExamSubmissionCommand implements IExamSubmissionCommand {
     }
 }
 
-export interface IExamSubmissionCommand {
+export interface IExecuteExamCommand {
     examId?: number;
-    examQuestions?: ExamSubmissionExamQuestionDto[];
+    examQuestions?: ExecuteExamExamQuestionDto[];
 }
 
-export class ExamSubmissionExamQuestionDto implements IExamSubmissionExamQuestionDto {
+export class ExecuteExamExamQuestionDto implements IExecuteExamExamQuestionDto {
     examQuestionId?: number;
-    submittedAnswers?: ExamSubmissionAnswerDto[];
+    submittedAnswers?: ExecuteExamAnswerDto[];
 
-    constructor(data?: IExamSubmissionExamQuestionDto) {
+    constructor(data?: IExecuteExamExamQuestionDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -463,14 +560,14 @@ export class ExamSubmissionExamQuestionDto implements IExamSubmissionExamQuestio
             if (Array.isArray(_data["submittedAnswers"])) {
                 this.submittedAnswers = [] as any;
                 for (let item of _data["submittedAnswers"])
-                    this.submittedAnswers!.push(ExamSubmissionAnswerDto.fromJS(item));
+                    this.submittedAnswers!.push(ExecuteExamAnswerDto.fromJS(item));
             }
         }
     }
 
-    static fromJS(data: any): ExamSubmissionExamQuestionDto {
+    static fromJS(data: any): ExecuteExamExamQuestionDto {
         data = typeof data === 'object' ? data : {};
-        let result = new ExamSubmissionExamQuestionDto();
+        let result = new ExecuteExamExamQuestionDto();
         result.init(data);
         return result;
     }
@@ -487,15 +584,15 @@ export class ExamSubmissionExamQuestionDto implements IExamSubmissionExamQuestio
     }
 }
 
-export interface IExamSubmissionExamQuestionDto {
+export interface IExecuteExamExamQuestionDto {
     examQuestionId?: number;
-    submittedAnswers?: ExamSubmissionAnswerDto[];
+    submittedAnswers?: ExecuteExamAnswerDto[];
 }
 
-export class ExamSubmissionAnswerDto implements IExamSubmissionAnswerDto {
+export class ExecuteExamAnswerDto implements IExecuteExamAnswerDto {
     id?: number;
 
-    constructor(data?: IExamSubmissionAnswerDto) {
+    constructor(data?: IExecuteExamAnswerDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -510,9 +607,9 @@ export class ExamSubmissionAnswerDto implements IExamSubmissionAnswerDto {
         }
     }
 
-    static fromJS(data: any): ExamSubmissionAnswerDto {
+    static fromJS(data: any): ExecuteExamAnswerDto {
         data = typeof data === 'object' ? data : {};
-        let result = new ExamSubmissionAnswerDto();
+        let result = new ExecuteExamAnswerDto();
         result.init(data);
         return result;
     }
@@ -524,7 +621,7 @@ export class ExamSubmissionAnswerDto implements IExamSubmissionAnswerDto {
     }
 }
 
-export interface IExamSubmissionAnswerDto {
+export interface IExecuteExamAnswerDto {
     id?: number;
 }
 

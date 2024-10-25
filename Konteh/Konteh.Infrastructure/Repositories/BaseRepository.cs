@@ -22,7 +22,7 @@ public abstract class BaseRepository<T> : IRepository<T> where T : class
         _context.Set<T>().Remove(entity);
     }
 
-    public async Task<IEnumerable<T>> GetAll()
+    public virtual async Task<IEnumerable<T>> GetAll()
     {
         return await _context.Set<T>().ToListAsync();
     }

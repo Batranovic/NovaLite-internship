@@ -17,7 +17,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { HttpClientModule } from '@angular/common/http';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatRadioButton, MatRadioGroup } from '@angular/material/radio';
+import { MatRadioButton, MatRadioGroup, MatRadioModule } from '@angular/material/radio';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ExamOverviewComponent } from './exam-overview/exam-overview.component';
 
@@ -48,9 +48,7 @@ import { ExamOverviewComponent } from './exam-overview/exam-overview.component';
     MatTableModule,
     MatPaginatorModule,
     MatCardModule,
-    MatRadioButton,
-    MatRadioGroup,
-    MatFormField
+    MatRadioModule,
   ]
 })
 export class ExamsModule { }
