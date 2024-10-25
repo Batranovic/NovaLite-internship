@@ -10,5 +10,4 @@ public class Exam
     public Candidate Candiate { get; set; } = null!;
     public List<ExamQuestion> ExamQuestions { get; set; } = [];
     public ExamStatus Status { get; set; }
-    public double Score { get; set; } = 0;
 }

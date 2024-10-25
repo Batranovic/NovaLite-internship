@@ -51,4 +51,8 @@ export class NavBarComponent implements OnInit{
   redirectToCreateQuestion() {
     this.router.navigate(["create-question"]);
   }
+
+  redirectToExamsOverview(){
+    this.router.navigate(['exams-overview'])
+  }
 }

@@ -7,19 +7,23 @@ namespace Konteh.BackOfficeApi.Features.Exams;
 
 public static class GetAllExams
 {
-    public class Query : IRequest<IEnumerable<Response>>;
+    public class Query : IRequest<Response>;
 
     public class Response
+    {
+        public IEnumerable<ResponseItem> Items { get; set; } = [];
+    }
+    public class ResponseItem
     {
         public long Id { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime? EndTime { get; set; }
-        public Candidate Candidate { get; set; } = null!;
+        public string Candidate { get; set; } = string.Empty!;
         public ExamStatus Status { get; set; }
-        public double Score { get; set; } = 0;
+        public double Score { get; set; }
     }
 
-    public class RequestHandler : IRequestHandler<Query, IEnumerable<Response>>
+    public class RequestHandler : IRequestHandler<Query, Response>
     {
         private readonly IRepository<Exam> _repository;
 
@@ -28,10 +32,26 @@ public static class GetAllExams
             _repository = repository;
         }
 
-        public async Task<IEnumerable<Response>> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<Response> Handle(Query request, CancellationToken cancellationToken)
         {
             var exams = await _repository.GetAll();
-            return exams.Select(e => new Response { Id = e.Id, StartTime = e.StartTime, EndTime = e.EndTime, Candidate = e.Candiate, Status = e.Status, Score = e.Score });
+            return new Response
+            {
+                Items = exams.Select(e => new ResponseItem
+                {
+                    Id = e.Id,
+                    StartTime = e.StartTime,
+                    EndTime = e.EndTime,
+                    Candidate = $"{e.Candiate.Name} {e.Candiate.Surname}, {e.Candiate.Faculty}",
+                    Status = e.Status,
+                    Score = CalculateScore(e)
+                })
+            };
+        }
+
+        private double CalculateScore(Exam exam)
+        {
+            return 0 / exam.ExamQuestions.Count;
         }
     }
 

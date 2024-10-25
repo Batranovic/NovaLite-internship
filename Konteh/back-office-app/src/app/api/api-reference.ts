@@ -192,6 +192,13 @@ export class QuestionsClient implements IQuestionsClient {
             result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = ProblemDetails.fromJS(resultData404);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -297,6 +304,72 @@ export class QuestionsClient implements IQuestionsClient {
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
                 result200 = resultData200 !== undefined ? resultData200 : <any>null;
     
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
+export interface IExamsClient {
+    getAllExams(): Observable<GetAllExamsResponse>;
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class ExamsClient implements IExamsClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "https://localhost:7184";
+    }
+
+    getAllExams(): Observable<GetAllExamsResponse> {
+        let url_ = this.baseUrl + "/exams";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAllExams(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAllExams(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<GetAllExamsResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<GetAllExamsResponse>;
+        }));
+    }
+
+    protected processGetAllExams(response: HttpResponseBase): Observable<GetAllExamsResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetAllExamsResponse.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -850,6 +923,112 @@ export interface IGetAllQuestionsResponse {
     id?: number;
     text?: string;
     category?: QuestionCategory;
+}
+
+export class GetAllExamsResponse implements IGetAllExamsResponse {
+    items?: GetAllExamsResponseItem[];
+
+    constructor(data?: IGetAllExamsResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(GetAllExamsResponseItem.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): GetAllExamsResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetAllExamsResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IGetAllExamsResponse {
+    items?: GetAllExamsResponseItem[];
+}
+
+export class GetAllExamsResponseItem implements IGetAllExamsResponseItem {
+    id?: number;
+    startTime?: Date;
+    endTime?: Date | undefined;
+    candidate?: string;
+    status?: ExamStatus;
+    score?: number;
+
+    constructor(data?: IGetAllExamsResponseItem) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.startTime = _data["startTime"] ? new Date(_data["startTime"].toString()) : <any>undefined;
+            this.endTime = _data["endTime"] ? new Date(_data["endTime"].toString()) : <any>undefined;
+            this.candidate = _data["candidate"];
+            this.status = _data["status"];
+            this.score = _data["score"];
+        }
+    }
+
+    static fromJS(data: any): GetAllExamsResponseItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetAllExamsResponseItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["startTime"] = this.startTime ? this.startTime.toISOString() : <any>undefined;
+        data["endTime"] = this.endTime ? this.endTime.toISOString() : <any>undefined;
+        data["candidate"] = this.candidate;
+        data["status"] = this.status;
+        data["score"] = this.score;
+        return data;
+    }
+}
+
+export interface IGetAllExamsResponseItem {
+    id?: number;
+    startTime?: Date;
+    endTime?: Date | undefined;
+    candidate?: string;
+    status?: ExamStatus;
+    score?: number;
+}
+
+export enum ExamStatus {
+    Pending = 1,
+    InProgess = 2,
+    Completed = 3,
 }
 
 export class ApiException extends Error {
