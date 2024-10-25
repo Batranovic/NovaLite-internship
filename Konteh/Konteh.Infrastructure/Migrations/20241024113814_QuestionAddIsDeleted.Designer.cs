@@ -12,16 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Konteh.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-<<<<<<<< HEAD:Konteh/Konteh.Infrastructure/Migrations/20241025062401_InitialMigration.Designer.cs
-    [Migration("20241025062401_InitialMigration")]
-    partial class InitialMigration
-========
     [Migration("20241024113814_QuestionAddIsDeleted")]
     partial class QuestionAddIsDeleted
->>>>>>>> master:Konteh/Konteh.Infrastructure/Migrations/20241024113814_QuestionAddIsDeleted.Designer.cs
     {
         /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
