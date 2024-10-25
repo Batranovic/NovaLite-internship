@@ -47,7 +47,6 @@ public class QuestionsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteById(long questionId)
     {
-        return NotFound();
         await _mediator.Send(new DeleteQuestion.Command { Id = questionId });
         return Ok();
     }
