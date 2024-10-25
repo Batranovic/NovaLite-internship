@@ -1,6 +1,10 @@
+using FluentValidation;
 using Konteh.Domain;
 using Konteh.FrontOfficeApi.Features.Exams.RandomGenerator;
 using Konteh.Infrastructure;
+using Konteh.Infrastructure.ExceptionHandlers;
+using Konteh.Infrastructure.Extensions;
+using Konteh.Infrastructure.PipelineBehaviours;
 using Konteh.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
@@ -13,8 +17,11 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+
+      
         // Add services to the container.
 
+        builder.AddRabbitMq(Assembly.GetExecutingAssembly());
         builder.Services.AddControllers();
         builder.Services.AddOpenApiDocument(o => o.SchemaSettings.SchemaNameGenerator = new CustomSwaggerSchemaNameGenerator());
         builder.Services.AddDbContext<AppDbContext>(o => o.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -26,25 +33,38 @@ public class Program
         builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
         builder.Services.AddScoped<IRepository<ExamQuestion>, ExamQuestionRepository>();
         builder.Services.AddScoped<IRepository<Answer>, AnswerRepository>();
+        
+          builder.Services.AddMediatR(cfg =>
+        {
+            cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+            cfg.AddOpenBehavior(typeof(ValidationBehaviour<,>));
+        });
+        builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
 
+        // Added for exceptions handling
+        builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+        builder.Services.AddProblemDetails();
 
         builder.Services.AddCors(options =>
         {
             options.AddPolicy("MyCorsPolicy", corsBuilder =>
             {
-                corsBuilder.AllowAnyOrigin()
-                        .AllowAnyMethod()
-                        .AllowAnyHeader();
+                corsBulder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
             });
         });
         var app = builder.Build();
 
+        var app = builder.Build();
 
         // Configure the HTTP request pipeline.
+        app.UseHttpsRedirection();
+        app.UseCors("MyCorsPolicy");
+        app.UseExceptionHandler();
         app.UseOpenApi();
         app.UseSwaggerUi();
-        app.UseHttpsRedirection();
 
         app.UseAuthorization();
         app.UseCors("MyCorsPolicy");

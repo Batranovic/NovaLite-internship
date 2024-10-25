@@ -1,35 +1,38 @@
-<div class="container">
-    <div class="form-container">
-        <h2 class="form-title">Question Form</h2>
-        <form [formGroup]="questionForm" (ngSubmit)="onSubmit()">
-            <mat-form-field appearance="fill">
-                <mat-label>Text</mat-label>
-                <textarea matInput formControlName="text"></textarea>
-            </mat-form-field>
-            <mat-form-field appearance="fill">
-                <mat-label>Category</mat-label>
-                <mat-select formControlName="category">
-                    <mat-option *ngFor="let c of questionCategories" [value]="c">
-                        {{ getCategoryText(c) }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-            <mat-form-field appearance="fill">
-                <mat-label>Type</mat-label>
-                <mat-select formControlName="type">
-                    <mat-option *ngFor="let t of questionTypes" [value]="t">
-                        {{ getTypeText(t) }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-            <mat-error *ngIf="questionForm.get('type')?.hasError('multipleCorrect')">{{ errorMessage.multipleCorrect
-                }}</mat-error>
-            <button class="question-form-button" mat-flat-button color="primary" type="submit">Submit</button>
-        </form>
-
-        <button mat-raised-button color="primary" type="button" (click)="addAnswer()">Add an answer</button>
-        <ng-container *ngFor="let group of answersArray.controls; let i = index">
-            <app-answer-form *ngIf="!group.value.isDeleted" [answerForm]="group" (delete)="onDeleteAnswer(i)">
-            </app-answer-form>
-        </ng-container>
-    </div>
+<div class="form-container">
+    <h2 class="form-title">Question Form</h2>
+    <form [formGroup]="questionForm" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="fill">
+            <mat-label>Text</mat-label>
+            <textarea matInput formControlName="text"></textarea>
+        </mat-form-field>
+        <mat-error *ngIf="questionForm.get('text')?.hasError('formServer')">
+            {{ questionForm.get('text')?.getError('formServer') }}
+        </mat-error>
+        <mat-form-field appearance="fill">
+            <mat-label>Category</mat-label>
+            <mat-select formControlName="category">
+                <mat-option *ngFor="let c of questionCategories" [value]="c">
+                    {{ getCategoryText(c) }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-error *ngIf="questionForm.get('category')?.hasError('formServer')">
+            {{ questionForm.get('category')?.getError('formServer') }}
+        </mat-error>
+        <mat-form-field appearance="fill">
+            <mat-label>Type</mat-label>
+            <mat-select formControlName="type">
+                <mat-option *ngFor="let t of questionTypes" [value]="t">
+                    {{ getTypeText(t) }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <button class="question-form-button" mat-flat-button color="primary" type="submit" [disabled]="!questionForm.valid">Submit</button>
+    </form>
+    <form-errors [form]="questionForm"></form-errors>
+    <button class="add-answer-button" mat-raised-button color="primary" type="button" (click)="addAnswer()">Add an answer</button>
+    <ng-container *ngFor="let group of answersArray.controls; let i = index">
+        <app-answer-form *ngIf="!group.value.isDeleted" [answerForm]="group" (delete)="onDeleteAnswer(i)">
+        </app-answer-form>
+    </ng-container>
+</div>
