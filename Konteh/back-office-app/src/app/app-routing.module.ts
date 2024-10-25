@@ -8,7 +8,7 @@ import {NotFoundComponent} from './features/layout/not-found/not-found.component
 
 const routes: Routes = [
   { path: '', redirectTo: 'questions-overview', pathMatch: 'full' },
-  { path: 'questions-overview', component: QuestionsOverviewComponent},
+  { path: 'questions-overview', component: QuestionsOverviewComponent, canActivate: [AuthGuard] },
   { path: 'exam-notifications', component: ExamNotificationsComponent, canActivate: [AuthGuard] },
   { path: 'create-question', component: CreateQuestionComponent, canActivate: [AuthGuard] },
   { path: 'edit-question/:id', component: CreateQuestionComponent, canActivate: [AuthGuard] },
