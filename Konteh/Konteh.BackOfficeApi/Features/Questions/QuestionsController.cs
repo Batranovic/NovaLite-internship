@@ -24,6 +24,8 @@ public class QuestionsController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [ProducesResponseType(typeof(GetQuestionById.Response), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<GetQuestionById.Response>> GetQuestionById(long id)
     {
         var response = await _mediator.Send(new GetQuestionById.Query { Id = id });
@@ -41,7 +43,9 @@ public class QuestionsController : ControllerBase
     }
 
     [HttpDelete("{questionId:long}")]
-    public async Task<ActionResult<bool>> DeleteById(long questionId)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteById(long questionId)
     {
         await _mediator.Send(new DeleteQuestion.Command { Id = questionId });
         return Ok();
