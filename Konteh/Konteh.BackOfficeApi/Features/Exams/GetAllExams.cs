@@ -16,8 +16,6 @@ public static class GetAllExams
     public class ResponseItem
     {
         public long Id { get; set; }
-        public DateTime StartTime { get; set; }
-        public DateTime? EndTime { get; set; }
         public string Candidate { get; set; } = string.Empty!;
         public ExamStatus Status { get; set; }
         public double Score { get; set; }
@@ -40,8 +38,6 @@ public static class GetAllExams
                 Items = exams.Select(e => new ResponseItem
                 {
                     Id = e.Id,
-                    StartTime = e.StartTime,
-                    EndTime = e.EndTime,
                     Candidate = $"{e.Candiate.Name} {e.Candiate.Surname}, {e.Candiate.Faculty}",
                     Status = e.Status,
                     Score = CalculateScore(e)

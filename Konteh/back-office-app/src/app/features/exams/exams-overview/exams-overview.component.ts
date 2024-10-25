@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { ExamsClient, GetAllExamsResponse } from '../../../api/api-reference';
+import { ExamsClient } from '../../../api/api-reference';
 import { MatTableDataSource } from '@angular/material/table';
 
 @Component({
-  selector: 'app-exam-overview',
-  templateUrl: './exam-overview.component.html',
-  styleUrls: ['./exam-overview.component.css']
+  selector: 'app-exams-overview',
+  templateUrl: './exams-overview.component.html',
+  styleUrls: ['./exams-overview.component.css']
 })
-export class ExamOverviewComponent implements OnInit {
+export class ExamsOverviewComponent implements OnInit {
   displayedColumns: string[] = ['id', 'candidate', 'status', 'score'];
   dataSource =  new MatTableDataSource(); 
 
