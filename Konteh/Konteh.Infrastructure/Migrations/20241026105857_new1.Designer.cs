@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Konteh.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241024121848_SubmittedAnswers")]
-    partial class SubmittedAnswers
+    [Migration("20241026105857_new1")]
+    partial class new1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,21 @@ namespace Konteh.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("AnswerExamQuestion", b =>
+                {
+                    b.Property<long>("ExamQuestionId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("SubmittedAnswersId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("ExamQuestionId", "SubmittedAnswersId");
+
+                    b.HasIndex("SubmittedAnswersId");
+
+                    b.ToTable("AnswerExamQuestion");
+                });
 
             modelBuilder.Entity("Konteh.Domain.Answer", b =>
                 {
@@ -155,27 +170,19 @@ namespace Konteh.Infrastructure.Migrations
                     b.ToTable("Questions");
                 });
 
-            modelBuilder.Entity("Konteh.Domain.SubmittedAnswer", b =>
+            modelBuilder.Entity("AnswerExamQuestion", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                    b.HasOne("Konteh.Domain.ExamQuestion", null)
+                        .WithMany()
+                        .HasForeignKey("ExamQuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<long>("AnswerId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("ExamQuestionId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AnswerId");
-
-                    b.HasIndex("ExamQuestionId");
-
-                    b.ToTable("SubmittedAnswers");
+                    b.HasOne("Konteh.Domain.Answer", null)
+                        .WithMany()
+                        .HasForeignKey("SubmittedAnswersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Konteh.Domain.Answer", b =>
@@ -211,29 +218,9 @@ namespace Konteh.Infrastructure.Migrations
                     b.Navigation("Question");
                 });
 
-            modelBuilder.Entity("Konteh.Domain.SubmittedAnswer", b =>
-                {
-                    b.HasOne("Konteh.Domain.Answer", "Answer")
-                        .WithMany()
-                        .HasForeignKey("AnswerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Konteh.Domain.ExamQuestion", null)
-                        .WithMany("SubmmitedAnswers")
-                        .HasForeignKey("ExamQuestionId");
-
-                    b.Navigation("Answer");
-                });
-
             modelBuilder.Entity("Konteh.Domain.Exam", b =>
                 {
                     b.Navigation("ExamQuestions");
-                });
-
-            modelBuilder.Entity("Konteh.Domain.ExamQuestion", b =>
-                {
-                    b.Navigation("SubmmitedAnswers");
                 });
 
             modelBuilder.Entity("Konteh.Domain.Question", b =>

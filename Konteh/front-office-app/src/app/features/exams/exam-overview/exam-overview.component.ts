@@ -90,7 +90,7 @@ export class ExamOverviewComponent {
  async submitExam() {
     const examQuestions = this.examResponse.examQuestions?.map(question => {
       const submittedAnswers = this.selectedAnswers[question.id!]?.map(answerId => 
-        new ExecuteExamAnswerDto({ id: answerId })
+        new ExecuteExamAnswerDto({ answerId})
       ) || [];
 
       return new ExecuteExamExamQuestionDto({

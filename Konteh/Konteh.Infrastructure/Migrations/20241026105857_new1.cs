@@ -5,27 +5,27 @@
 namespace Konteh.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AddeddExamQuestionToAnswerManyToManyRelationship : Migration
+    public partial class new1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "SubmittedAnswers");
+                name: "ExamQuestionAnswer");
 
             migrationBuilder.CreateTable(
                 name: "AnswerExamQuestion",
                 columns: table => new
                 {
                     ExamQuestionId = table.Column<long>(type: "bigint", nullable: false),
-                    SubmmitedAnswersId = table.Column<long>(type: "bigint", nullable: false)
+                    SubmittedAnswersId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AnswerExamQuestion", x => new { x.ExamQuestionId, x.SubmmitedAnswersId });
+                    table.PrimaryKey("PK_AnswerExamQuestion", x => new { x.ExamQuestionId, x.SubmittedAnswersId });
                     table.ForeignKey(
-                        name: "FK_AnswerExamQuestion_Answers_SubmmitedAnswersId",
-                        column: x => x.SubmmitedAnswersId,
+                        name: "FK_AnswerExamQuestion_Answers_SubmittedAnswersId",
+                        column: x => x.SubmittedAnswersId,
                         principalTable: "Answers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -38,9 +38,9 @@ namespace Konteh.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AnswerExamQuestion_SubmmitedAnswersId",
+                name: "IX_AnswerExamQuestion_SubmittedAnswersId",
                 table: "AnswerExamQuestion",
-                column: "SubmmitedAnswersId");
+                column: "SubmittedAnswersId");
         }
 
         /// <inheritdoc />
@@ -50,38 +50,32 @@ namespace Konteh.Infrastructure.Migrations
                 name: "AnswerExamQuestion");
 
             migrationBuilder.CreateTable(
-                name: "SubmittedAnswers",
+                name: "ExamQuestionAnswer",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
                     AnswerId = table.Column<long>(type: "bigint", nullable: false),
-                    ExamQuestionId = table.Column<long>(type: "bigint", nullable: true)
+                    ExamQuestionId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SubmittedAnswers", x => x.Id);
+                    table.PrimaryKey("PK_ExamQuestionAnswer", x => new { x.AnswerId, x.ExamQuestionId });
                     table.ForeignKey(
-                        name: "FK_SubmittedAnswers_Answers_AnswerId",
+                        name: "FK_ExamQuestionAnswer_Answers_AnswerId",
                         column: x => x.AnswerId,
                         principalTable: "Answers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_SubmittedAnswers_ExamQuestions_ExamQuestionId",
+                        name: "FK_ExamQuestionAnswer_ExamQuestions_ExamQuestionId",
                         column: x => x.ExamQuestionId,
                         principalTable: "ExamQuestions",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_SubmittedAnswers_AnswerId",
-                table: "SubmittedAnswers",
-                column: "AnswerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SubmittedAnswers_ExamQuestionId",
-                table: "SubmittedAnswers",
+                name: "IX_ExamQuestionAnswer_ExamQuestionId",
+                table: "ExamQuestionAnswer",
                 column: "ExamQuestionId");
         }
     }

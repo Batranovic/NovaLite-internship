@@ -590,7 +590,7 @@ export interface IExecuteExamExamQuestionDto {
 }
 
 export class ExecuteExamAnswerDto implements IExecuteExamAnswerDto {
-    id?: number;
+    answerId?: number;
     text?: string;
 
     constructor(data?: IExecuteExamAnswerDto) {
@@ -604,7 +604,7 @@ export class ExecuteExamAnswerDto implements IExecuteExamAnswerDto {
 
     init(_data?: any) {
         if (_data) {
-            this.id = _data["id"];
+            this.answerId = _data["answerId"];
             this.text = _data["text"];
         }
     }
@@ -618,14 +618,14 @@ export class ExecuteExamAnswerDto implements IExecuteExamAnswerDto {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
+        data["answerId"] = this.answerId;
         data["text"] = this.text;
         return data;
     }
 }
 
 export interface IExecuteExamAnswerDto {
-    id?: number;
+    answerId?: number;
     text?: string;
 }
 

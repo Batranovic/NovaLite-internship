@@ -3,17 +3,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Konteh.Infrastructure.Repositories;
 
-public class ExamQuestionRepository : BaseRepository<ExamQuestion>, IExamQuestionRepository
+public class ExamQuestionRepository : BaseRepository<ExamQuestion>
 {
     public ExamQuestionRepository(AppDbContext context) : base(context)
     {
     }
 
-    public async Task<List<ExamQuestion>> GetByIds(IEnumerable<long> ids)
+    public override IEnumerable<ExamQuestion> GetByIds(List<long> ids)
     {
-        return await _context.Set<ExamQuestion>()
-                             .Where(eq => ids.Contains(eq.Id))
-                             .ToListAsync();
+        return _context.Set<ExamQuestion>()
+                       .Include(eq => eq.Question)                
+                       .ThenInclude(q => q.Answers)              
+                       .Where(eq => ids.Contains(eq.Id))         
+                       .ToList();                                 
     }
 
 }

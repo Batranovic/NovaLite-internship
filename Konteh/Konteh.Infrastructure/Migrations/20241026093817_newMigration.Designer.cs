@@ -4,6 +4,7 @@ using Konteh.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Konteh.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241026093817_newMigration")]
+    partial class newMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -27,12 +30,12 @@ namespace Konteh.Infrastructure.Migrations
                     b.Property<long>("ExamQuestionId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("SubmittedAnswersId")
+                    b.Property<long>("SubmmitedAnswersId")
                         .HasColumnType("bigint");
 
-                    b.HasKey("ExamQuestionId", "SubmittedAnswersId");
+                    b.HasKey("ExamQuestionId", "SubmmitedAnswersId");
 
-                    b.HasIndex("SubmittedAnswersId");
+                    b.HasIndex("SubmmitedAnswersId");
 
                     b.ToTable("AnswerExamQuestion");
                 });
@@ -177,7 +180,7 @@ namespace Konteh.Infrastructure.Migrations
 
                     b.HasOne("Konteh.Domain.Answer", null)
                         .WithMany()
-                        .HasForeignKey("SubmittedAnswersId")
+                        .HasForeignKey("SubmmitedAnswersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

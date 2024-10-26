@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Konteh.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241025081959_AddeddExamQuestionToAnswerManyToManyRelationship")]
-    partial class AddeddExamQuestionToAnswerManyToManyRelationship
+    [Migration("20241026104546_new")]
+    partial class @new
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,19 +25,19 @@ namespace Konteh.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("AnswerExamQuestion", b =>
+            modelBuilder.Entity("ExamQuestionAnswer", b =>
                 {
+                    b.Property<long>("AnswerId")
+                        .HasColumnType("bigint");
+
                     b.Property<long>("ExamQuestionId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("SubmmitedAnswersId")
-                        .HasColumnType("bigint");
+                    b.HasKey("AnswerId", "ExamQuestionId");
 
-                    b.HasKey("ExamQuestionId", "SubmmitedAnswersId");
+                    b.HasIndex("ExamQuestionId");
 
-                    b.HasIndex("SubmmitedAnswersId");
-
-                    b.ToTable("AnswerExamQuestion");
+                    b.ToTable("ExamQuestionAnswer");
                 });
 
             modelBuilder.Entity("Konteh.Domain.Answer", b =>
@@ -170,17 +170,17 @@ namespace Konteh.Infrastructure.Migrations
                     b.ToTable("Questions");
                 });
 
-            modelBuilder.Entity("AnswerExamQuestion", b =>
+            modelBuilder.Entity("ExamQuestionAnswer", b =>
                 {
-                    b.HasOne("Konteh.Domain.ExamQuestion", null)
+                    b.HasOne("Konteh.Domain.Answer", null)
                         .WithMany()
-                        .HasForeignKey("ExamQuestionId")
+                        .HasForeignKey("AnswerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Konteh.Domain.Answer", null)
+                    b.HasOne("Konteh.Domain.ExamQuestion", null)
                         .WithMany()
-                        .HasForeignKey("SubmmitedAnswersId")
+                        .HasForeignKey("ExamQuestionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

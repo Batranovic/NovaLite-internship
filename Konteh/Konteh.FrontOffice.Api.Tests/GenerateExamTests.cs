@@ -13,7 +13,7 @@ public class GenerateExamTests
 {
     private IQuestionRepository _questionRepository;
     private IRepository<Exam> _examRepository;
-    private GenerateExam.Handler _handler;
+    private GenerateExam.RequestHandler _handler;
     private IRandomGenerator _randomGenerator;
     private IRepository<Candidate> _candidateRepository;
 
@@ -24,7 +24,7 @@ public class GenerateExamTests
         _examRepository = Substitute.For<IRepository<Exam>>();
         _randomGenerator = Substitute.For<IRandomGenerator>();
         _candidateRepository = Substitute.For<IRepository<Candidate>>();
-        _handler = new GenerateExam.Handler(_questionRepository, _examRepository, _randomGenerator, _candidateRepository);
+        _handler = new GenerateExam.RequestHandler(_questionRepository, _examRepository, _randomGenerator, _candidateRepository);
     }
 
     [Test]

@@ -20,15 +20,15 @@ public static class ExecuteExam
 
     public class AnswerDto
     {
-        public long Id { get; set; }
+        public long AnswerId { get; set; }
         public string Text { get; set; } = string.Empty;
 
         public class RequestHandler : IRequestHandler<Command>
         {
             private readonly IRepository<Exam> _examRepository;
-            private readonly IExamQuestionRepository _examQuestionRepository;
+            private readonly IRepository<ExamQuestion> _examQuestionRepository;
 
-            public RequestHandler(IRepository<Exam> examRepository, IExamQuestionRepository examQuestionRepository)
+            public RequestHandler(IRepository<Exam> examRepository, IRepository<ExamQuestion> examQuestionRepository)
             {
                 _examRepository = examRepository;
                 _examQuestionRepository = examQuestionRepository;
@@ -41,15 +41,17 @@ public static class ExecuteExam
 
                 exam.EndTime = DateTime.UtcNow;
 
-                var selectedAnswersIds = request.ExamQuestions.ToDictionary(e => e.ExamQuestionId, e => e.SubmittedAnswers.Select(a => a.Id).ToHashSet());
+                var selectedAnswersIds = request.ExamQuestions.ToDictionary(e => e.ExamQuestionId, e => e.SubmittedAnswers.Select(a => a.AnswerId).ToHashSet());
 
-                var examQuestions = _examQuestionRepository.GetByIds(request.ExamQuestions.Select(e => e.ExamQuestionId).ToList());
+                var examQuestions =  _examQuestionRepository.GetByIds(request.ExamQuestions.Select(e => e.ExamQuestionId).ToList());
 
-                /* foreach(var examQuestion in examQuestions)
+                 foreach(var examQuestion in examQuestions)
                  {
                      var answersIds = selectedAnswersIds[examQuestion.Id];
+                    examQuestion.SubmittedAnswers = examQuestion.Question.Answers.Where(a => answersIds.Contains(a.Id)).ToList();
 
-                 }*/
+                 }
+                await _examQuestionRepository.SaveChanges();
 
                 await _examRepository.SaveChanges();
             }

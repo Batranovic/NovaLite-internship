@@ -7,6 +7,6 @@ public class ExamQuestionConfiguration : IEntityTypeConfiguration<ExamQuestion>
 {
     public void Configure(EntityTypeBuilder<ExamQuestion> builder)
     {
-        builder.HasMany(x => x.SubmmitedAnswers).WithMany();
+        builder.HasMany(x => x.SubmittedAnswers).WithMany();
     }
 }
