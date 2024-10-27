@@ -20,6 +20,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatRadioButton, MatRadioGroup, MatRadioModule } from '@angular/material/radio';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ExamOverviewComponent } from './exam-overview/exam-overview.component';
+import { FormErrorsComponent } from "../../shared/form-errors.component";
 
 @NgModule({
   declarations: [
@@ -49,6 +50,7 @@ import { ExamOverviewComponent } from './exam-overview/exam-overview.component';
     MatPaginatorModule,
     MatCardModule,
     MatRadioModule,
+    FormErrorsComponent
   ]
 })
 export class ExamsModule { }

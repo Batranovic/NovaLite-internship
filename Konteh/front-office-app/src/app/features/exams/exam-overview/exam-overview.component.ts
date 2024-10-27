@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatRadioChange } from '@angular/material/radio';
 import { MatCheckboxChange } from '@angular/material/checkbox';
+import { AnswerService } from './answet.service';
 
 @Component({
   selector: 'app-exam-overview',
@@ -12,12 +13,11 @@ import { MatCheckboxChange } from '@angular/material/checkbox';
 })
 export class ExamOverviewComponent {
   QuestionType = QuestionType
-  examResponse: Partial<GenerateExamResponse> = {examQuestions: []}
-  examQuestion : ExecuteExamExamQuestionDto | undefined 
+  examResponse: GenerateExamResponse = new GenerateExamResponse(); 
   currentQuestionIndex = 0
   selectedAnswers : { [questionId: number]: number[]} = {}
 
-  constructor(private router: Router, private examClient: ExamClient, private snackBar: MatSnackBar) {
+  constructor(private router: Router, private examClient: ExamClient, private snackBar: MatSnackBar,  private answerService: AnswerService) {
     const navigation = this.router.getCurrentNavigation();
     if (navigation?.extras.state) {
       this.examResponse = navigation.extras.state['examResponse'];
@@ -35,6 +35,7 @@ export class ExamOverviewComponent {
   get currentQuestion() {
     return this.examResponse?.examQuestions?.[this.currentQuestionIndex];
   }
+  
   nextQuestion() {
     if (!this.isLastQuestion){
       this.currentQuestionIndex++;
@@ -48,51 +49,25 @@ export class ExamOverviewComponent {
   }
 
   onAnswerChange(event: MatRadioChange | MatCheckboxChange, answerId: number, questionId: number) {
-    let isChecked: boolean;
-
-    if ('checked' in event) {
-      isChecked = event.checked; 
-    } else {
-      isChecked = true; 
-    }
-
-    if (!this.selectedAnswers[questionId]) {
-      this.selectedAnswers[questionId] = [];
-    }
+    const isChecked = 'checked' in event ? event.checked : true;
 
     if (isChecked) {
-      this.addAnswer(questionId, answerId);
+      this.answerService.addAnswer(questionId, answerId);
     } else {
-      this.removeAnswer(questionId, answerId);
-    }
-  }
-  
-  addAnswer(questionId: number, answerId: number) {
-    if (!this.selectedAnswers[questionId]) {
-      this.selectedAnswers[questionId] = [];
-    }
-  
-    if (!this.selectedAnswers[questionId].includes(answerId)) {
-      this.selectedAnswers[questionId].push(answerId);
-    }
-  }
-  
-  removeAnswer(questionId: number, answerId: number) {
-    if (this.selectedAnswers[questionId]) {
-      this.selectedAnswers[questionId] = this.selectedAnswers[questionId].filter(id => id !== answerId);
+      this.answerService.removeAnswer(questionId, answerId);
     }
   }
 
   isAnswerSelected(answerId: number, questionId: number): boolean {
-    return this.selectedAnswers[questionId]?.includes(answerId) || false;
+    return this.answerService.getAnswers(questionId).includes(answerId);
   }
   
  async submitExam() {
     const examQuestions = this.examResponse.examQuestions?.map(question => {
-      const submittedAnswers = this.selectedAnswers[question.id!]?.map(answerId => 
-        new ExecuteExamAnswerDto({ answerId})
+      const submittedAnswers = this.answerService.getAnswers(question.id!).map(answerId => 
+        new ExecuteExamAnswerDto({ answerId })
       ) || [];
-
+      
       return new ExecuteExamExamQuestionDto({
         examQuestionId: question.id,
         submittedAnswers

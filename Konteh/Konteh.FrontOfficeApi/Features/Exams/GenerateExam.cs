@@ -1,6 +1,8 @@
-﻿using Konteh.Domain;
+﻿using FluentValidation;
+using Konteh.Domain;
 using Konteh.Domain.Enumerations;
 using Konteh.FrontOfficeApi.Features.Exams.RandomGenerator;
+using Konteh.Infrastructure.ExceptionHandlers.Exceptions;
 using Konteh.Infrastructure.Repositories;
 using MediatR;
 
@@ -75,7 +77,7 @@ public static class GenerateExam
 
                 if (questionsInCategory.Count() < 2)
                 {
-                    throw new InvalidOperationException($"Not enough questions available in category '{category}'.");
+                    throw new NotFoundException();
                 }
 
                 var selectedQuestions = questionsInCategory.OrderBy(q => _randomGenerator.Next())
@@ -141,7 +143,7 @@ public static class GenerateExam
 
             if (existingExam.Any())
             {
-                throw new InvalidOperationException("Candidate has already taken the exam.");
+                throw new ValidationException("Candidate has already taken the exam.");
             }
             return candidate;
         }

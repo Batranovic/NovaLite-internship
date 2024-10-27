@@ -23,6 +23,9 @@ public class ExamController : Controller
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<GenerateExam.Response>> GenerateExam(GenerateExam.Command command)
     {
         var response = await _mediator.Send(command);

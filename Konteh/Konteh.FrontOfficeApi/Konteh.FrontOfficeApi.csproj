@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Features\Exams\Validators\" />
     <Folder Include="Features\Notifications\Consumers\" />
   </ItemGroup>
 

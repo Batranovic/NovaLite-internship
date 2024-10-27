@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ExamClient, GenerateExamCommand, GenerateExamResponse } from '../../../api/api-reference';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
+import { setServerSideValidationErrors } from '../../../shared/validation';
 
 @Component({
   selector: 'app-exam-registration',
@@ -24,24 +25,18 @@ export class ExamRegistrationComponent {
   onSubmit() {
     if (this.examForm.valid) {
       const command = new GenerateExamCommand({
-        candidateName: this.examForm.value.candidateName ?? '', 
-        candidateSurname: this.examForm.value.candidateSurname ?? '', 
-        candidateEmail: this.examForm.value.candidateEmail ?? '',  
-        candidateFaculty: this.examForm.value.candidateFaculty ?? ''  
+        candidateName: this.examForm.value.candidateName!, 
+        candidateSurname: this.examForm.value.candidateSurname!, 
+        candidateEmail: this.examForm.value.candidateEmail!,  
+        candidateFaculty: this.examForm.value.candidateFaculty!  
       });
      
-      this.examClient.generateExam(command).subscribe(
-        (response: GenerateExamResponse) => {
-          this.router.navigate(['exam-overview'], { state: { examResponse: response } });
+      this.examClient.generateExam(command).subscribe({
+        next: (response: GenerateExamResponse) => {
+            this.router.navigate(['exam-overview'], { state: { examResponse: response } });
         },
-        (error: HttpErrorResponse) => {
-          if (error.status === 500) {
-            this.errorMessage = "You already took the quiz!";
-          } else {
-            this.errorMessage = "An unexpected error occurred.";
-          }
-        }
-      );
+        error: errors => setServerSideValidationErrors(errors, this.examForm)
+    });
     } 
   }
 }
