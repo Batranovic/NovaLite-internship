@@ -1,30 +1,49 @@
 ﻿using Konteh.Domain;
-using MassTransit;
+using Konteh.Infrastructure.ExceptionHandlers.Exceptions;
+using Konteh.Infrastructure.Repositories;
 using MediatR;
 
-namespace Konteh.FrontOfficeApi.Features.Exams
+namespace Konteh.FrontOfficeApi.Features.Exams;
+
+public static class SubmitExam
 {
-    public class SubmitExam
+    public class Command : IRequest
     {
-        public class Command : IRequest
+        public long ExamId { get; set; }
+        public List<ExamQuestionDto> ExamQuestions { get; set; } = [];
+    }
+    public class ExamQuestionDto
+    {
+        public long ExamQuestionId { get; set; }
+        public List<long> SubmittedAnswers { get; set; } = [];
+    }
+
+    public class RequestHandler : IRequestHandler<Command>
+    {
+        private readonly IRepository<Exam> _examRepository;
+
+        public RequestHandler(IRepository<Exam> examRepository)
         {
-            public string Name { get; set; } = string.Empty;
-            public string Test { get; set; } = string.Empty;
+            _examRepository = examRepository;
         }
 
-        public class RequestHandler : IRequestHandler<Command>
+        public async Task Handle(Command request, CancellationToken cancellationToken)
         {
-            private readonly IBus _bus;
+            //TODO: Only allow submitting exam once
+            var exam = await _examRepository.GetById(request.ExamId)
+                        ?? throw new NotFoundException();
 
-            public RequestHandler(IBus bus)
+            exam.EndTime = DateTime.UtcNow;
+
+            var examQuestions = exam.ExamQuestions;
+
+            foreach (var examQuestion in examQuestions)
             {
-                _bus = bus;
+                var answersIds = request.ExamQuestions.Single(x => x.ExamQuestionId == examQuestion.Id).SubmittedAnswers;
+                examQuestion.SubmittedAnswers = examQuestion.Question.Answers.Where(a => answersIds.Contains(a.Id)).ToList();
             }
 
-            public async Task Handle(Command request, CancellationToken cancellationToken)
-            {
-                await _bus.Publish(new Candidate() { Name = request.Name, Faculty = request.Test });
-            }
+            await _examRepository.SaveChanges();
         }
     }
 }

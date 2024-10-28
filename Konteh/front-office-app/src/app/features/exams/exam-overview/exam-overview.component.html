@@ -1,0 +1,21 @@
+<div class="container">
+  <img src="/images.png" alt="image" class="logo">
+  <div class="form-container">
+    <br>
+    <div *ngIf="exam?.questions?.length! > 0">
+      <h6 class="question-text">{{ currentQuestion?.text }}</h6>
+      <app-answer-form *ngIf="currentQuestion" [question]="currentQuestion"></app-answer-form>
+      <br>
+      <div class="pagination-controls">
+        <button class="arrow-button" (click)="previousQuestion()" [disabled]="isFirstQuestion">
+          <i class="fa fa-arrow-left"></i>
+        </button>
+        <button class="arrow-button" (click)="nextQuestion()" [disabled]="isLastQuestion">
+          <i class="fa fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+  <button *ngIf="isLastQuestion" class="exam-form-button" mat-flat-button type="submit"
+    (click)="submitExam()">Submit</button>
+</div>

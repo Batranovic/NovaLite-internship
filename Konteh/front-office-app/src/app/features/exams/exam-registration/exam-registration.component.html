@@ -1,0 +1,39 @@
+<div class="container">
+    <div class="form-container">
+        <h2 class="form-title">
+            <img src="/bulb.png" alt="icon" class="title-icon"> NovaLite Quiz
+        </h2>
+        <form [formGroup]="examForm" (ngSubmit)="onSubmit()">
+            <mat-form-field appearance="outline">
+                <mat-label>Name</mat-label>
+                <input matInput formControlName="candidateName" placeholder="Enter your first name">
+            </mat-form-field>
+            <mat-error *ngIf="examForm.get('candidateName')?.hasError('formServer')">
+                {{ examForm.get('candidateName')?.getError('formServer') }}
+            </mat-error>
+            <mat-form-field appearance="outline">
+                <mat-label>Surname</mat-label>
+                <input matInput formControlName="candidateSurname" placeholder="Enter your last name">
+            </mat-form-field>
+            <mat-error *ngIf="examForm.get('candidateSurname')?.hasError('formServer')">
+                {{ examForm.get('candidateSurname')?.getError('formServer') }}
+            </mat-error>
+            <mat-form-field appearance="outline">
+                <mat-label>Email</mat-label>
+                <input matInput formControlName="candidateEmail" type="email" placeholder="Enter your email">
+            </mat-form-field>
+            <mat-error *ngIf="examForm.get('candidateEmail')?.hasError('formServer')">
+                {{ examForm.get('candidateEmail')?.getError('formServer') }}
+            </mat-error>
+            <mat-form-field appearance="outline">
+                <mat-label>Faculty</mat-label>
+                <input matInput formControlName="candidateFaculty" placeholder="Enter your faculty name">
+            </mat-form-field>
+            <mat-error *ngIf="examForm.get('candidateFaculty')?.hasError('formServer')">
+                {{ examForm.get('candidateFaculty')?.getError('formServer') }}
+            </mat-error>
+            <button class="exam-form-button" mat-flat-button type="submit">Submit</button>
+        </form>
+        <form-errors [form]="examForm"></form-errors>
+    </div>
+</div>

@@ -40,4 +40,13 @@ public class QuestionRepository : BaseRepository<Question>, IQuestionRepository
             .Include(q => q.Answers.Where(a => !a.IsDeleted))
             .FirstOrDefaultAsync(q => q.Id == id);
     }
+
+    public override async Task<IEnumerable<Question>> GetAll()
+    {
+        return await _context.Set<Question>()
+            .Include(q => q.Answers.Where(a => !a.IsDeleted))
+            .ToListAsync();
+    }
+
+
 }
