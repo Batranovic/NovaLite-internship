@@ -9,7 +9,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatOptionModule } from '@angular/material/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterLink, RouterModule, RouterOutlet } from '@angular/router';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatListModule } from '@angular/material/list';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -71,7 +71,7 @@ export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
     FeaturesModule,
     FormErrorsComponent,
     ExamsModule,
-    LayoutModule
+    LayoutModule,
   ],
   providers: [
     provideAnimationsAsync(), HttpClientModule,

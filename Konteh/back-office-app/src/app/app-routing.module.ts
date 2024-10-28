@@ -17,6 +17,7 @@ const routes: Routes = [
   { path: 'not-found', component: NotFoundComponent },
 ];
 @NgModule({
+  imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
