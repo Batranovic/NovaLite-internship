@@ -8,11 +8,13 @@ import { MatAnchor, MatButtonModule, MatIconButton} from '@angular/material/butt
 import { MaterialModule} from '../../shared/material/material.module';
 import { MatMenuModule } from '@angular/material/menu';
 import { RouterLink } from '@angular/router';
+import { NotFoundComponent } from './not-found/not-found.component';
 
 @NgModule({
   declarations: [
     NavBarComponent,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    NotFoundComponent
   ],
   exports: [
     NavBarComponent

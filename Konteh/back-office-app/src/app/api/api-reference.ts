@@ -20,7 +20,7 @@ export interface IQuestionsClient {
     getQuestionById(id: number): Observable<GetQuestionByIdResponse>;
     createOrUpdateQuestion(command: CreateUpdateQuestionCommand): Observable<void>;
     getAll(): Observable<GetAllQuestionsResponse[]>;
-    deleteById(questionId: number): Observable<boolean>;
+    deleteById(questionId: number): Observable<void>;
 }
 
 @Injectable({
@@ -136,6 +136,13 @@ export class QuestionsClient implements IQuestionsClient {
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = GetQuestionByIdResponse.fromJS(resultData200);
             return _observableOf(result200);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = ProblemDetails.fromJS(resultData404);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -262,7 +269,7 @@ export class QuestionsClient implements IQuestionsClient {
         return _observableOf(null as any);
     }
 
-    deleteById(questionId: number): Observable<boolean> {
+    deleteById(questionId: number): Observable<void> {
         let url_ = this.baseUrl + "/questions/{questionId}";
         if (questionId === undefined || questionId === null)
             throw new Error("The parameter 'questionId' must be defined.");
@@ -273,7 +280,6 @@ export class QuestionsClient implements IQuestionsClient {
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
-                "Accept": "application/json"
             })
         };
 
@@ -284,14 +290,14 @@ export class QuestionsClient implements IQuestionsClient {
                 try {
                     return this.processDeleteById(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<boolean>;
+                    return _observableThrow(e) as any as Observable<void>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<boolean>;
+                return _observableThrow(response_) as any as Observable<void>;
         }));
     }
 
-    protected processDeleteById(response: HttpResponseBase): Observable<boolean> {
+    protected processDeleteById(response: HttpResponseBase): Observable<void> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -300,11 +306,14 @@ export class QuestionsClient implements IQuestionsClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result200 = resultData200 !== undefined ? resultData200 : <any>null;
-    
-            return _observableOf(result200);
+            return _observableOf(null as any);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = ProblemDetails.fromJS(resultData404);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {

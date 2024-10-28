@@ -3,14 +3,13 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { CreateQuestionComponent } from './features/questions/create-question/create-question.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatOptionModule } from '@angular/material/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { RouterOutlet } from '@angular/router';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatListModule } from '@angular/material/list';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -26,6 +25,7 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { environment } from './environments/environment';
 import { FormErrorsComponent } from './shared/form-errors.component';
 import { ExamsModule } from './features/exams/exams.module';
+import {HttpErrorInterceptor} from './shared/http-error-interceptor';
 
 export function MSALInstanceFactory(): IPublicClientApplication {
   return new PublicClientApplication({
@@ -46,7 +46,7 @@ export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
   ],
   imports: [
     BrowserAnimationsModule,
@@ -68,10 +68,10 @@ export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
     MatMenuModule,
     MatIconModule,
     MsalModule,
-    LayoutModule,
     FeaturesModule,
     FormErrorsComponent,
     ExamsModule,
+    LayoutModule
   ],
   providers: [
     provideAnimationsAsync(), HttpClientModule,
@@ -80,10 +80,14 @@ export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
       useFactory: MSALInstanceFactory
     },
     MsalService,
-
     {
       provide: HTTP_INTERCEPTORS,
       useClass: MsalInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpErrorInterceptor,
       multi: true
     },
     {
