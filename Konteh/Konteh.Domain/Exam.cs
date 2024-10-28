@@ -1,4 +1,6 @@
-﻿namespace Konteh.Domain;
+﻿using Konteh.Domain.Enumerations;
+
+namespace Konteh.Domain;
 
 public class Exam
 {
@@ -7,4 +9,5 @@ public class Exam
     public DateTime? EndTime { get; set; }
     public Candidate Candiate { get; set; } = null!;
     public List<ExamQuestion> ExamQuestions { get; set; } = [];
+    public ExamStatus Status { get; set; }
 }

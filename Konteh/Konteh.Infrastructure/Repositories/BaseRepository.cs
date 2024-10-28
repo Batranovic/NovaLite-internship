@@ -34,7 +34,7 @@ public abstract class BaseRepository<T> : IRepository<T> where T : class
 
     public async Task SaveChanges() => await _context.SaveChangesAsync();
 
-    public async Task<IEnumerable<T>> Search(Expression<Func<T, bool>> predicate)
+    public virtual async Task<IEnumerable<T>> Search(Expression<Func<T, bool>> predicate)
     {
         return await _context.Set<T>().Where(predicate).ToListAsync();
     }

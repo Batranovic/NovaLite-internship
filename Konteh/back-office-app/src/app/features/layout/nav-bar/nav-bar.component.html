@@ -1,10 +1,11 @@
 <mat-toolbar color="primary">
-      <span>Back Office</span>
+  
+  <img src="/logo.png" alt="image" class="logo">
       <span class="menu-spacer"></span>
-      <a mat-button (click)="redirectToHome()">Home</a>
-      <a mat-button (click)="redirectToQuestionsOverview()">Questions Overview</a>
-      <a mat-button (click)="redirectToExamOverview()">Exams</a>
-      <a mat-button (click)="redirectToCreateQuestion()">Create Question</a>
+      <a mat-button routerLink="/">Home</a>
+      <a mat-button routerLink="/questions-overview">Questions Overview</a>
+      <a mat-button routerLink="/create-question">Create Question</a>
+      <a mat-button routerLink="/exams-overview">Exams Overview</a>
       <button mat-button *ngIf="!isLoggedIn()" (click)="login()">Login</button>
       <button mat-button [matMenuTriggerFor]="userMenu" *ngIf="isLoggedIn()">
           <mat-icon>person</mat-icon>
@@ -12,6 +13,6 @@
         <mat-menu #userMenu="matMenu">
           <span class="account-username">{{ getAccountUsername() }}</span>
           <br>
-          <button class="logout-button" mat-menu-item (click)="logout()" >Logout</button>
+          <button  class="logout-button" mat-menu-item (click)="logout()" >Logout</button>
         </mat-menu>
 </mat-toolbar>

@@ -12,11 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Konteh.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241028081702_examMigration")]
-    partial class examMigration
+    [Migration("20241028082643_new-migration")]
+    partial class newmigration
     {
         /// <inheritdoc />
-        protected void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25,21 +25,6 @@ namespace Konteh.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("AnswerExamQuestion", b =>
-                {
-                    b.Property<long>("ExamQuestionId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("SubmittedAnswersId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("ExamQuestionId", "SubmittedAnswersId");
-
-                    b.HasIndex("SubmittedAnswersId");
-
-                    b.ToTable("AnswerExamQuestion");
-                });
-
             modelBuilder.Entity("Konteh.Domain.Answer", b =>
                 {
                     b.Property<long>("Id")
@@ -47,6 +32,9 @@ namespace Konteh.Infrastructure.Migrations
                         .HasColumnType("bigint");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long?>("ExamQuestionId")
+                        .HasColumnType("bigint");
 
                     b.Property<bool>("IsCorrect")
                         .HasColumnType("bit");
@@ -62,6 +50,8 @@ namespace Konteh.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ExamQuestionId");
 
                     b.HasIndex("QuestionId");
 
@@ -173,23 +163,12 @@ namespace Konteh.Infrastructure.Migrations
                     b.ToTable("Questions");
                 });
 
-            modelBuilder.Entity("AnswerExamQuestion", b =>
-                {
-                    b.HasOne("Konteh.Domain.ExamQuestion", null)
-                        .WithMany()
-                        .HasForeignKey("ExamQuestionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Konteh.Domain.Answer", null)
-                        .WithMany()
-                        .HasForeignKey("SubmittedAnswersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Konteh.Domain.Answer", b =>
                 {
+                    b.HasOne("Konteh.Domain.ExamQuestion", null)
+                        .WithMany("SubmmitedAnswers")
+                        .HasForeignKey("ExamQuestionId");
+
                     b.HasOne("Konteh.Domain.Question", null)
                         .WithMany("Answers")
                         .HasForeignKey("QuestionId");
@@ -224,6 +203,11 @@ namespace Konteh.Infrastructure.Migrations
             modelBuilder.Entity("Konteh.Domain.Exam", b =>
                 {
                     b.Navigation("ExamQuestions");
+                });
+
+            modelBuilder.Entity("Konteh.Domain.ExamQuestion", b =>
+                {
+                    b.Navigation("SubmmitedAnswers");
                 });
 
             modelBuilder.Entity("Konteh.Domain.Question", b =>
