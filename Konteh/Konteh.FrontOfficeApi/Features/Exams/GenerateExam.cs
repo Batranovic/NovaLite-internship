@@ -1,6 +1,8 @@
-﻿using Konteh.Domain;
+﻿using FluentValidation;
+using Konteh.Domain;
 using Konteh.Domain.Enumerations;
 using Konteh.FrontOfficeApi.Features.Exams.RandomGenerator;
+using Konteh.Infrastructure.ExceptionHandlers.Exceptions;
 using Konteh.Infrastructure.Repositories;
 using MediatR;
 
@@ -13,98 +15,88 @@ public static class GenerateExam
         QuestionCategory.General,
         QuestionCategory.OOP,
     ];
-    public class Command : IRequest<Response>
+    public class Command : IRequest<long>
     {
-        public int QuestionPerCategory { get; set; }
-    }
-    public class AnswerDto
-    {
-        public long Id { get; set; }
-        public string Text { get; set; } = string.Empty;
-    }
-    public class QuestionDto
-    {
-        public long Id { get; set; }
-        public string Text { get; set; } = string.Empty;
-        public QuestionCategory Category { get; set; }
-        public List<AnswerDto> Answers { get; set; } = [];
-    }
-    public class ExamQuestionDto
-    {
-        public long Id { get; set; }
-        public required QuestionDto Question { get; set; }
-    }
-    public class Response
-    {
-        public long Id { get; set; }
-        public DateTime StartTime { get; set; }
-        public List<ExamQuestionDto> ExamQuestions { get; set; } = new List<ExamQuestionDto>();
+        public required string CandidateName { get; set; }
+        public required string CandidateSurname { get; set; }
+        public required string CandidateEmail { get; set; }
+        public required string CandidateFaculty { get; set; }
     }
 
-    public class Handler : IRequestHandler<Command, Response>
+    public class RequestHandler : IRequestHandler<Command, long>
     {
-        private readonly IRepository<Question> _questionRepository;
+        private readonly IQuestionRepository _questionRepository;
         private readonly IRepository<Exam> _examRepository;
         private readonly IRandomGenerator _randomGenerator;
-        public Handler(IRepository<Question> questionRepository, IRepository<Exam> examRepository, IRandomGenerator randomGenerator)
+        private readonly IRepository<Candidate> _candidateRepository;
+        public RequestHandler(IQuestionRepository questionRepository, IRepository<Exam> examRepository, IRandomGenerator randomGenerator, IRepository<Candidate> candidateRepository)
         {
             _questionRepository = questionRepository;
             _examRepository = examRepository;
             _randomGenerator = randomGenerator;
+            _candidateRepository = candidateRepository;
         }
 
-        public async Task<Response> Handle(Command request, CancellationToken cancellationToken)
+        public async Task<long> Handle(Command request, CancellationToken cancellationToken)
         {
-            var questions = await _questionRepository.Search(x => Categories.Contains(x.Category));
+            var candidate = await HasCandidateTakenATestAsync(request);
+
+            var questions = (await _questionRepository.GetAll())
+                .Where(x => Categories.Contains(x.Category))
+                .ToList();
+
             var randomQuestions = new List<ExamQuestion>();
 
             foreach (var category in Categories)
             {
                 var questionsInCategory = questions.Where(q => q.Category == category).ToList();
 
-                if (questionsInCategory.Count() < request.QuestionPerCategory)
+                if (questionsInCategory.Count < 2)
                 {
-                    throw new InvalidOperationException($"Not enough questions available in category '{category}'.");
+                    throw new NotFoundException();
                 }
 
                 var selectedQuestions = questionsInCategory.OrderBy(q => _randomGenerator.Next())
-                    .Take(request.QuestionPerCategory)
+                    .Take(2)
                     .Select(x => new ExamQuestion { Question = x });
                 randomQuestions.AddRange(selectedQuestions);
             }
-
-            var examQuestionsDto = randomQuestions.Select(q => new ExamQuestionDto
-            {
-                Id = q.Id,
-                Question = new QuestionDto
-                {
-                    Id = q.Question.Id,
-                    Text = q.Question.Text,
-                    Category = q.Question.Category,
-                    Answers = q.Question.Answers.Select(a => new AnswerDto
-                    {
-                        Id = a.Id,
-                        Text = a.Text
-                    }).ToList()
-                }
-            }).ToList();
 
             var exam = new Exam
             {
                 StartTime = DateTime.UtcNow,
                 ExamQuestions = randomQuestions,
-                Candiate = new Candidate { Email = "candidate@gmail.com", Faculty = "FTN", Name = "N", Surname = "B" }
+                Candiate = candidate
             };
 
             _examRepository.Create(exam);
             await _examRepository.SaveChanges();
+            return exam.Id;
+        }
 
-            return new Response
+        private async Task<Candidate> HasCandidateTakenATestAsync(Command request)
+        {
+            var candidate = (await _candidateRepository.Search(x => x.Email == request.CandidateEmail)).FirstOrDefault();
+            if (candidate == null)
             {
-                Id = exam.Id,
-                StartTime = exam.StartTime,
-                ExamQuestions = examQuestionsDto,
-            };
+                candidate = new Candidate
+                {
+                    Name = request.CandidateName,
+                    Surname = request.CandidateSurname,
+                    Email = request.CandidateEmail,
+                    Faculty = request.CandidateFaculty
+                };
+                _candidateRepository.Create(candidate);
+                await _candidateRepository.SaveChanges();
+            }
+
+            var existingExam = await _examRepository.Search(e => e.Candiate.Email == candidate.Email);
+
+            if (existingExam.Any())
+            {
+                throw new ValidationException("Candidate has already taken the exam.");
+            }
+            return candidate;
         }
     }
 }

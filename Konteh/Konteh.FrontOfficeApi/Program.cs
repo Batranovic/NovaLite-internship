@@ -18,21 +18,26 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
 
-        builder.Services.AddMediatR(cfg =>
-        {
-            cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-            cfg.AddOpenBehavior(typeof(ValidationBehaviour<,>));
-        });
-        builder.Services.AddScoped<IRandomGenerator, RandomGenerator>();
-        builder.Services.AddScoped<IRepository<Question>, QuestionRepository>();
-        builder.Services.AddScoped<IRepository<Exam>, ExamRepository>();
-        builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
         // Add services to the container.
 
         builder.AddRabbitMq(Assembly.GetExecutingAssembly());
         builder.Services.AddControllers();
         builder.Services.AddOpenApiDocument(o => o.SchemaSettings.SchemaNameGenerator = new CustomSwaggerSchemaNameGenerator());
         builder.Services.AddDbContext<AppDbContext>(o => o.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+        builder.Services.AddScoped<IRandomGenerator, RandomGenerator>();
+        builder.Services.AddScoped<IRepository<Question>, QuestionRepository>();
+        builder.Services.AddScoped<IRepository<Exam>, ExamRepository>();
+        builder.Services.AddScoped<IRepository<Candidate>, CandidateRepository>();
+        builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
+
+        builder.Services.AddMediatR(cfg =>
+      {
+          cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+          cfg.AddOpenBehavior(typeof(ValidationBehaviour<,>));
+      });
+        builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
 
         // Added for exceptions handling
         builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -40,25 +45,23 @@ public class Program
 
         builder.Services.AddCors(options =>
         {
-            options.AddPolicy("MyCorsPolicy", corsBulder =>
+            options.AddPolicy("MyCorsPolicy", corsBuilder =>
             {
-                corsBulder.AllowAnyOrigin()
+                corsBuilder.AllowAnyOrigin()
                     .AllowAnyMethod()
                     .AllowAnyHeader();
             });
         });
-
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
         app.UseHttpsRedirection();
-        app.UseCors("MyCorsPolicy");
         app.UseExceptionHandler();
         app.UseOpenApi();
         app.UseSwaggerUi();
 
         app.UseAuthorization();
-
+        app.UseCors("MyCorsPolicy");
         app.MapControllers();
 
         app.Run();
