@@ -22,15 +22,7 @@ export class NavBarComponent implements OnInit{
       )
     })
   }
-
-  redirectToHome() {
-    this.router.navigate(['']);
-  }
-
-  redirectToQuestionsOverview() {
-    this.router.navigate(["questions-overview"]);
-  }
-
+  
   isLoggedIn(): boolean {
     return this.msalService.instance.getActiveAccount() != null;
   }
@@ -46,17 +38,5 @@ export class NavBarComponent implements OnInit{
   getAccountUsername(): string | null {
     const account = this.msalService.instance.getActiveAccount();
     return account ? account.username : null;
-  }
-
-  redirectToExamOverview() {
-    this.router.navigate(["exam-notifications"]);
-  }
-
-  redirectToCreateQuestion() {
-    this.router.navigate(["create-question"]);
-  }
-
-  redirectToExamsOverview(){
-    this.router.navigate(['exams-overview'])
   }
 }

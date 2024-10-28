@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ExamsClient } from '../../../api/api-reference';
+import { ExamsClient, GetAllExamsResponse } from '../../../api/api-reference';
 import { MatTableDataSource } from '@angular/material/table';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-exams-overview',
@@ -8,8 +9,9 @@ import { MatTableDataSource } from '@angular/material/table';
   styleUrls: ['./exams-overview.component.css']
 })
 export class ExamsOverviewComponent implements OnInit {
-  displayedColumns: string[] = ['id', 'candidate', 'status', 'score'];
-  dataSource =  new MatTableDataSource(); 
+  displayedColumns: string[] = ['candidate', 'status', 'score'];
+  dataSource = new MatTableDataSource<GetAllExamsResponse>();
+  searchText: string | null = "";
 
   constructor(private examsClient: ExamsClient) {}
 
@@ -18,8 +20,13 @@ export class ExamsOverviewComponent implements OnInit {
   }
 
   fetchExams() {
-    this.examsClient.getAllExams().subscribe(response => {
-      this.dataSource.data = response.items ?? []; 
+    this.examsClient.getAllExams(this.searchText).subscribe((response) => {
+      this.dataSource.data = response?? []; 
     });
+  }
+
+  onSearchChanged(searchText: string){
+    this.searchText = searchText;
+    this.fetchExams();
   }
 }

@@ -316,7 +316,7 @@ export class QuestionsClient implements IQuestionsClient {
 }
 
 export interface IExamsClient {
-    getAllExams(): Observable<GetAllExamsResponse>;
+    getAllExams(candidate: string | null | undefined): Observable<GetAllExamsResponse[]>;
 }
 
 @Injectable({
@@ -332,8 +332,10 @@ export class ExamsClient implements IExamsClient {
         this.baseUrl = baseUrl ?? "https://localhost:7184";
     }
 
-    getAllExams(): Observable<GetAllExamsResponse> {
-        let url_ = this.baseUrl + "/exams";
+    getAllExams(candidate: string | null | undefined): Observable<GetAllExamsResponse[]> {
+        let url_ = this.baseUrl + "/exams?";
+        if (candidate !== undefined && candidate !== null)
+            url_ += "Candidate=" + encodeURIComponent("" + candidate) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -351,14 +353,14 @@ export class ExamsClient implements IExamsClient {
                 try {
                     return this.processGetAllExams(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<GetAllExamsResponse>;
+                    return _observableThrow(e) as any as Observable<GetAllExamsResponse[]>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<GetAllExamsResponse>;
+                return _observableThrow(response_) as any as Observable<GetAllExamsResponse[]>;
         }));
     }
 
-    protected processGetAllExams(response: HttpResponseBase): Observable<GetAllExamsResponse> {
+    protected processGetAllExams(response: HttpResponseBase): Observable<GetAllExamsResponse[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -369,7 +371,14 @@ export class ExamsClient implements IExamsClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = GetAllExamsResponse.fromJS(resultData200);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(GetAllExamsResponse.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -926,7 +935,10 @@ export interface IGetAllQuestionsResponse {
 }
 
 export class GetAllExamsResponse implements IGetAllExamsResponse {
-    items?: GetAllExamsResponseItem[];
+    id?: number;
+    candidate?: string;
+    status?: ExamStatus;
+    score?: number;
 
     constructor(data?: IGetAllExamsResponse) {
         if (data) {
@@ -939,11 +951,10 @@ export class GetAllExamsResponse implements IGetAllExamsResponse {
 
     init(_data?: any) {
         if (_data) {
-            if (Array.isArray(_data["items"])) {
-                this.items = [] as any;
-                for (let item of _data["items"])
-                    this.items!.push(GetAllExamsResponseItem.fromJS(item));
-            }
+            this.id = _data["id"];
+            this.candidate = _data["candidate"];
+            this.status = _data["status"];
+            this.score = _data["score"];
         }
     }
 
@@ -956,59 +967,7 @@ export class GetAllExamsResponse implements IGetAllExamsResponse {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.items)) {
-            data["items"] = [];
-            for (let item of this.items)
-                data["items"].push(item.toJSON());
-        }
-        return data;
-    }
-}
-
-export interface IGetAllExamsResponse {
-    items?: GetAllExamsResponseItem[];
-}
-
-export class GetAllExamsResponseItem implements IGetAllExamsResponseItem {
-    id?: number;
-    startTime?: Date;
-    endTime?: Date | undefined;
-    candidate?: string;
-    status?: ExamStatus;
-    score?: number;
-
-    constructor(data?: IGetAllExamsResponseItem) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.startTime = _data["startTime"] ? new Date(_data["startTime"].toString()) : <any>undefined;
-            this.endTime = _data["endTime"] ? new Date(_data["endTime"].toString()) : <any>undefined;
-            this.candidate = _data["candidate"];
-            this.status = _data["status"];
-            this.score = _data["score"];
-        }
-    }
-
-    static fromJS(data: any): GetAllExamsResponseItem {
-        data = typeof data === 'object' ? data : {};
-        let result = new GetAllExamsResponseItem();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
-        data["startTime"] = this.startTime ? this.startTime.toISOString() : <any>undefined;
-        data["endTime"] = this.endTime ? this.endTime.toISOString() : <any>undefined;
         data["candidate"] = this.candidate;
         data["status"] = this.status;
         data["score"] = this.score;
@@ -1016,19 +975,16 @@ export class GetAllExamsResponseItem implements IGetAllExamsResponseItem {
     }
 }
 
-export interface IGetAllExamsResponseItem {
+export interface IGetAllExamsResponse {
     id?: number;
-    startTime?: Date;
-    endTime?: Date | undefined;
     candidate?: string;
     status?: ExamStatus;
     score?: number;
 }
 
 export enum ExamStatus {
-    Pending = 1,
-    InProgess = 2,
-    Completed = 3,
+    InProgess = 1,
+    Completed = 2,
 }
 
 export class ApiException extends Error {

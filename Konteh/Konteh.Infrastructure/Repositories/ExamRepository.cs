@@ -1,5 +1,6 @@
 ﻿using Konteh.Domain;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Konteh.Infrastructure.Repositories;
 
@@ -9,11 +10,20 @@ public class ExamRepository : BaseRepository<Exam>
     {
     }
 
-    public override async Task<IEnumerable<Exam>> GetAll()
+    public override async Task<IEnumerable<Exam>> Search(Expression<Func<Exam, bool>> predicate)
     {
-        return await _context.Exams
-                         .Include(e => e.Candiate)
-                         .Include(e => e.ExamQuestions)
-                         .ToListAsync();
+        var query = _context.Exams
+                            .Include(e => e.Candiate)
+                            .Include(e => e.ExamQuestions)
+                            .AsQueryable();
+
+        if (predicate != null)
+        {
+            query = query.Where(predicate);
+        }
+
+        return await query.ToListAsync();
     }
+
+
 }

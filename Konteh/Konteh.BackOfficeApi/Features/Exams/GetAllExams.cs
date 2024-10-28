@@ -7,13 +7,13 @@ namespace Konteh.BackOfficeApi.Features.Exams;
 
 public static class GetAllExams
 {
-    public class Query : IRequest<Response>;
+    public class Query : IRequest<IEnumerable<Response>>
+    {
+        public string? Candidate { get; set; } = string.Empty;
+
+    }
 
     public class Response
-    {
-        public IEnumerable<ResponseItem> Items { get; set; } = [];
-    }
-    public class ResponseItem
     {
         public long Id { get; set; }
         public string Candidate { get; set; } = string.Empty!;
@@ -21,7 +21,7 @@ public static class GetAllExams
         public double Score { get; set; }
     }
 
-    public class RequestHandler : IRequestHandler<Query, Response>
+    public class RequestHandler : IRequestHandler<Query, IEnumerable<Response>>
     {
         private readonly IRepository<Exam> _repository;
 
@@ -30,19 +30,10 @@ public static class GetAllExams
             _repository = repository;
         }
 
-        public async Task<Response> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<Response>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var exams = await _repository.GetAll();
-            return new Response
-            {
-                Items = exams.Select(e => new ResponseItem
-                {
-                    Id = e.Id,
-                    Candidate = $"{e.Candiate.Name} {e.Candiate.Surname}, {e.Candiate.Faculty}",
-                    Status = e.Status,
-                    Score = CalculateScore(e)
-                })
-            };
+            var exams = await _repository.Search(e => string.IsNullOrEmpty(request.Candidate) || e.Candiate.Name.Contains(request.Candidate) || e.Candiate.Surname.Contains(request.Candidate));
+            return exams.Select(e => new Response { Id = e.Id, Candidate = $"{e.Candiate.Name} {e.Candiate.Surname}", Status = e.Status, Score = CalculateScore(e) });
         }
 
         private double CalculateScore(Exam exam)

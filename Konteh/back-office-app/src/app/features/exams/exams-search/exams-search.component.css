@@ -1,0 +1,17 @@
+.form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    width: 40rem;
+}
+  
+.form-field {
+    width: 100%;
+}
+  
+.mat-form-field {
+    flex: 1;
+    min-width: 200px;
+}  

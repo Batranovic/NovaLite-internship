@@ -7,6 +7,7 @@ import { MatIcon, MatIconModule} from '@angular/material/icon';
 import { MatAnchor, MatButtonModule, MatIconButton} from '@angular/material/button';
 import { MaterialModule} from '../../shared/material/material.module';
 import { MatMenuModule } from '@angular/material/menu';
+import { RouterLink } from '@angular/router';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { MatMenuModule } from '@angular/material/menu';
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,
-    MatMenuModule
+    MatMenuModule,
+    RouterLink
   ]
 })
 export class LayoutModule { }

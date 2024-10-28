@@ -2,7 +2,6 @@
 
 public enum ExamStatus
 {
-    Pending = 1,
-    InProgess = 2,
-    Completed = 3
+    InProgess = 1,
+    Completed = 2
 }
