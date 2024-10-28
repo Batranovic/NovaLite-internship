@@ -29,10 +29,14 @@ public static class SubmitExam
 
         public async Task Handle(Command request, CancellationToken cancellationToken)
         {
-            //TODO: Only allow submitting exam once
+
             var exam = await _examRepository.GetById(request.ExamId)
                         ?? throw new NotFoundException();
 
+            if (exam.EndTime != null)
+            {
+                throw new Exception("Exam has already been completed");
+            }
             exam.EndTime = DateTime.UtcNow;
 
             var examQuestions = exam.ExamQuestions;

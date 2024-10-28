@@ -21,7 +21,7 @@ public class ExamController : Controller
     public async Task<ActionResult<long>> GenerateExam(GenerateExam.Command command)
     {
         var response = await _mediator.Send(command);
-        return Ok();
+        return Ok(response);
     }
 
     [HttpPut]
