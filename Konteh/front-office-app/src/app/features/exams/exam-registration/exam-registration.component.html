@@ -16,7 +16,7 @@
                 <input matInput formControlName="candidateSurname" placeholder="Enter your last name">
             </mat-form-field>
             <mat-error *ngIf="examForm.get('candidateSurname')?.hasError('formServer')">
-                {{ examForm.get('candidateSurame')?.getError('formServer') }}
+                {{ examForm.get('candidateSurname')?.getError('formServer') }}
             </mat-error>
             <mat-form-field appearance="outline">
                 <mat-label>Email</mat-label>

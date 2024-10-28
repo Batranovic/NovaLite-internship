@@ -17,15 +17,17 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { HttpClientModule } from '@angular/common/http';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatRadioButton, MatRadioGroup, MatRadioModule } from '@angular/material/radio';
+import { MatRadioModule } from '@angular/material/radio';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ExamOverviewComponent } from './exam-overview/exam-overview.component';
 import { FormErrorsComponent } from "../../shared/form-errors.component";
+import { AnswerFormComponent } from '../answer-form/answer-form.component';
 
 @NgModule({
   declarations: [
     ExamRegistrationComponent,
-    ExamOverviewComponent
+    ExamOverviewComponent,
+    AnswerFormComponent
   ],
   imports: [
     CommonModule,

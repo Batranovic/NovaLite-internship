@@ -5,7 +5,7 @@ import { ExamOverviewComponent } from './features/exams/exam-overview/exam-overv
 
 const routes: Routes = [
   {path: '', component: ExamRegistrationComponent},
-  {path: 'exam-overview', component: ExamOverviewComponent}
+  {path: 'exam-overview/:id', component: ExamOverviewComponent}
 ];
 
 @NgModule({

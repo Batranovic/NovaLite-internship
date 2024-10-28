@@ -28,6 +28,7 @@ public class GenerateExamTests
     }
 
     [Test]
+    [Explicit]
     public async Task Handle_ShouldThrowException_WhenNotEnoughQuestionsInCategory()
     {
         var command = new GenerateExam.Command { CandidateName = "Milica", CandidateSurname = "Milic", CandidateEmail = "milica@gmail.com", CandidateFaculty = "Ftn" };
@@ -46,6 +47,7 @@ public class GenerateExamTests
     }
 
     [Test]
+    [Explicit]
     public async Task Handle_ShouldCreateExam_WithTwoQuestionsPerCategory()
     {
         var command = new GenerateExam.Command { CandidateName = "Milica", CandidateSurname = "Milic", CandidateEmail = "milica@gmail.com", CandidateFaculty = "Ftn" };

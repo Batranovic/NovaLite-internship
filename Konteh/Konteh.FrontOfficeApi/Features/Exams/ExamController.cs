@@ -14,29 +14,31 @@ public class ExamController : Controller
         _mediator = mediator;
     }
 
-    // TODO: Remove this when notification using features are implemented
-    [HttpPost("notify")]
-    public async Task<ActionResult> Notify(SubmitExam.Command command)
-    {
-        await _mediator.Send(command);
-        return Ok();
-    }
-
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(long), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<GenerateExam.Response>> GenerateExam(GenerateExam.Command command)
+    public async Task<ActionResult<long>> GenerateExam(GenerateExam.Command command)
     {
         var response = await _mediator.Send(command);
-        return Ok(response);
+        return Ok();
     }
 
     [HttpPut]
-    public async Task<ActionResult> ExecuteExam(ExecuteExam.Command command)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> SubmitExam(SubmitExam.Command command)
     {
         await _mediator.Send(command);
         return Ok();
     }
 
+    [HttpGet("{id:long}")]
+    [ProducesResponseType(typeof(GetExam.Response), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<GetExam.Response>> GetById(long id)
+    {
+        var response = await _mediator.Send(new GetExam.Query { ExamId = id });
+        return Ok(response);
+    }
 }

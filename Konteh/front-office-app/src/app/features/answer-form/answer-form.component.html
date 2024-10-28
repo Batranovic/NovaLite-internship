@@ -1,0 +1,9 @@
+<mat-radio-group class="answer-list" *ngIf="question?.type === QuestionType.RadioButton">
+  <mat-radio-button *ngFor="let answer of question?.answers" class="answer-input" [value]="answer.id"
+    (change)="onAnswerSelected(answer)">{{answer.text}}</mat-radio-button>
+</mat-radio-group>
+
+<section class="answer-list" *ngIf="question?.type === QuestionType.CheckBox">
+  <mat-checkbox *ngFor="let answer of question?.answers" class="answer-input" [checked]="answer.isSelected"
+    (change)="onAnswerChecked($event.checked, answer)">{{answer.text}}</mat-checkbox>
+</section>

@@ -1,26 +1,21 @@
 import { Component } from '@angular/core';
-import { ExamClient, ExecuteExamAnswerDto, ExecuteExamCommand, ExecuteExamExamQuestionDto, GenerateExamResponse,  QuestionType } from '../../../api/api-reference';
-import { Router } from '@angular/router';
+import { ExamClient, GetExamResponse, SubmitExamCommand, SubmitExamExamQuestionDto } from '../../../api/api-reference';
+import { ActivatedRoute, ActivatedRouteSnapshot, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatRadioChange } from '@angular/material/radio';
-import { MatCheckboxChange } from '@angular/material/checkbox';
-import { AnswerService } from './answet.service';
 
 @Component({
   selector: 'app-exam-overview',
   templateUrl: './exam-overview.component.html',
-  styleUrl: './exam-overview.component.css'
+  styleUrls: ['./exam-overview.component.css']
 })
 export class ExamOverviewComponent {
-  QuestionType = QuestionType
-  examResponse: GenerateExamResponse = new GenerateExamResponse(); 
-  currentQuestionIndex = 0
-  selectedAnswers : { [questionId: number]: number[]} = {}
+  exam!: GetExamResponse;
+  currentQuestionIndex = 0;
 
-  constructor(private router: Router, private examClient: ExamClient, private snackBar: MatSnackBar,  private answerService: AnswerService) {
-    const navigation = this.router.getCurrentNavigation();
-    if (navigation?.extras.state) {
-      this.examResponse = navigation.extras.state['examResponse'];
+  constructor(private activatedRoute: ActivatedRoute, private examClient: ExamClient, private snackBar: MatSnackBar, private router: Router) {
+    const examId = this.activatedRoute.snapshot.paramMap.get('id');
+    if (examId) {
+      this.examClient.getById(+examId).subscribe(response => this.exam = response);
     }
   }
 
@@ -29,57 +24,35 @@ export class ExamOverviewComponent {
   }
 
   get isLastQuestion(): boolean {
-    return !!this.examResponse?.examQuestions && this.currentQuestionIndex === (this.examResponse?.examQuestions?.length ?? 0) - 1;
+    return !!this.exam?.questions && this.currentQuestionIndex === (this.exam?.questions?.length ?? 0) - 1;
   }
 
   get currentQuestion() {
-    return this.examResponse?.examQuestions?.[this.currentQuestionIndex];
+    return this.exam?.questions?.[this.currentQuestionIndex];
   }
-  
+
   nextQuestion() {
-    if (!this.isLastQuestion){
+    if (!this.isLastQuestion) {
       this.currentQuestionIndex++;
     }
   }
 
-  previousQuestion(){
-    if(!this.isFirstQuestion){
+  previousQuestion() {
+    if (!this.isFirstQuestion) {
       this.currentQuestionIndex--;
     }
   }
 
-  onAnswerChange(event: MatRadioChange | MatCheckboxChange, answerId: number, questionId: number) {
-    const isChecked = 'checked' in event ? event.checked : true;
-
-    if (isChecked) {
-      this.answerService.addAnswer(questionId, answerId);
-    } else {
-      this.answerService.removeAnswer(questionId, answerId);
-    }
-  }
-
-  isAnswerSelected(answerId: number, questionId: number): boolean {
-    return this.answerService.getAnswers(questionId).includes(answerId);
-  }
-  
- async submitExam() {
-    const examQuestions = this.examResponse.examQuestions?.map(question => {
-      const submittedAnswers = this.answerService.getAnswers(question.id!).map(answerId => 
-        new ExecuteExamAnswerDto({ answerId })
-      ) || [];
-      
-      return new ExecuteExamExamQuestionDto({
+  async submitExam() {
+    const command = new SubmitExamCommand({
+      examId: this.exam.id,
+      examQuestions: this.exam.questions?.map(question => new SubmitExamExamQuestionDto({
         examQuestionId: question.id,
-        submittedAnswers
-      });
-    }) || [];
-
-    const command = new ExecuteExamCommand({
-      examId: this.examResponse.id,
-      examQuestions
+        submittedAnswers: question.answers?.filter(answer => answer.isSelected).map(answer => answer.id!)
+      }))
     });
 
-    this.examClient.executeExam(command).subscribe({
+    this.examClient.submitExam(command).subscribe({
       next: _ => {
         this.snackBar.open('Exam submitted successfully', 'Ok', {
           duration: 3000,

@@ -2,26 +2,9 @@
   <img src="/images.png" alt="image" class="logo">
   <div class="form-container">
     <br>
-    <div *ngIf="examResponse!.examQuestions!.length > 0">
-      <h6 class="question-text">{{ currentQuestion?.question?.text }}</h6>
-      <ul class="answer-list">
-        <li *ngFor="let answer of currentQuestion?.question?.answers" class="answer-item">
-          <mat-radio-button *ngIf="currentQuestion?.question?.type === QuestionType.RadioButton"
-                           class="answer-input"
-                           [checked]="isAnswerSelected(answer.id!, currentQuestion?.id!)"
-                           (change)="onAnswerChange($event, answer.id ?? 0, currentQuestion?.id ?? 0)">
-            {{ answer.text }}
-          </mat-radio-button>
-      
-          <mat-checkbox *ngIf="currentQuestion?.question?.type === QuestionType.CheckBox"
-                        class="answer-input"
-                        [checked]="isAnswerSelected(answer.id!, currentQuestion?.id!)"
-                        (change)="onAnswerChange($event, answer.id ?? 0, currentQuestion?.id ?? 0)">
-            {{ answer.text }}
-          </mat-checkbox>
-        </li>
-      </ul>
-      
+    <div *ngIf="exam?.questions?.length! > 0">
+      <h6 class="question-text">{{ currentQuestion?.text }}</h6>
+      <app-answer-form *ngIf="currentQuestion" [question]="currentQuestion"></app-answer-form>
       <br>
       <div class="pagination-controls">
         <button class="arrow-button" (click)="previousQuestion()" [disabled]="isFirstQuestion">
@@ -33,5 +16,6 @@
       </div>
     </div>
   </div>
-  <button *ngIf="isLastQuestion" class="exam-form-button" mat-flat-button type="submit" (click)="submitExam()">Submit</button>
+  <button *ngIf="isLastQuestion" class="exam-form-button" mat-flat-button type="submit"
+    (click)="submitExam()">Submit</button>
 </div>

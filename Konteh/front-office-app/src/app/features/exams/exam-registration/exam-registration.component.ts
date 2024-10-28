@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ExamClient, GenerateExamCommand, GenerateExamResponse } from '../../../api/api-reference';
+import { ExamClient, GenerateExamCommand } from '../../../api/api-reference';
 import { Router } from '@angular/router';
-import { HttpErrorResponse } from '@angular/common/http';
 import { setServerSideValidationErrors } from '../../../shared/validation';
 
 @Component({
@@ -31,9 +30,7 @@ export class ExamRegistrationComponent {
       });
      
       this.examClient.generateExam(command).subscribe({
-        next: (response: GenerateExamResponse) => {
-            this.router.navigate(['exam-overview'], { state: { examResponse: response } });
-        },
+        next: examId => this.router.navigate([`exam-overview/${examId}`]),
         error: errors => setServerSideValidationErrors(errors, this.examForm)
     });
     } 

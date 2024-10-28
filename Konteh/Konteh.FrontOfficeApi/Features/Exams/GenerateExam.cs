@@ -15,39 +15,15 @@ public static class GenerateExam
         QuestionCategory.General,
         QuestionCategory.OOP,
     ];
-    public class Command : IRequest<Response>
+    public class Command : IRequest<long>
     {
         public required string CandidateName { get; set; }
         public required string CandidateSurname { get; set; }
         public required string CandidateEmail { get; set; }
         public required string CandidateFaculty { get; set; }
     }
-    public class AnswerDto
-    {
-        public long Id { get; set; }
-        public string Text { get; set; } = string.Empty;
-    }
-    public class QuestionDto
-    {
-        public long Id { get; set; }
-        public string Text { get; set; } = string.Empty;
-        public QuestionCategory Category { get; set; }
-        public QuestionType Type { get; set; }
-        public List<AnswerDto> Answers { get; set; } = [];
-    }
-    public class ExamQuestionDto
-    {
-        public long Id { get; set; }
-        public required QuestionDto Question { get; set; }
-    }
-    public class Response
-    {
-        public long Id { get; set; }
-        public DateTime StartTime { get; set; }
-        public List<ExamQuestionDto> ExamQuestions { get; set; } = new List<ExamQuestionDto>();
-    }
 
-    public class RequestHandler : IRequestHandler<Command, Response>
+    public class RequestHandler : IRequestHandler<Command, long>
     {
         private readonly IQuestionRepository _questionRepository;
         private readonly IRepository<Exam> _examRepository;
@@ -61,7 +37,7 @@ public static class GenerateExam
             _candidateRepository = candidateRepository;
         }
 
-        public async Task<Response> Handle(Command request, CancellationToken cancellationToken)
+        public async Task<long> Handle(Command request, CancellationToken cancellationToken)
         {
             var candidate = await HasCandidateTakenATestAsync(request);
 
@@ -75,7 +51,7 @@ public static class GenerateExam
             {
                 var questionsInCategory = questions.Where(q => q.Category == category).ToList();
 
-                if (questionsInCategory.Count() < 2)
+                if (questionsInCategory.Count < 2)
                 {
                     throw new NotFoundException();
                 }
@@ -95,32 +71,7 @@ public static class GenerateExam
 
             _examRepository.Create(exam);
             await _examRepository.SaveChanges();
-
-            return new Response
-            {
-                Id = exam.Id,
-                StartTime = exam.StartTime,
-                ExamQuestions = exam.ExamQuestions.Select(q => new ExamQuestionDto
-                {
-
-                    Id = q.Id,
-                    Question = new QuestionDto
-                    {
-                        Id = q.Question.Id,
-                        Text = q.Question.Text,
-                        Category = q.Question.Category,
-                        Type = q.Question.Type,
-                        Answers = q.Question.Answers
-                        .Where(a => !a.IsDeleted)
-                        .Select(a => new AnswerDto
-                        {
-                            Id = a.Id,
-                            Text = a.Text
-                        }).ToList()
-                    }
-                }).ToList(),
-
-            };
+            return exam.Id;
         }
 
         private async Task<Candidate> HasCandidateTakenATestAsync(Command request)
