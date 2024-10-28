@@ -25,7 +25,7 @@ export class ExamsSearchComponent implements OnInit{
         distinctUntilChanged()
       )
       .subscribe((searchText: string | null) => {
-        this.searchChange.emit(searchText?.trim() || '');
+        this.searchChange.emit(searchText?.trim());
       });
   }
 }
