@@ -51,14 +51,14 @@ mat-form-field input {
     background-color: #f1cc38 !important; 
 }
 
-.error-message {
-    color: red;
-    margin-top: 10px;
-    text-align: center;
-}
-
 .title-icon {
     width: 28px;
     height: 28px;
     margin-right: 8px;
+}
+
+mat-error{
+    bottom: 60px; 
+    transform: translateY(120%); 
+    position: relative;
 }

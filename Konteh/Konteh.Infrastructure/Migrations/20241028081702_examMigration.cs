@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Konteh.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class newMigration : Migration
+    public partial class examMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -115,14 +115,14 @@ namespace Konteh.Infrastructure.Migrations
                 columns: table => new
                 {
                     ExamQuestionId = table.Column<long>(type: "bigint", nullable: false),
-                    SubmmitedAnswersId = table.Column<long>(type: "bigint", nullable: false)
+                    SubmittedAnswersId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AnswerExamQuestion", x => new { x.ExamQuestionId, x.SubmmitedAnswersId });
+                    table.PrimaryKey("PK_AnswerExamQuestion", x => new { x.ExamQuestionId, x.SubmittedAnswersId });
                     table.ForeignKey(
-                        name: "FK_AnswerExamQuestion_Answers_SubmmitedAnswersId",
-                        column: x => x.SubmmitedAnswersId,
+                        name: "FK_AnswerExamQuestion_Answers_SubmittedAnswersId",
+                        column: x => x.SubmittedAnswersId,
                         principalTable: "Answers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -135,9 +135,9 @@ namespace Konteh.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AnswerExamQuestion_SubmmitedAnswersId",
+                name: "IX_AnswerExamQuestion_SubmittedAnswersId",
                 table: "AnswerExamQuestion",
-                column: "SubmmitedAnswersId");
+                column: "SubmittedAnswersId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Answers_QuestionId",

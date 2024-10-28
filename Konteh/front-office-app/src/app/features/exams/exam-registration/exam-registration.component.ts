@@ -11,7 +11,6 @@ import { setServerSideValidationErrors } from '../../../shared/validation';
   styleUrl: './exam-registration.component.css'
 })
 export class ExamRegistrationComponent {
-  errorMessage: string | null = null;
 
   constructor(private examClient: ExamClient, private router: Router){}
 

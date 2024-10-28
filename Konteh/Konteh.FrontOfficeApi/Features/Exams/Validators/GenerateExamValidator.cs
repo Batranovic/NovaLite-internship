@@ -3,7 +3,7 @@ using Konteh.Domain;
 using Konteh.Infrastructure.Repositories;
 using static Konteh.FrontOfficeApi.Features.Exams.GenerateExam;
 
-namespace Konteh.FrontOfficeApi.Features.Exams.RandomGenerator;
+namespace Konteh.FrontOfficeApi.Features.Exams.Validators;
 
 public class GenerateExamValidator : AbstractValidator<Command>
 {
