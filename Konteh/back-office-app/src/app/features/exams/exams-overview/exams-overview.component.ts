@@ -13,19 +13,19 @@ export class ExamsOverviewComponent implements OnInit {
   dataSource = new MatTableDataSource<GetAllExamsResponse>();
   searchText: string | null = "";
 
-  constructor(private examsClient: ExamsClient) {}
+  constructor(private examsClient: ExamsClient) { }
 
   ngOnInit() {
-    this.fetchExams(); 
+    this.fetchExams();
   }
 
   fetchExams() {
     this.examsClient.getAllExams(this.searchText).subscribe((response) => {
-      this.dataSource.data = response?? []; 
+      this.dataSource.data = response ?? [];
     });
   }
 
-  onSearchChanged(searchText: string){
+  onSearchChanged(searchText: string) {
     this.searchText = searchText;
     this.fetchExams();
   }
