@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ExamsClient, GetAllExamsResponse } from '../../../api/api-reference';
 import { MatTableDataSource } from '@angular/material/table';
-import { Observable } from 'rxjs';
+import { NotificationsService } from '../../../shared/notifications.service';
 
 @Component({
   selector: 'app-exams-overview',
@@ -13,10 +13,13 @@ export class ExamsOverviewComponent implements OnInit {
   dataSource = new MatTableDataSource<GetAllExamsResponse>();
   searchText: string | null = "";
 
-  constructor(private examsClient: ExamsClient) { }
+  constructor(private examsClient: ExamsClient, private notificationsService: NotificationsService) { }
 
   ngOnInit() {
     this.fetchExams();
+    this.notificationsService.messageReceived.subscribe((message: GetAllExamsResponse) => {
+      this.updateExamInDataSource(message);
+    });
   }
 
   fetchExams() {
@@ -28,5 +31,19 @@ export class ExamsOverviewComponent implements OnInit {
   onSearchChanged(searchText: string) {
     this.searchText = searchText;
     this.fetchExams();
+  }
+
+  private updateExamInDataSource(newExam: GetAllExamsResponse) {
+    let flag = true;
+    for (let exam of this.dataSource.data) {
+      if (exam.id === newExam.id){
+        exam = newExam;
+        flag = false;
+      }
+    }
+    if (flag){
+      this.dataSource.data.push(newExam);
+    }
+    this.dataSource.data = this.dataSource.data;
   }
 }

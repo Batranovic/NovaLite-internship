@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import {Candidate, NotificationsService} from '../../../shared/notifications.service';
+import {NotificationsService} from '../../../shared/notifications.service';
+import {GetAllExamsResponse} from '../../../api/api-reference';
 
 @Component({
   selector: 'app-exam-notifications',
   templateUrl: './exam-notifications.component.html',
 })
 export class ExamNotificationsComponent implements OnInit {
-  receivedMessage: Candidate | null = null;
+  receivedMessage: GetAllExamsResponse | null = null;
 
   constructor(private notificationsService: NotificationsService) {}
 

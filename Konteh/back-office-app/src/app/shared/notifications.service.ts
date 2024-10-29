@@ -2,13 +2,14 @@ import { EventEmitter, Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { HttpTransportType } from '@microsoft/signalr';
 import { environment } from '../environments/environment';
+import {GetAllExamsResponse} from '../api/api-reference';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NotificationsService {
   private hubConnection: signalR.HubConnection;
-  public messageReceived: EventEmitter<Candidate> = new EventEmitter<Candidate>();
+  public messageReceived: EventEmitter<GetAllExamsResponse> = new EventEmitter<GetAllExamsResponse>();
 
   constructor() {
     this.hubConnection = new signalR.HubConnectionBuilder()
@@ -27,15 +28,9 @@ export class NotificationsService {
   }
 
   private setupListeners(): void {
-    this.hubConnection.on('ReceiveMessage', (message: Candidate) => {
+    this.hubConnection.on('ReceiveMessage', (message: GetAllExamsResponse) => {
       this.messageReceived.emit(message);
     });
   }
 }
 
-export type Candidate = {
-  candidate: string;
-  id: number;
-  score: number;
-  status: number;
-};
