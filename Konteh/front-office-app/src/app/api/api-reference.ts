@@ -539,6 +539,7 @@ export interface ISubmitExamExamQuestionDto {
 
 export class GetExamResponse implements IGetExamResponse {
     id?: number;
+    startTime?: Date;
     questions?: GetExamExamQuestionItem[];
 
     constructor(data?: IGetExamResponse) {
@@ -553,6 +554,7 @@ export class GetExamResponse implements IGetExamResponse {
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
+            this.startTime = _data["startTime"] ? new Date(_data["startTime"].toString()) : <any>undefined;
             if (Array.isArray(_data["questions"])) {
                 this.questions = [] as any;
                 for (let item of _data["questions"])
@@ -571,6 +573,7 @@ export class GetExamResponse implements IGetExamResponse {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
+        data["startTime"] = this.startTime ? this.startTime.toISOString() : <any>undefined;
         if (Array.isArray(this.questions)) {
             data["questions"] = [];
             for (let item of this.questions)
@@ -582,6 +585,7 @@ export class GetExamResponse implements IGetExamResponse {
 
 export interface IGetExamResponse {
     id?: number;
+    startTime?: Date;
     questions?: GetExamExamQuestionItem[];
 }
 

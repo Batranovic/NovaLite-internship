@@ -2,6 +2,7 @@ using Konteh.Domain;
 using Konteh.Domain.Enumerations;
 using Konteh.FrontOfficeApi.Features.Exams;
 using Konteh.FrontOfficeApi.Features.Exams.RandomGenerator;
+using Konteh.Infrastructure.ExceptionHandlers.Exceptions;
 using Konteh.Infrastructure.Repositories;
 using Konteh.Test.Infrastructure;
 using NSubstitute;
@@ -28,7 +29,6 @@ public class GenerateExamTests
     }
 
     [Test]
-    [Explicit]
     public async Task Handle_ShouldThrowException_WhenNotEnoughQuestionsInCategory()
     {
         var command = new GenerateExam.Command { CandidateName = "Milica", CandidateSurname = "Milic", CandidateEmail = "milica@gmail.com", CandidateFaculty = "Ftn" };
@@ -39,24 +39,23 @@ public class GenerateExamTests
 
         _questionRepository.Search(Arg.Any<Expression<Func<Question, bool>>>()).Returns(questions);
 
-        var exception = Assert.ThrowsAsync<InvalidOperationException>(() => _handler.Handle(command, CancellationToken.None));
-        Assert.That(exception.Message, Is.EqualTo("Not enough questions available in category 'General'."));
+        var exception = Assert.ThrowsAsync<NotFoundException>(() => _handler.Handle(command, CancellationToken.None));
+        Assert.That(exception, Is.TypeOf<NotFoundException>());
+        Assert.That(exception.Message, Is.EqualTo(new NotFoundException().Message));
 
         _examRepository.DidNotReceive().Create(Arg.Any<Exam>());
         await _examRepository.DidNotReceive().SaveChanges();
     }
 
     [Test]
-    [Explicit]
     public async Task Handle_ShouldCreateExam_WithTwoQuestionsPerCategory()
     {
-        var command = new GenerateExam.Command { CandidateName = "Milica", CandidateSurname = "Milic", CandidateEmail = "milica@gmail.com", CandidateFaculty = "Ftn" };
+        var command = new GenerateExam.Command { CandidateName = "Milica", CandidateSurname = "Milic", CandidateEmail = "milica1@gmail.com", CandidateFaculty = "Ftn" };
         var questions = TestData.GetAllQuestions();
 
-        _questionRepository.Search(Arg.Any<Expression<Func<Question, bool>>>()).Returns(questions);
+        _questionRepository.GetAll().Returns(Task.FromResult(questions.AsEnumerable()));
 
         var response = await _handler.Handle(command, CancellationToken.None);
-
         await Verify(response);
 
         _examRepository.Received(1).Create(Arg.Is<Exam>(e => e.ExamQuestions.Count == 4));

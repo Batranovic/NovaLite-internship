@@ -1,4 +1,5 @@
 <div class="container">
+  <app-exam-timer class="timer"  *ngIf="exam" [exam]="exam" (timerExpired)="submitExam()"></app-exam-timer>
   <img src="/images.png" alt="image" class="logo">
   <div class="form-container">
     <br>

@@ -16,6 +16,7 @@ public static class GetExam
     public class Response
     {
         public long Id { get; set; }
+        public DateTime StartTime { get; set; }
         public IEnumerable<ExamQuestionItem> Questions { get; set; } = [];
     }
 
@@ -50,6 +51,7 @@ public static class GetExam
             return new Response
             {
                 Id = exam.Id,
+                StartTime = exam.StartTime,
                 Questions = exam.ExamQuestions.Select(examQuestion => new ExamQuestionItem
                 {
                     Id = examQuestion.Id,

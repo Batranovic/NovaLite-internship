@@ -22,12 +22,16 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { ExamOverviewComponent } from './exam-overview/exam-overview.component';
 import { FormErrorsComponent } from "../../shared/form-errors.component";
 import { AnswerFormComponent } from '../answer-form/answer-form.component';
+import { ExamTimerComponent } from './exam-timer/exam-timer.component';
+import { SubmitDialogComponent } from './submit-dialog/submit-dialog.component';
 
 @NgModule({
   declarations: [
     ExamRegistrationComponent,
     ExamOverviewComponent,
-    AnswerFormComponent
+    AnswerFormComponent,
+    ExamTimerComponent,
+    SubmitDialogComponent
   ],
   imports: [
     CommonModule,
@@ -52,7 +56,7 @@ import { AnswerFormComponent } from '../answer-form/answer-form.component';
     MatPaginatorModule,
     MatCardModule,
     MatRadioModule,
-    FormErrorsComponent
+    FormErrorsComponent,
   ]
 })
 export class ExamsModule { }

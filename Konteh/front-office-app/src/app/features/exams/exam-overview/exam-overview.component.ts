@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { ExamClient, GetExamResponse, SubmitExamCommand, SubmitExamExamQuestionDto } from '../../../api/api-reference';
-import { ActivatedRoute, ActivatedRouteSnapshot, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
+import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component';
 
 @Component({
   selector: 'app-exam-overview',
@@ -12,7 +14,7 @@ export class ExamOverviewComponent {
   exam!: GetExamResponse;
   currentQuestionIndex = 0;
 
-  constructor(private activatedRoute: ActivatedRoute, private examClient: ExamClient, private snackBar: MatSnackBar, private router: Router) {
+  constructor(private activatedRoute: ActivatedRoute, private examClient: ExamClient, private snackBar: MatSnackBar, private router: Router, private dialog: MatDialog) {
     const examId = this.activatedRoute.snapshot.paramMap.get('id');
     if (examId) {
       this.examClient.getById(+examId).subscribe(response => this.exam = response);
@@ -44,24 +46,28 @@ export class ExamOverviewComponent {
   }
 
   async submitExam() {
-    const command = new SubmitExamCommand({
-      examId: this.exam.id,
-      examQuestions: this.exam.questions?.map(question => new SubmitExamExamQuestionDto({
-        examQuestionId: question.id,
-        submittedAnswers: question.answers?.filter(answer => answer.isSelected).map(answer => answer.id!)
-      }))
-    });
-
-    this.examClient.submitExam(command).subscribe({
-      next: _ => {
-        this.snackBar.open('Exam submitted successfully', 'Ok', {
-          duration: 3000,
+    const dialogRef = this.dialog.open(SubmitDialogComponent);
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        const command = new SubmitExamCommand({
+          examId: this.exam.id,
+          examQuestions: this.exam.questions?.map(question => new SubmitExamExamQuestionDto({
+            examQuestionId: question.id,
+            submittedAnswers: question.answers?.filter(answer => answer.isSelected).map(answer => answer.id!)
+          }))
         });
-        this.router.navigate(['/']);
-      },
-      error: (err) => {
-        console.error('Error submitting exam', err);
-      }
+    
+        this.examClient.submitExam(command).subscribe({
+          next: _ => {
+            localStorage.removeItem('examEndTime')
+            this.snackBar.open('Exam submitted successfully', 'Ok', {
+              duration: 3000,
+            });
+            this.router.navigate(['/']);
+          }
+        });
+      } 
     });
   }
+  
 }

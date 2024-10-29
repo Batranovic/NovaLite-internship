@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { AnswerService } from '../exams/exam-overview/answer.service';
-import { GetExamAnswerItem, GetExamExamQuestionItem, QuestionType, } from '../../api/api-reference';
+import { GetExamAnswerItem, GetExamExamQuestionItem, GetExamResponse, QuestionType, } from '../../api/api-reference';
 
 @Component({
   selector: 'app-answer-form',
@@ -9,6 +9,7 @@ import { GetExamAnswerItem, GetExamExamQuestionItem, QuestionType, } from '../..
 })
 export class AnswerFormComponent {
   @Input() question!: GetExamExamQuestionItem;
+  @Input() exam!: GetExamResponse;
   QuestionType = QuestionType;
 
   get selectedAnswer() {
@@ -25,4 +26,6 @@ export class AnswerFormComponent {
     const selectedAnswer = this.question.answers?.filter(x => x === answer)[0];
     selectedAnswer!.isSelected = checked;
   }
+
+ 
 }

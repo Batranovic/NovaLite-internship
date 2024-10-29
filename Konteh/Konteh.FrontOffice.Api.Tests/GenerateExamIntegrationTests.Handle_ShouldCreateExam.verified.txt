@@ -1,29 +1,76 @@
 ﻿{
-  StartTime: DateTime_1,
-  ExamQuestions: [
+  Questions: [
     {
-      Question: {
-        Text: What is an interface?,
-        Category: General
-      }
+      Text: What is an interface?,
+      Answers: [
+        {
+          Text: A class that can have multiple methods,
+          IsSelected: false
+        },
+        {
+          Text: A reference type used to define a contract for classes,
+          IsSelected: false
+        },
+        {
+          Text: A class with no constructors,
+          IsSelected: false
+        },
+        {
+          Text: A static class,
+          IsSelected: false
+        }
+      ]
     },
     {
-      Question: {
-        Text: What is abstraction?,
-        Category: General
-      }
+      Text: What is abstraction?,
+      Answers: [
+        {
+          Text: Hiding complexity and showing only the essential features of an object,
+          IsSelected: false
+        },
+        {
+          Text: Providing access to all details of an object,
+          IsSelected: false
+        },
+        {
+          Text: Combining multiple classes into one,
+          IsSelected: false
+        }
+      ]
     },
     {
-      Question: {
-        Text: What is inheritance?,
-        Category: OOP
-      }
+      Text: What is inheritance?,
+      Answers: [
+        {
+          Text: The ability of a class to inherit features from another class,
+          IsSelected: false
+        },
+        {
+          Text: The ability to encapsulate data,
+          IsSelected: false
+        },
+        {
+          Text: The ability to create objects,
+          IsSelected: false
+        }
+      ]
     },
     {
-      Question: {
-        Text: What is encapsulation?,
-        Category: OOP
-      }
+      Text: What is encapsulation?,
+      Answers: [
+        {
+          Text: Hiding internal details of an object,
+          IsSelected: false
+        },
+        {
+          Text: Allowing objects to inherit from other objects,
+          IsSelected: false
+        },
+        {
+          Text: Separating object concerns,
+          IsSelected: false
+        }
+      ]
     }
   ]
 }

@@ -66,7 +66,8 @@ public static class GenerateExam
             {
                 StartTime = DateTime.UtcNow,
                 ExamQuestions = randomQuestions,
-                Candiate = candidate
+                Candiate = candidate,
+                Status = ExamStatus.InProgess
             };
 
             _examRepository.Create(exam);

@@ -8,7 +8,6 @@ namespace Konteh.FrontOffice.Api.Tests;
 public class GenerateExamIntegrationTests : FrontOfficeIntegrationTest
 {
     [Test]
-    [Explicit]
     public async Task Handle_ShouldCreateExam()
     {
         var command = new GenerateExam.Command { CandidateName = "Milica", CandidateSurname = "Milic", CandidateEmail = "milica@gmail.com", CandidateFaculty = "Ftn" };
