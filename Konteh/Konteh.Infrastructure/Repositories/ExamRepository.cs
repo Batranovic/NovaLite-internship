@@ -15,6 +15,9 @@ public class ExamRepository : BaseRepository<Exam>
         var query = _context.Exams
                             .Include(e => e.Candiate)
                             .Include(e => e.ExamQuestions)
+                                .ThenInclude(eq => eq.SubmittedAnswers)
+                             .Include(e => e.ExamQuestions)
+                                .ThenInclude(eq => eq.Question.Answers)
                             .AsQueryable();
 
         if (predicate != null)

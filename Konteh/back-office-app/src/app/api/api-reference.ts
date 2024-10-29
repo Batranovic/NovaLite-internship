@@ -948,6 +948,7 @@ export class GetAllExamsResponse implements IGetAllExamsResponse {
     candidate?: string;
     status?: ExamStatus;
     score?: number;
+    maxScore?: number;
 
     constructor(data?: IGetAllExamsResponse) {
         if (data) {
@@ -964,6 +965,7 @@ export class GetAllExamsResponse implements IGetAllExamsResponse {
             this.candidate = _data["candidate"];
             this.status = _data["status"];
             this.score = _data["score"];
+            this.maxScore = _data["maxScore"];
         }
     }
 
@@ -980,6 +982,7 @@ export class GetAllExamsResponse implements IGetAllExamsResponse {
         data["candidate"] = this.candidate;
         data["status"] = this.status;
         data["score"] = this.score;
+        data["maxScore"] = this.maxScore;
         return data;
     }
 }
@@ -989,6 +992,7 @@ export interface IGetAllExamsResponse {
     candidate?: string;
     status?: ExamStatus;
     score?: number;
+    maxScore?: number;
 }
 
 export enum ExamStatus {
