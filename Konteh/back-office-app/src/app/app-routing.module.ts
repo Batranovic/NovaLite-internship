@@ -15,6 +15,7 @@ const routes: Routes = [
   { path: 'edit-question/:id', component: CreateQuestionComponent, canActivate: [AuthGuard] },
   { path: 'exams-overview', component: ExamsOverviewComponent, canActivate: [AuthGuard] },
   { path: 'not-found', component: NotFoundComponent },
+  { path: 'notifications', component: ExamNotificationsComponent },
 ];
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

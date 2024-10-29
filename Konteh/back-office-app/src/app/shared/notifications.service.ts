@@ -8,7 +8,7 @@ import { environment } from '../environments/environment';
 })
 export class NotificationsService {
   private hubConnection: signalR.HubConnection;
-  public messageReceived: EventEmitter<string> = new EventEmitter<string>();
+  public messageReceived: EventEmitter<Candidate> = new EventEmitter<Candidate>();
 
   constructor() {
     this.hubConnection = new signalR.HubConnectionBuilder()
@@ -27,8 +27,15 @@ export class NotificationsService {
   }
 
   private setupListeners(): void {
-    this.hubConnection.on('ReceiveMessage', (message: string) => {
+    this.hubConnection.on('ReceiveMessage', (message: Candidate) => {
       this.messageReceived.emit(message);
     });
   }
 }
+
+export type Candidate = {
+  candidate: string;
+  id: number;
+  score: number;
+  status: number;
+};
