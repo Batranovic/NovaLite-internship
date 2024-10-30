@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { ExamStatusPipe } from './exam-status.pipe';
-import { ExamNotificationsComponent } from './exam-notifications/exam-notifications.component';
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { ExamsOverviewComponent } from './exams-overview/exams-overview.component';
 import { ExamsSearchComponent } from './exams-search/exams-search.component';
@@ -14,7 +13,6 @@ import { MatInputModule } from '@angular/material/input';
   declarations: [
     ExamsOverviewComponent,
     ExamStatusPipe,
-    ExamNotificationsComponent,
     ExamsSearchComponent
   ],
   imports: [
