@@ -56,26 +56,26 @@ export class ExamOverviewComponent {
     const dialogRef = this.dialog.open(SubmitDialogComponent, {
       data: { disableCancel: this.isTimerExpired }
     });
-    dialogRef.afterClosed().pipe(
-      filter(result => result)
-    ).subscribe(() => {
-      const command = new SubmitExamCommand({
-        examId: this.exam.id,
-        examQuestions: this.exam.questions?.map(question => new SubmitExamExamQuestionDto({
-          examQuestionId: question.id,
-          submittedAnswers: question.answers?.filter(answer => answer.isSelected).map(answer => answer.id!)
-        }))
-      });
+    dialogRef.afterClosed()
+      .pipe(filter(result => result))
+      .subscribe(() => {
+        const command = new SubmitExamCommand({
+          examId: this.exam.id,
+          examQuestions: this.exam.questions?.map(question => new SubmitExamExamQuestionDto({
+            examQuestionId: question.id,
+            submittedAnswers: question.answers?.filter(answer => answer.isSelected).map(answer => answer.id!)
+          }))
+        });
 
-      this.examClient.submitExam(command).subscribe({
-        next: _ => {
-          this.snackBar.open('Exam submitted successfully', 'Ok', {
-            duration: 3000,
-          });
-          this.router.navigate(['/']);
-        }
+        this.examClient.submitExam(command).subscribe({
+          next: _ => {
+            this.snackBar.open('Exam submitted successfully', 'Ok', {
+              duration: 3000,
+            });
+            this.router.navigate(['/']);
+          }
+        });
       });
-    });
   }
 
 }
