@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, UntypedFormGroup, Validators } from '@angular/forms';
-import { CreateUpdateQuestionAnswerDto, CreateUpdateQuestionCommand, QuestionCategory, QuestionsClient, QuestionType } from '../../../api/api-reference';
+import {  CreateOrUpdateQuestionCommand, CreateOrUpdateQuestionCommandAnswerDto, QuestionCategory, QuestionsClient, QuestionType } from '../../../api/api-reference';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { DeleteAnswerDialogComponent } from '../delete-answer-dialog/delete-answer-dialog.component';
@@ -38,15 +38,15 @@ export class CreateQuestionComponent implements OnInit {
   }
 
   onSubmit() {
-    const answersToSubmit: CreateUpdateQuestionAnswerDto[] = this.answersArray.controls.map(control => {
-      return new CreateUpdateQuestionAnswerDto({
+    const answersToSubmit: CreateOrUpdateQuestionCommandAnswerDto[] = this.answersArray.controls.map(control => {
+      return new CreateOrUpdateQuestionCommandAnswerDto({
         id: control.value.id,
         text: control.value.text,
         isCorrect: control.value.isCorrect,
         isDeleted: control.value.isDeleted
       });
     });
-    const command = new CreateUpdateQuestionCommand({
+    const command = new CreateOrUpdateQuestionCommand({
       id: this.questionId!,
       text: this.questionForm.value.text!,
       category: this.questionForm.value.category!,

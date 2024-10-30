@@ -18,7 +18,7 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 export interface IQuestionsClient {
     paginate(questionText: string | null | undefined, page: number | undefined, pageSize: number | undefined): Observable<SearchQuestionsResponse>;
     getQuestionById(id: number): Observable<GetQuestionByIdResponse>;
-    createOrUpdateQuestion(command: CreateUpdateQuestionCommand): Observable<void>;
+    createOrUpdateQuestion(command: CreateOrUpdateQuestionCommand): Observable<void>;
     getAll(): Observable<GetAllQuestionsResponse[]>;
     deleteById(questionId: number): Observable<void>;
 }
@@ -152,7 +152,7 @@ export class QuestionsClient implements IQuestionsClient {
         return _observableOf(null as any);
     }
 
-    createOrUpdateQuestion(command: CreateUpdateQuestionCommand): Observable<void> {
+    createOrUpdateQuestion(command: CreateOrUpdateQuestionCommand): Observable<void> {
         let url_ = this.baseUrl + "/questions";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -791,14 +791,14 @@ export interface IValidationProblemDetails extends IHttpValidationProblemDetails
     [key: string]: any;
 }
 
-export class CreateUpdateQuestionCommand implements ICreateUpdateQuestionCommand {
+export class CreateOrUpdateQuestionCommand implements ICreateOrUpdateQuestionCommand {
     id?: number | undefined;
     text?: string;
     category?: QuestionCategory;
     type?: QuestionType;
-    answers?: CreateUpdateQuestionAnswerDto[];
+    answers?: CreateOrUpdateQuestionCommandAnswerDto[];
 
-    constructor(data?: ICreateUpdateQuestionCommand) {
+    constructor(data?: ICreateOrUpdateQuestionCommand) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -816,14 +816,14 @@ export class CreateUpdateQuestionCommand implements ICreateUpdateQuestionCommand
             if (Array.isArray(_data["answers"])) {
                 this.answers = [] as any;
                 for (let item of _data["answers"])
-                    this.answers!.push(CreateUpdateQuestionAnswerDto.fromJS(item));
+                    this.answers!.push(CreateOrUpdateQuestionCommandAnswerDto.fromJS(item));
             }
         }
     }
 
-    static fromJS(data: any): CreateUpdateQuestionCommand {
+    static fromJS(data: any): CreateOrUpdateQuestionCommand {
         data = typeof data === 'object' ? data : {};
-        let result = new CreateUpdateQuestionCommand();
+        let result = new CreateOrUpdateQuestionCommand();
         result.init(data);
         return result;
     }
@@ -843,21 +843,21 @@ export class CreateUpdateQuestionCommand implements ICreateUpdateQuestionCommand
     }
 }
 
-export interface ICreateUpdateQuestionCommand {
+export interface ICreateOrUpdateQuestionCommand {
     id?: number | undefined;
     text?: string;
     category?: QuestionCategory;
     type?: QuestionType;
-    answers?: CreateUpdateQuestionAnswerDto[];
+    answers?: CreateOrUpdateQuestionCommandAnswerDto[];
 }
 
-export class CreateUpdateQuestionAnswerDto implements ICreateUpdateQuestionAnswerDto {
+export class CreateOrUpdateQuestionCommandAnswerDto implements ICreateOrUpdateQuestionCommandAnswerDto {
     id?: number;
     text?: string;
     isCorrect?: boolean;
     isDeleted?: boolean;
 
-    constructor(data?: ICreateUpdateQuestionAnswerDto) {
+    constructor(data?: ICreateOrUpdateQuestionCommandAnswerDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -875,9 +875,9 @@ export class CreateUpdateQuestionAnswerDto implements ICreateUpdateQuestionAnswe
         }
     }
 
-    static fromJS(data: any): CreateUpdateQuestionAnswerDto {
+    static fromJS(data: any): CreateOrUpdateQuestionCommandAnswerDto {
         data = typeof data === 'object' ? data : {};
-        let result = new CreateUpdateQuestionAnswerDto();
+        let result = new CreateOrUpdateQuestionCommandAnswerDto();
         result.init(data);
         return result;
     }
@@ -892,7 +892,7 @@ export class CreateUpdateQuestionAnswerDto implements ICreateUpdateQuestionAnswe
     }
 }
 
-export interface ICreateUpdateQuestionAnswerDto {
+export interface ICreateOrUpdateQuestionCommandAnswerDto {
     id?: number;
     text?: string;
     isCorrect?: boolean;
@@ -947,8 +947,7 @@ export class GetExamResponse implements IGetExamResponse {
     id?: number;
     candidate?: string;
     status?: ExamStatus;
-    score?: number;
-    maxScore?: number;
+    score?: string;
 
     constructor(data?: IGetExamResponse) {
         if (data) {
@@ -965,7 +964,6 @@ export class GetExamResponse implements IGetExamResponse {
             this.candidate = _data["candidate"];
             this.status = _data["status"];
             this.score = _data["score"];
-            this.maxScore = _data["maxScore"];
         }
     }
 
@@ -982,7 +980,6 @@ export class GetExamResponse implements IGetExamResponse {
         data["candidate"] = this.candidate;
         data["status"] = this.status;
         data["score"] = this.score;
-        data["maxScore"] = this.maxScore;
         return data;
     }
 }
@@ -991,8 +988,7 @@ export interface IGetExamResponse {
     id?: number;
     candidate?: string;
     status?: ExamStatus;
-    score?: number;
-    maxScore?: number;
+    score?: string;
 }
 
 export enum ExamStatus {
