@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ExamsClient, GetAllExamsResponse } from '../../../api/api-reference';
+import { ExamsClient, GetExamResponse } from '../../../api/api-reference';
 import { MatTableDataSource } from '@angular/material/table';
 import { NotificationsService } from '../../../shared/notifications.service';
 
@@ -10,14 +10,14 @@ import { NotificationsService } from '../../../shared/notifications.service';
 })
 export class ExamsOverviewComponent implements OnInit {
   displayedColumns: string[] = ['candidate', 'status', 'score'];
-  dataSource = new MatTableDataSource<GetAllExamsResponse>();
+  dataSource = new MatTableDataSource<GetExamResponse>();
   searchText: string | null = "";
 
   constructor(private examsClient: ExamsClient, private notificationsService: NotificationsService) { }
 
   ngOnInit() {
     this.fetchExams();
-    this.notificationsService.messageReceived.subscribe((message: GetAllExamsResponse) => {
+    this.notificationsService.messageReceived.subscribe((message: GetExamResponse) => {
       this.updateExamInDataSource(message);
     });
   }
@@ -33,7 +33,7 @@ export class ExamsOverviewComponent implements OnInit {
     this.fetchExams();
   }
 
-  private updateExamInDataSource(newExam: GetAllExamsResponse) {
+  private updateExamInDataSource(newExam: GetExamResponse) {
     const data = this.dataSource.data;
     const index = data.findIndex(exam => exam.id === newExam.id);
 

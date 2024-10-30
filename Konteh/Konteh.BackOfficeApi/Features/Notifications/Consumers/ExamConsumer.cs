@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Konteh.BackOfficeApi.Features.Notifications.Consumers;
 
-public class ExamConsumer : IConsumer<GetExamDTO>
+public class ExamConsumer : IConsumer<GetExamResponse>
 {
     private readonly IHubContext<ExamHub> _examHubContext;
 
@@ -14,8 +14,8 @@ public class ExamConsumer : IConsumer<GetExamDTO>
         _examHubContext = examHubContext;
     }
 
-    public async Task Consume(ConsumeContext<GetExamDTO> context)
+    public async Task Consume(ConsumeContext<GetExamResponse> context)
     {
-        await _examHubContext.Clients.All.SendAsync("ReceiveMessage", context.Message);
+        await _examHubContext.Clients.All.SendAsync("ExamStartedOrSubmitted", context.Message);
     }
 }

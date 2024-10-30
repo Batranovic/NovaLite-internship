@@ -54,7 +54,7 @@ public static class SubmitExam
             }
 
             await _examRepository.SaveChanges();
-            await _bus.Publish(new GetExamDTO() { Id = exam.Id, Candidate = $"{exam.Candiate.Name} {exam.Candiate.Surname}", Score = 0, Status = ExamStatus.Completed });
+            await _bus.Publish(new GetExamResponse() { Id = exam.Id, Candidate = $"{exam.Candiate.Name} {exam.Candiate.Surname}", Score = 0, Status = ExamStatus.Completed });
         }
     }
 }

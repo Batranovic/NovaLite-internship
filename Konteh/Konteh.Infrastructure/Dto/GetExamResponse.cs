@@ -1,7 +1,7 @@
 ﻿using Konteh.Domain.Enumerations;
 
 namespace Konteh.Infrastructure.DTO;
-public class GetExamDTO
+public class GetExamResponse
 {
     public long Id { get; set; }
     public string Candidate { get; set; } = string.Empty!;
