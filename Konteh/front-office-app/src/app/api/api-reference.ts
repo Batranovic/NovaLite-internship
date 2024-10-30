@@ -540,6 +540,7 @@ export interface ISubmitExamExamQuestionDto {
 export class GetExamResponse implements IGetExamResponse {
     id?: number;
     questions?: GetExamExamQuestionItem[];
+    maxEndDateTime?: Date;
 
     constructor(data?: IGetExamResponse) {
         if (data) {
@@ -558,6 +559,7 @@ export class GetExamResponse implements IGetExamResponse {
                 for (let item of _data["questions"])
                     this.questions!.push(GetExamExamQuestionItem.fromJS(item));
             }
+            this.maxEndDateTime = _data["maxEndDateTime"] ? new Date(_data["maxEndDateTime"].toString()) : <any>undefined;
         }
     }
 
@@ -576,6 +578,7 @@ export class GetExamResponse implements IGetExamResponse {
             for (let item of this.questions)
                 data["questions"].push(item.toJSON());
         }
+        data["maxEndDateTime"] = this.maxEndDateTime ? this.maxEndDateTime.toISOString() : <any>undefined;
         return data;
     }
 }
@@ -583,6 +586,7 @@ export class GetExamResponse implements IGetExamResponse {
 export interface IGetExamResponse {
     id?: number;
     questions?: GetExamExamQuestionItem[];
+    maxEndDateTime?: Date;
 }
 
 export class GetExamExamQuestionItem implements IGetExamExamQuestionItem {

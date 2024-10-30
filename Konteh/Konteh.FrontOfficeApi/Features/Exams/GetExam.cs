@@ -1,8 +1,10 @@
 ﻿using Konteh.Domain;
 using Konteh.Domain.Enumerations;
+using Konteh.FrontOfficeApi.Options;
 using Konteh.Infrastructure.ExceptionHandlers.Exceptions;
 using Konteh.Infrastructure.Repositories;
 using MediatR;
+using Microsoft.Extensions.Options;
 
 namespace Konteh.FrontOfficeApi.Features.Exams;
 
@@ -17,6 +19,7 @@ public static class GetExam
     {
         public long Id { get; set; }
         public IEnumerable<ExamQuestionItem> Questions { get; set; } = [];
+        public DateTime MaxEndDateTime { get; set; }
     }
 
     public class ExamQuestionItem
@@ -37,10 +40,11 @@ public static class GetExam
     public class RequestHandler : IRequestHandler<Query, Response>
     {
         private readonly IRepository<Exam> _examRepository;
-
-        public RequestHandler(IRepository<Exam> examRepository)
+        private readonly ExamOptions _options;
+        public RequestHandler(IRepository<Exam> examRepository, IOptions<ExamOptions> options)
         {
             _examRepository = examRepository;
+            _options = options.Value;
         }
 
         public async Task<Response> Handle(Query request, CancellationToken cancellationToken)
@@ -61,7 +65,8 @@ public static class GetExam
                         Text = answer.Text,
                         IsSelected = examQuestion.SubmittedAnswers.Contains(answer)
                     })
-                })
+                }),
+                MaxEndDateTime = exam.StartTime.AddSeconds(_options.MaxDurationInSeconds)
             };
         }
     }
