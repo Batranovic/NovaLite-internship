@@ -12,33 +12,30 @@ public static class GetAllExams
         public string? Candidate { get; set; } = string.Empty;
     }
 
+
     public class RequestHandler : IRequestHandler<Query, IEnumerable<GetExamResponse>>
     {
-        private readonly IRepository<Exam> _repository;
+        private readonly IRepository<Exam> _examRepository;
 
-        public RequestHandler(IRepository<Exam> repository)
+        public RequestHandler(IRepository<Exam> examRepository)
         {
-            _repository = repository;
+            _examRepository = examRepository;
         }
 
         public async Task<IEnumerable<GetExamResponse>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var searchTerms = request.Candidate?.Trim().Split(' ') ?? [];
-            if (searchTerms.Length == 2)
-            {
-                var firstName = searchTerms[0];
-                var lastName = searchTerms[1];
-                var searchedExams = await _repository.Search(e => string.IsNullOrEmpty(request.Candidate) || (e.Candiate.Name.Contains(firstName) && e.Candiate.Surname.Contains(lastName)));
-                return searchedExams.Select(e => new GetExamResponse { Id = e.Id, Candidate = $"{e.Candiate.Name} {e.Candiate.Surname}", Status = e.Status, Score = CalculateScore(e) });
-            }
-            var exams = await _repository.Search(e => string.IsNullOrEmpty(request.Candidate) || e.Candiate.Name.Contains(request.Candidate) || e.Candiate.Surname.Contains(request.Candidate));
-            return exams.Select(e => new GetExamResponse { Id = e.Id, Candidate = $"{e.Candiate.Name} {e.Candiate.Surname}", Status = e.Status, Score = CalculateScore(e) });
-        }
+            var exams = await _examRepository.Search(e =>
+            string.IsNullOrEmpty(request.Candidate)
+            || e.Candiate.Name.Contains(request.Candidate)
+            || e.Candiate.Surname.Contains(request.Candidate));
 
-        private double CalculateScore(Exam exam)
-        {
-            return 0 / exam.ExamQuestions.Count;
+            return exams.Select(e => new GetExamResponse
+            {
+                Id = e.Id,
+                Candidate = $"{e.Candiate.Name} {e.Candiate.Surname}",
+                Status = e.Status,
+                Score = e.ExamQuestions.Count(ea => ea.IsCorrect()),
+            });
         }
     }
-
 }

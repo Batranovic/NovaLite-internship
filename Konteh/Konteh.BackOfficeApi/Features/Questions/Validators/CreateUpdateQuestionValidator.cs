@@ -1,10 +1,9 @@
 ﻿using FluentValidation;
-using Konteh.Domain.Enumerations;
-using static Konteh.BackOfficeApi.Features.Questions.CreateUpdateQuestion;
+using Konteh.Domain.Commands;
 
 namespace Konteh.BackOfficeApi.Features.Questions.Validators;
 
-public class CreateUpdateQuestionValidator : AbstractValidator<Command>
+public class CreateUpdateQuestionValidator : AbstractValidator<CreateOrUpdateQuestionCommand>
 {
     public CreateUpdateQuestionValidator()
     {
@@ -21,16 +20,8 @@ public class CreateUpdateQuestionValidator : AbstractValidator<Command>
             .WithMessage("Question type must be valid value.");
 
         RuleFor(x => x)
-            .Must(command => ValidateCorrectAnswers(command.Type, command.Answers))
-            .WithMessage(command =>
-            {
-                if (command.Type == QuestionType.RadioButton)
-                {
-                    return "RadioButton question must have one correct answer.";
-                }
-
-                return "Question must have at least one correct answer.";
-            });
+            .Must(command => command.ValidateCorrectAnswers())
+            .WithMessage("Invalid number of correct answers.");
 
         RuleForEach(x => x.Answers).ChildRules(a =>
         {
@@ -39,17 +30,5 @@ public class CreateUpdateQuestionValidator : AbstractValidator<Command>
             .WithMessage("Answer text can't be empty");
         });
 
-    }
-
-    private static bool ValidateCorrectAnswers(QuestionType type, List<AnswerDto> answers)
-    {
-        var correctAnswers = answers.Count(a => a.IsCorrect);
-
-        if ((type == QuestionType.RadioButton && correctAnswers > 1) || correctAnswers < 1)
-        {
-            return false;
-        }
-
-        return true;
     }
 }

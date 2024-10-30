@@ -37,7 +37,7 @@ public class GenerateExamTests
         var command = new GenerateExam.Command { CandidateName = "Milica", CandidateSurname = "Milic", CandidateEmail = "milica@gmail.com", CandidateFaculty = "Ftn" };
         var questions = new List<Question>
         {
-            new Question {Id = 1, Category = QuestionCategory.General}
+            new CheckBoxQuestion {Id = 1, Category = QuestionCategory.General}
         };
 
         _questionRepository.Search(Arg.Any<Expression<Func<Question, bool>>>()).Returns(questions);

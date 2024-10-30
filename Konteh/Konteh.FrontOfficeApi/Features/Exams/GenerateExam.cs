@@ -16,6 +16,10 @@ public static class GenerateExam
     [
         QuestionCategory.General,
         QuestionCategory.OOP,
+        QuestionCategory.Git,
+        QuestionCategory.Testing,
+        QuestionCategory.Sql,
+        QuestionCategory.Csharp
     ];
     public class Command : IRequest<long>
     {

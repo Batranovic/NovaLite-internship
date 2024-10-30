@@ -1,5 +1,5 @@
 ﻿using Konteh.Domain;
-using Konteh.Domain.Enumerations;
+using Konteh.Domain.Commands;
 using Konteh.Infrastructure.ExceptionHandlers.Exceptions;
 using Konteh.Infrastructure.Repositories;
 using MediatR;
@@ -8,24 +8,7 @@ namespace Konteh.BackOfficeApi.Features.Questions;
 
 public static class CreateUpdateQuestion
 {
-    public class Command : IRequest<Unit>
-    {
-        public long? Id { get; set; } = null;
-        public string Text { get; set; } = string.Empty;
-        public QuestionCategory Category { get; set; }
-        public QuestionType Type { get; set; }
-        public List<AnswerDto> Answers { get; set; } = [];
-    }
-
-    public class AnswerDto
-    {
-        public long Id { get; set; }
-        public string Text { get; set; } = string.Empty;
-        public bool IsCorrect { get; set; }
-        public bool IsDeleted { get; set; }
-    }
-
-    public class RequestHandler : IRequestHandler<Command, Unit>
+    public class RequestHandler : IRequestHandler<CreateOrUpdateQuestionCommand, Unit>
     {
         private readonly IRepository<Question> _repository;
 
@@ -34,7 +17,7 @@ public static class CreateUpdateQuestion
             _repository = repository;
         }
 
-        public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(CreateOrUpdateQuestionCommand request, CancellationToken cancellationToken)
         {
             if (request.Id == null)
             {
@@ -49,13 +32,13 @@ public static class CreateUpdateQuestion
             return Unit.Value;
         }
 
-        private async Task UpdateQuestion(Command request)
+        private async Task UpdateQuestion(CreateOrUpdateQuestionCommand request)
         {
             var existingQuestion = await _repository.GetById(request.Id!.Value) ?? throw new NotFoundException();
             existingQuestion.Text = request.Text;
             existingQuestion.Category = request.Category;
-            existingQuestion.Type = request.Type;
-
+            //TODO: Think about a way to do this
+            //existingQuestion.Type = request.Type;
             foreach (var answer in request.Answers)
             {
                 var existingAnswer = existingQuestion.Answers
@@ -78,20 +61,9 @@ public static class CreateUpdateQuestion
             }
         }
 
-        private void CreateQuestion(Command request)
+        private void CreateQuestion(CreateOrUpdateQuestionCommand request)
         {
-            var question = new Question
-            {
-                Text = request.Text,
-                Category = request.Category,
-                Type = request.Type,
-                Answers = request.Answers.Select(a => new Answer
-                {
-                    Text = a.Text,
-                    IsCorrect = a.IsCorrect,
-                    IsDeleted = false,
-                }).ToList()
-            };
+            var question = Question.Create(request);
 
             _repository.Create(question);
         }
