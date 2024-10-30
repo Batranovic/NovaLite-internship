@@ -1,4 +1,5 @@
 ﻿using Konteh.Domain;
+using Konteh.Domain.Enumerations;
 using Konteh.Infrastructure.DTO;
 using Konteh.Infrastructure.ExceptionHandlers.Exceptions;
 using Konteh.Infrastructure.Repositories;
@@ -53,8 +54,7 @@ public static class SubmitExam
             }
 
             await _examRepository.SaveChanges();
-            await _bus.Publish(new GetExamDTO() { Id = exam.Id, Candidate = exam.Candiate.Name, Score = 0, Status = Domain.Enumerations.ExamStatus.Completed });
-
+            await _bus.Publish(new GetExamDTO() { Id = exam.Id, Candidate = $"{exam.Candiate.Name} {exam.Candiate.Surname}", Score = 0, Status = ExamStatus.Completed });
         }
     }
 }

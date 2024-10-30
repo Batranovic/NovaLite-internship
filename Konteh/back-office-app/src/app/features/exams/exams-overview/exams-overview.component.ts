@@ -40,7 +40,7 @@ export class ExamsOverviewComponent implements OnInit {
     if (index !== -1) {
       data[index] = newExam;
     } else {
-      data.push(newExam);
+      data.unshift(newExam);
     }
     this.dataSource.data = [...data];
   }
