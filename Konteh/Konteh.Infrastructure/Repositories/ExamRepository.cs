@@ -29,5 +29,6 @@ public class ExamRepository : BaseRepository<Exam>
     public override async Task<Exam?> GetById(long id) => await _context.Set<Exam>()
         .Include(x => x.ExamQuestions)
         .ThenInclude(x => x.Question.Answers)
+        .Include(x => x.Candiate)
         .SingleOrDefaultAsync(x => x.Id == id);
 }

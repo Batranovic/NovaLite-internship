@@ -52,8 +52,9 @@ public static class SubmitExam
                 examQuestion.SubmittedAnswers = examQuestion.Question.Answers.Where(a => answersIds.Contains(a.Id)).ToList();
             }
 
-            await _bus.Publish(new GetExamDTO() { Id = exam.Id, Candidate = "test", Score = 0, Status = Domain.Enumerations.ExamStatus.Completed });
             await _examRepository.SaveChanges();
+            await _bus.Publish(new GetExamDTO() { Id = exam.Id, Candidate = exam.Candiate.Name, Score = 0, Status = Domain.Enumerations.ExamStatus.Completed });
+
         }
     }
 }

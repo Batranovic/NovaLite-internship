@@ -34,16 +34,14 @@ export class ExamsOverviewComponent implements OnInit {
   }
 
   private updateExamInDataSource(newExam: GetAllExamsResponse) {
-    let flag = true;
-    for (let exam of this.dataSource.data) {
-      if (exam.id === newExam.id){
-        exam = newExam;
-        flag = false;
-      }
+    const data = this.dataSource.data;
+    const index = data.findIndex(exam => exam.id === newExam.id);
+
+    if (index !== -1) {
+      data[index] = newExam;
+    } else {
+      data.push(newExam);
     }
-    if (flag){
-      this.dataSource.data.push(newExam);
-    }
-    this.dataSource.data = this.dataSource.data;
+    this.dataSource.data = [...data];
   }
 }
