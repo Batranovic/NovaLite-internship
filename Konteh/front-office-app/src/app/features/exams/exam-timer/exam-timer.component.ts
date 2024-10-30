@@ -9,7 +9,7 @@ import { GetExamResponse } from '../../../api/api-reference';
 export class ExamTimerComponent implements OnInit {
   @Output() timerExpired = new EventEmitter<void>()
   @Input() exam! : GetExamResponse;
-  totalTime: number = 240
+  totalTime: number = 240 //TO DO: change the value of totalTime 
   timer: any
   formattedTime: string = '';
   
@@ -18,18 +18,16 @@ export class ExamTimerComponent implements OnInit {
   }
 
   initializeTimer() {
-    const storedEndTime = localStorage.getItem('examEndTime')
-    
-    if (storedEndTime) {
-      const endTime = parseInt(storedEndTime, 10)
-      const currentTime = this.exam.startTime?.getTime()
-      const remainingTime = Math.floor((endTime - currentTime!) / 1000)
-      this.totalTime = Math.max(remainingTime, 0)
+    const currentDate =new Date()
+    const currentTime = currentDate.getTime()
+    const startTime = this.exam.startTime!.getTime(); 
+    const endTime = startTime + this.totalTime * 1000; 
+
+    if (currentTime <= endTime) {
+      const remainingTime = Math.floor((endTime - currentTime) / 1000); 
+      this.totalTime = Math.max(remainingTime, 0);
     } else {
-      console.log(this.exam!)
-      const currentTime = this.exam.startTime?.getTime()
-      const endTime = currentTime! + this.totalTime * 1000
-      localStorage.setItem('examEndTime', endTime.toString())
+      this.totalTime = 0;
     }
 
     setTimeout(() => {

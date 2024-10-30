@@ -13,6 +13,7 @@ import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component'
 export class ExamOverviewComponent {
   exam!: GetExamResponse;
   currentQuestionIndex = 0;
+  isTimerExpired = false;
 
   constructor(private activatedRoute: ActivatedRoute, private examClient: ExamClient, private snackBar: MatSnackBar, private router: Router, private dialog: MatDialog) {
     const examId = this.activatedRoute.snapshot.paramMap.get('id');
@@ -45,8 +46,15 @@ export class ExamOverviewComponent {
     }
   }
 
+ onTimerExpired() {
+    this.isTimerExpired = true;
+    this.submitExam();
+  }
+
   async submitExam() {
-    const dialogRef = this.dialog.open(SubmitDialogComponent);
+     const dialogRef = this.dialog.open(SubmitDialogComponent, {
+      data: { disableCancel: this.isTimerExpired }
+    });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         const command = new SubmitExamCommand({
@@ -59,7 +67,6 @@ export class ExamOverviewComponent {
     
         this.examClient.submitExam(command).subscribe({
           next: _ => {
-            localStorage.removeItem('examEndTime')
             this.snackBar.open('Exam submitted successfully', 'Ok', {
               duration: 3000,
             });

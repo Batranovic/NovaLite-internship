@@ -1,11 +1,11 @@
 <div class="container">
-  <app-exam-timer class="timer"  *ngIf="exam" [exam]="exam" (timerExpired)="submitExam()"></app-exam-timer>
+  <app-exam-timer class="timer"  *ngIf="exam" [exam]="exam" (timerExpired)="onTimerExpired()"></app-exam-timer>
   <img src="/images.png" alt="image" class="logo">
   <div class="form-container">
     <br>
     <div *ngIf="exam?.questions?.length! > 0">
       <h6 class="question-text">{{ currentQuestion?.text }}</h6>
-      <app-answer-form *ngIf="currentQuestion" [question]="currentQuestion"></app-answer-form>
+      <app-answer-form *ngIf="currentQuestion" [question]="currentQuestion" [isTimerExpired]="isTimerExpired"></app-answer-form>
       <br>
       <div class="pagination-controls">
         <button class="arrow-button" (click)="previousQuestion()" [disabled]="isFirstQuestion">

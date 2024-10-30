@@ -10,6 +10,7 @@ import { GetExamAnswerItem, GetExamExamQuestionItem, GetExamResponse, QuestionTy
 export class AnswerFormComponent {
   @Input() question!: GetExamExamQuestionItem;
   @Input() exam!: GetExamResponse;
+  @Input() isTimerExpired!: boolean;
   QuestionType = QuestionType;
 
   get selectedAnswer() {
