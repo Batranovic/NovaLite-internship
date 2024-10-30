@@ -1,7 +1,11 @@
 ﻿using Konteh.Domain;
+using Konteh.Domain.Enumerations;
+using Konteh.Infrastructure.DTO;
 using Konteh.Infrastructure.ExceptionHandlers.Exceptions;
 using Konteh.Infrastructure.Repositories;
+using MassTransit;
 using MediatR;
+
 
 namespace Konteh.FrontOfficeApi.Features.Exams;
 
@@ -21,10 +25,12 @@ public static class SubmitExam
     public class RequestHandler : IRequestHandler<Command>
     {
         private readonly IRepository<Exam> _examRepository;
+        private readonly IBus _bus;
 
-        public RequestHandler(IRepository<Exam> examRepository)
+        public RequestHandler(IBus bus, IRepository<Exam> examRepository)
         {
             _examRepository = examRepository;
+            _bus = bus;
         }
 
         public async Task Handle(Command request, CancellationToken cancellationToken)
@@ -50,6 +56,7 @@ public static class SubmitExam
             }
 
             await _examRepository.SaveChanges();
+            await _bus.Publish(new GetExamResponse() { Id = exam.Id, Candidate = $"{exam.Candiate.Name} {exam.Candiate.Surname}", Score = 0, Status = ExamStatus.Completed });
         }
     }
 }

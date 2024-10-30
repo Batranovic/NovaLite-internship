@@ -1,5 +1,5 @@
 ﻿using Konteh.Domain;
-using Konteh.Domain.Enumerations;
+using Konteh.Infrastructure.DTO;
 using Konteh.Infrastructure.Repositories;
 using MediatR;
 
@@ -7,10 +7,9 @@ namespace Konteh.BackOfficeApi.Features.Exams;
 
 public static class GetAllExams
 {
-    public class Query : IRequest<IEnumerable<Response>>
+    public class Query : IRequest<IEnumerable<GetExamResponse>>
     {
         public string? Candidate { get; set; } = string.Empty;
-
     }
 
     public class Response
@@ -31,7 +30,7 @@ public static class GetAllExams
             _examRepository = examRepository;
         }
 
-        public async Task<IEnumerable<Response>> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<GetExamResponse>> Handle(Query request, CancellationToken cancellationToken)
         {
             var exams = await _examRepository.Search(e =>
             string.IsNullOrEmpty(request.Candidate)

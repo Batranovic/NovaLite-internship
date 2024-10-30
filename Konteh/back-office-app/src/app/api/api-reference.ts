@@ -325,7 +325,7 @@ export class QuestionsClient implements IQuestionsClient {
 }
 
 export interface IExamsClient {
-    getAllExams(candidate: string | null | undefined): Observable<GetAllExamsResponse[]>;
+    getAllExams(candidate: string | null | undefined): Observable<GetExamResponse[]>;
 }
 
 @Injectable({
@@ -341,7 +341,7 @@ export class ExamsClient implements IExamsClient {
         this.baseUrl = baseUrl ?? "https://localhost:7184";
     }
 
-    getAllExams(candidate: string | null | undefined): Observable<GetAllExamsResponse[]> {
+    getAllExams(candidate: string | null | undefined): Observable<GetExamResponse[]> {
         let url_ = this.baseUrl + "/exams?";
         if (candidate !== undefined && candidate !== null)
             url_ += "Candidate=" + encodeURIComponent("" + candidate) + "&";
@@ -362,14 +362,14 @@ export class ExamsClient implements IExamsClient {
                 try {
                     return this.processGetAllExams(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<GetAllExamsResponse[]>;
+                    return _observableThrow(e) as any as Observable<GetExamResponse[]>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<GetAllExamsResponse[]>;
+                return _observableThrow(response_) as any as Observable<GetExamResponse[]>;
         }));
     }
 
-    protected processGetAllExams(response: HttpResponseBase): Observable<GetAllExamsResponse[]> {
+    protected processGetAllExams(response: HttpResponseBase): Observable<GetExamResponse[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -383,7 +383,7 @@ export class ExamsClient implements IExamsClient {
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
-                    result200!.push(GetAllExamsResponse.fromJS(item));
+                    result200!.push(GetExamResponse.fromJS(item));
             }
             else {
                 result200 = <any>null;
@@ -943,14 +943,14 @@ export interface IGetAllQuestionsResponse {
     category?: QuestionCategory;
 }
 
-export class GetAllExamsResponse implements IGetAllExamsResponse {
+export class GetExamResponse implements IGetExamResponse {
     id?: number;
     candidate?: string;
     status?: ExamStatus;
     score?: number;
     maxScore?: number;
 
-    constructor(data?: IGetAllExamsResponse) {
+    constructor(data?: IGetExamResponse) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -969,9 +969,9 @@ export class GetAllExamsResponse implements IGetAllExamsResponse {
         }
     }
 
-    static fromJS(data: any): GetAllExamsResponse {
+    static fromJS(data: any): GetExamResponse {
         data = typeof data === 'object' ? data : {};
-        let result = new GetAllExamsResponse();
+        let result = new GetExamResponse();
         result.init(data);
         return result;
     }
@@ -987,7 +987,7 @@ export class GetAllExamsResponse implements IGetAllExamsResponse {
     }
 }
 
-export interface IGetAllExamsResponse {
+export interface IGetExamResponse {
     id?: number;
     candidate?: string;
     status?: ExamStatus;

@@ -5,6 +5,7 @@ using Konteh.FrontOfficeApi.Features.Exams.RandomGenerator;
 using Konteh.Infrastructure.ExceptionHandlers.Exceptions;
 using Konteh.Infrastructure.Repositories;
 using Konteh.Test.Infrastructure;
+using MassTransit;
 using NSubstitute;
 using System.Linq.Expressions;
 
@@ -17,6 +18,7 @@ public class GenerateExamTests
     private GenerateExam.RequestHandler _handler;
     private IRandomGenerator _randomGenerator;
     private IRepository<Candidate> _candidateRepository;
+    private IBus _bus = null!;
 
     [SetUp]
     public void Setup()
@@ -25,7 +27,8 @@ public class GenerateExamTests
         _examRepository = Substitute.For<IRepository<Exam>>();
         _randomGenerator = Substitute.For<IRandomGenerator>();
         _candidateRepository = Substitute.For<IRepository<Candidate>>();
-        _handler = new GenerateExam.RequestHandler(_questionRepository, _examRepository, _randomGenerator, _candidateRepository);
+        _bus = Substitute.For<IBus>();
+        _handler = new GenerateExam.RequestHandler(_questionRepository, _examRepository, _randomGenerator, _candidateRepository, _bus);
     }
 
     [Test]
