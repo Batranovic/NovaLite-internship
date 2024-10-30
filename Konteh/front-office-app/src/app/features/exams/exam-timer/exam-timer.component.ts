@@ -9,7 +9,7 @@ import { GetExamResponse } from '../../../api/api-reference';
 export class ExamTimerComponent implements OnInit {
   @Output() timerExpired = new EventEmitter<void>()
   @Input() exam! : GetExamResponse;
-  totalTime: number = 240 //TO DO: change the value of totalTime 
+  totalTime: number = 900;
   timer: any
   formattedTime: string = '';
   

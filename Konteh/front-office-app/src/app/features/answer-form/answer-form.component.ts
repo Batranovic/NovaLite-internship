@@ -1,5 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { AnswerService } from '../exams/exam-overview/answer.service';
+import { Component, Input} from '@angular/core';
 import { GetExamAnswerItem, GetExamExamQuestionItem, GetExamResponse, QuestionType, } from '../../api/api-reference';
 
 @Component({
