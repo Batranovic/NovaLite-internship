@@ -54,7 +54,7 @@ export class CreateQuestionComponent implements OnInit {
       answers: answersToSubmit
     });
     this.questionClient.createOrUpdateQuestion(command).subscribe({
-      next: _ => this.router.navigate(['/questions-overview']),
+      next: _ => this.router.navigate(['/questions']),
       error: errors => setServerSideValidationErrors(errors, this.questionForm)
     });
   }

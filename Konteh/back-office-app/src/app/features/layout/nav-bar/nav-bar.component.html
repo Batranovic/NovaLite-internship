@@ -2,10 +2,9 @@
   
   <img src="/logo.png" alt="image" class="logo">
       <span class="menu-spacer"></span>
-      <a mat-button routerLink="/">Home</a>
-      <a mat-button routerLink="/questions-overview">Questions Overview</a>
-      <a mat-button routerLink="/create-question">Create Question</a>
-      <a mat-button routerLink="/exams-overview">Exams Overview</a>
+      <a mat-button routerLink="questions">Questions Overview</a>
+      <a mat-button routerLink="questions/create">Create Question</a>
+      <a mat-button routerLink="exams">Exams Overview</a>
       <button mat-button *ngIf="!isLoggedIn()" (click)="login()">Login</button>
       <button mat-button [matMenuTriggerFor]="userMenu" *ngIf="isLoggedIn()">
           <mat-icon>person</mat-icon>

@@ -6,7 +6,6 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DeleteAnswerDialogComponent } from './delete-answer-dialog/delete-answer-dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -24,6 +23,8 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { HttpClientModule } from '@angular/common/http';
 import { FormErrorsComponent } from "../../shared/form-errors.component";
+import { QuestionsRoutingModule } from './questions-routing.module';
+import { MaterialModule } from '../../shared/material/material.module';
 
 @NgModule({
   declarations: [
@@ -41,26 +42,14 @@ import { FormErrorsComponent } from "../../shared/form-errors.component";
   ],
   imports: [
     CommonModule,
-    MatCardModule,
-    MatListModule,
-    MatIconModule,
-    MatMenuModule,
-    MatRadioModule,
-    BrowserAnimationsModule,
     FormsModule,
-    MatDialogModule,
-    MatSnackBarModule,
-    MatButtonModule,
-    MatError,
     ReactiveFormsModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatInputModule,
-    MatCheckboxModule,
+    MaterialModule,
     HttpClientModule,
     MatTableModule,
     MatPaginatorModule,
-    FormErrorsComponent
+    FormErrorsComponent,
+    QuestionsRoutingModule
 ]
 })
 export class QuestionsModule { }

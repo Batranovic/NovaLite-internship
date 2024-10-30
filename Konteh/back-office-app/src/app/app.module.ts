@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -9,23 +8,21 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatOptionModule } from '@angular/material/core';
-import { RouterLink, RouterModule, RouterOutlet } from '@angular/router';
+import { RouterOutlet } from '@angular/router';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatListModule } from '@angular/material/list';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { QuestionsModule } from './features/questions/questions.module';
 import { MSAL_INSTANCE, MSAL_INTERCEPTOR_CONFIG, MsalInterceptor, MsalInterceptorConfiguration, MsalModule, MsalService } from '@azure/msal-angular'
 import { InteractionType, IPublicClientApplication, PublicClientApplication } from '@azure/msal-browser';
 import { LayoutModule } from "./features/layout/layout.module";
-import { FeaturesModule } from './features/features.module';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { environment } from './environments/environment';
 import { FormErrorsComponent } from './shared/form-errors.component';
-import { ExamsModule } from './features/exams/exams.module';
 import {HttpErrorInterceptor} from './shared/http-error-interceptor';
+import { CommonModule } from '@angular/common';
 
 export function MSALInstanceFactory(): IPublicClientApplication {
   return new PublicClientApplication({
@@ -50,7 +47,6 @@ export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
   ],
   imports: [
     BrowserAnimationsModule,
-    BrowserModule,
     AppRoutingModule,
     MatFormFieldModule,
     MatInputModule,
@@ -63,18 +59,16 @@ export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
     MatRadioModule,
     MatListModule,
     MatCheckboxModule,
-    QuestionsModule,
     FormsModule,
     MatMenuModule,
     MatIconModule,
     MsalModule,
-    FeaturesModule,
     FormErrorsComponent,
-    ExamsModule,
     LayoutModule,
+    CommonModule
   ],
   providers: [
-    provideAnimationsAsync(), HttpClientModule,
+    provideAnimationsAsync(),
     {
       provide: MSAL_INSTANCE,
       useFactory: MSALInstanceFactory

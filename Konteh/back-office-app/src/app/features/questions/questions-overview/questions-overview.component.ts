@@ -35,7 +35,7 @@ export class QuestionsOverviewComponent implements OnInit {
   }
 
   editQuestion(id: number): void {
-    this.router.navigate(['/edit-question', id])
+    this.router.navigate([`/questions/edit/${id}`]);
   }
 
   deleteQuestion(id: number) {
