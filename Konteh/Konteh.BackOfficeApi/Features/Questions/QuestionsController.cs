@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Konteh.Domain.Commands;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -36,7 +37,7 @@ public class QuestionsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> CreateOrUpdateQuestion(CreateUpdateQuestion.Command command)
+    public async Task<ActionResult> CreateOrUpdateQuestion(CreateOrUpdateQuestionCommand command)
     {
         await _mediator.Send(command);
         return Ok();
