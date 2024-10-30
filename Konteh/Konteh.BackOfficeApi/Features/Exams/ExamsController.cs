@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Konteh.Infrastructure.DTO;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using static Konteh.BackOfficeApi.Features.Exams.GetAllExams;
 
@@ -16,7 +17,7 @@ public class ExamsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Response>>> GetAllExams([FromQuery] Query request)
+    public async Task<ActionResult<IEnumerable<GetExamResponse>>> GetAllExams([FromQuery] Query request)
     {
         var response = await _mediator.Send(request);
         return Ok(response);

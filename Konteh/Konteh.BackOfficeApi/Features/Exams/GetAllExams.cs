@@ -1,5 +1,5 @@
 ﻿using Konteh.Domain;
-using Konteh.Domain.Enumerations;
+using Konteh.Infrastructure.DTO;
 using Konteh.Infrastructure.Repositories;
 using MediatR;
 
@@ -7,21 +7,12 @@ namespace Konteh.BackOfficeApi.Features.Exams;
 
 public static class GetAllExams
 {
-    public class Query : IRequest<IEnumerable<Response>>
+    public class Query : IRequest<IEnumerable<GetExamResponse>>
     {
         public string? Candidate { get; set; } = string.Empty;
-
     }
 
-    public class Response
-    {
-        public long Id { get; set; }
-        public string Candidate { get; set; } = string.Empty!;
-        public ExamStatus Status { get; set; }
-        public double Score { get; set; }
-    }
-
-    public class RequestHandler : IRequestHandler<Query, IEnumerable<Response>>
+    public class RequestHandler : IRequestHandler<Query, IEnumerable<GetExamResponse>>
     {
         private readonly IRepository<Exam> _repository;
 
@@ -30,7 +21,7 @@ public static class GetAllExams
             _repository = repository;
         }
 
-        public async Task<IEnumerable<Response>> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<GetExamResponse>> Handle(Query request, CancellationToken cancellationToken)
         {
             var searchTerms = request.Candidate?.Trim().Split(' ') ?? [];
             if (searchTerms.Length == 2)
@@ -38,10 +29,10 @@ public static class GetAllExams
                 var firstName = searchTerms[0];
                 var lastName = searchTerms[1];
                 var searchedExams = await _repository.Search(e => string.IsNullOrEmpty(request.Candidate) || (e.Candiate.Name.Contains(firstName) && e.Candiate.Surname.Contains(lastName)));
-                return searchedExams.Select(e => new Response { Id = e.Id, Candidate = $"{e.Candiate.Name} {e.Candiate.Surname}", Status = e.Status, Score = CalculateScore(e) });
+                return searchedExams.Select(e => new GetExamResponse { Id = e.Id, Candidate = $"{e.Candiate.Name} {e.Candiate.Surname}", Status = e.Status, Score = CalculateScore(e) });
             }
             var exams = await _repository.Search(e => string.IsNullOrEmpty(request.Candidate) || e.Candiate.Name.Contains(request.Candidate) || e.Candiate.Surname.Contains(request.Candidate));
-            return exams.Select(e => new Response { Id = e.Id, Candidate = $"{e.Candiate.Name} {e.Candiate.Surname}", Status = e.Status, Score = CalculateScore(e) });
+            return exams.Select(e => new GetExamResponse { Id = e.Id, Candidate = $"{e.Candiate.Name} {e.Candiate.Surname}", Status = e.Status, Score = CalculateScore(e) });
         }
 
         private double CalculateScore(Exam exam)

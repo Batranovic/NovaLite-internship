@@ -2,8 +2,10 @@
 using Konteh.Domain;
 using Konteh.Domain.Enumerations;
 using Konteh.FrontOfficeApi.Features.Exams.RandomGenerator;
+using Konteh.Infrastructure.DTO;
 using Konteh.Infrastructure.ExceptionHandlers.Exceptions;
 using Konteh.Infrastructure.Repositories;
+using MassTransit;
 using MediatR;
 
 namespace Konteh.FrontOfficeApi.Features.Exams;
@@ -29,12 +31,19 @@ public static class GenerateExam
         private readonly IRepository<Exam> _examRepository;
         private readonly IRandomGenerator _randomGenerator;
         private readonly IRepository<Candidate> _candidateRepository;
-        public RequestHandler(IQuestionRepository questionRepository, IRepository<Exam> examRepository, IRandomGenerator randomGenerator, IRepository<Candidate> candidateRepository)
+        private readonly IBus _bus;
+
+        public RequestHandler(IQuestionRepository questionRepository,
+            IRepository<Exam> examRepository,
+            IRandomGenerator randomGenerator,
+            IRepository<Candidate> candidateRepository,
+            IBus bus)
         {
             _questionRepository = questionRepository;
             _examRepository = examRepository;
             _randomGenerator = randomGenerator;
             _candidateRepository = candidateRepository;
+            _bus = bus;
         }
 
         public async Task<long> Handle(Command request, CancellationToken cancellationToken)
@@ -71,7 +80,9 @@ public static class GenerateExam
             };
 
             _examRepository.Create(exam);
+
             await _examRepository.SaveChanges();
+            await _bus.Publish(new GetExamResponse() { Id = exam.Id, Candidate = $"{exam.Candiate.Name} {exam.Candiate.Surname}", Score = 0, Status = ExamStatus.InProgess });
             return exam.Id;
         }
 
