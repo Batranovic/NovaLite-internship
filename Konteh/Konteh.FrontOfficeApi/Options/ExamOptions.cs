@@ -2,6 +2,6 @@
 
 public class ExamOptions
 {
-    public const string SectionName = "Position";
+    public const string SectionName = "ExamSettings";
     public int MaxDurationInSeconds { get; set; }
 }
