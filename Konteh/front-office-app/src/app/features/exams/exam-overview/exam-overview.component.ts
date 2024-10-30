@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-exam-overview',
@@ -46,35 +47,35 @@ export class ExamOverviewComponent {
     }
   }
 
- onTimerExpired() {
+  onTimerExpired() {
     this.isTimerExpired = true;
     this.submitExam();
   }
 
   async submitExam() {
-     const dialogRef = this.dialog.open(SubmitDialogComponent, {
+    const dialogRef = this.dialog.open(SubmitDialogComponent, {
       data: { disableCancel: this.isTimerExpired }
     });
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        const command = new SubmitExamCommand({
-          examId: this.exam.id,
-          examQuestions: this.exam.questions?.map(question => new SubmitExamExamQuestionDto({
-            examQuestionId: question.id,
-            submittedAnswers: question.answers?.filter(answer => answer.isSelected).map(answer => answer.id!)
-          }))
-        });
-    
-        this.examClient.submitExam(command).subscribe({
-          next: _ => {
-            this.snackBar.open('Exam submitted successfully', 'Ok', {
-              duration: 3000,
-            });
-            this.router.navigate(['/']);
-          }
-        });
-      } 
+    dialogRef.afterClosed().pipe(
+      filter(result => result)
+    ).subscribe(() => {
+      const command = new SubmitExamCommand({
+        examId: this.exam.id,
+        examQuestions: this.exam.questions?.map(question => new SubmitExamExamQuestionDto({
+          examQuestionId: question.id,
+          submittedAnswers: question.answers?.filter(answer => answer.isSelected).map(answer => answer.id!)
+        }))
+      });
+
+      this.examClient.submitExam(command).subscribe({
+        next: _ => {
+          this.snackBar.open('Exam submitted successfully', 'Ok', {
+            duration: 3000,
+          });
+          this.router.navigate(['/']);
+        }
+      });
     });
   }
-  
+
 }

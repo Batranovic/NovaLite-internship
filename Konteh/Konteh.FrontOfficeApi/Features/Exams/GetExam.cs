@@ -8,6 +8,7 @@ namespace Konteh.FrontOfficeApi.Features.Exams;
 
 public static class GetExam
 {
+    private static readonly int maxDurationInSeconds = 900;
     public class Query : IRequest<Response>
     {
         public long ExamId { get; set; }
@@ -16,8 +17,8 @@ public static class GetExam
     public class Response
     {
         public long Id { get; set; }
-        public DateTime StartTime { get; set; }
         public IEnumerable<ExamQuestionItem> Questions { get; set; } = [];
+        public DateTime MaxEndDateTime { get; set; }
     }
 
     public class ExamQuestionItem
@@ -51,7 +52,6 @@ public static class GetExam
             return new Response
             {
                 Id = exam.Id,
-                StartTime = exam.StartTime,
                 Questions = exam.ExamQuestions.Select(examQuestion => new ExamQuestionItem
                 {
                     Id = examQuestion.Id,
@@ -63,7 +63,8 @@ public static class GetExam
                         Text = answer.Text,
                         IsSelected = examQuestion.SubmittedAnswers.Contains(answer)
                     })
-                })
+                }),
+                MaxEndDateTime = exam.StartTime.AddSeconds(maxDurationInSeconds)
             };
         }
     }

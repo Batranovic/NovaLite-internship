@@ -9,7 +9,7 @@ import { GetExamResponse } from '../../../api/api-reference';
 export class ExamTimerComponent implements OnInit {
   @Output() timerExpired = new EventEmitter<void>()
   @Input() exam! : GetExamResponse;
-  totalTime: number = 900;
+  totalTime!: number;
   timer: any
   formattedTime: string = '';
   
@@ -20,8 +20,7 @@ export class ExamTimerComponent implements OnInit {
   initializeTimer() {
     const currentDate =new Date()
     const currentTime = currentDate.getTime()
-    const startTime = this.exam.startTime!.getTime(); 
-    const endTime = startTime + this.totalTime * 1000; 
+    const endTime = this.exam.maxEndDateTime!.getTime();  
 
     if (currentTime <= endTime) {
       const remainingTime = Math.floor((endTime - currentTime) / 1000); 
@@ -29,7 +28,7 @@ export class ExamTimerComponent implements OnInit {
     } else {
       this.totalTime = 0;
     }
-
+ 
     setTimeout(() => {
       this.startTimer()
     }, 1000)

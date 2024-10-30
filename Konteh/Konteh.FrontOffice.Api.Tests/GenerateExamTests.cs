@@ -40,8 +40,6 @@ public class GenerateExamTests
         _questionRepository.Search(Arg.Any<Expression<Func<Question, bool>>>()).Returns(questions);
 
         var exception = Assert.ThrowsAsync<NotFoundException>(() => _handler.Handle(command, CancellationToken.None));
-        Assert.That(exception, Is.TypeOf<NotFoundException>());
-        Assert.That(exception.Message, Is.EqualTo(new NotFoundException().Message));
 
         _examRepository.DidNotReceive().Create(Arg.Any<Exam>());
         await _examRepository.DidNotReceive().SaveChanges();

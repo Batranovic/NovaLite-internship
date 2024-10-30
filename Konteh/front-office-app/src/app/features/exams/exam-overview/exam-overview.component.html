@@ -3,7 +3,7 @@
   <img src="/images.png" alt="image" class="logo">
   <div class="form-container">
     <br>
-    <div *ngIf="exam?.questions?.length! > 0">
+    <div *ngIf="exam?.questions?.length! > 0" class="form-content">
       <h6 class="question-text">{{ currentQuestion?.text }}</h6>
       <app-answer-form *ngIf="currentQuestion" [question]="currentQuestion" [isTimerExpired]="isTimerExpired"></app-answer-form>
       <br>

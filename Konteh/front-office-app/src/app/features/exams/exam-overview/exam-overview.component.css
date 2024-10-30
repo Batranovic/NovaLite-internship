@@ -18,19 +18,29 @@
 }
 
 .form-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    max-width: 650px;
-    margin: 10px auto;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); 
-    background-color: #fff;
-    border: 1.7px solid black ;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 650px; 
+  height: 300px; 
+  margin: 10px auto;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); 
+  background-color: #fff;
+  border: 1.7px solid black;
 }
+
+.form-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; 
+  height: 100%; 
+  width: 100%;
+}
+
 .exam-title {
     font-size: 27px;
     margin-bottom: 10px;
@@ -38,10 +48,13 @@
 }
 
 .question-text {
-    font-size: 23px;
-    color: #333;
-    margin-bottom: 10px;
+  font-size: 23px;
+  color: #333;
+  margin-bottom: 10px;
+  text-align: center; /
+  width: 100%; 
 }
+
 
 .exam-form-button {
     width: 10%;
@@ -61,7 +74,7 @@
 .pagination-controls {
   display: flex;
   justify-content: space-between;
-  margin-top: 20px; 
+  width: 100%; 
 }
 
 .arrow-button {
@@ -88,3 +101,4 @@
   right: 10px;        
   z-index: 1000;   
 }
+
