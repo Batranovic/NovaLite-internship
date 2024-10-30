@@ -37,7 +37,9 @@ public static class SubmitExam
             {
                 throw new Exception("Exam has already been completed");
             }
-            exam.EndTime = DateTime.UtcNow;
+
+            exam.EndTime = DateTime.Now;
+            exam.Status = Domain.Enumerations.ExamStatus.Completed;
 
             var examQuestions = exam.ExamQuestions;
 

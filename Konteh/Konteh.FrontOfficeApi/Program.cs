@@ -1,6 +1,7 @@
 using FluentValidation;
 using Konteh.Domain;
 using Konteh.FrontOfficeApi.Features.Exams.RandomGenerator;
+using Konteh.FrontOfficeApi.Options;
 using Konteh.Infrastructure;
 using Konteh.Infrastructure.ExceptionHandlers;
 using Konteh.Infrastructure.Extensions;
@@ -30,6 +31,7 @@ public class Program
         builder.Services.AddScoped<IRepository<Exam>, ExamRepository>();
         builder.Services.AddScoped<IRepository<Candidate>, CandidateRepository>();
         builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
+        builder.Services.Configure<ExamOptions>(builder.Configuration.GetSection(ExamOptions.SectionName));
 
         builder.Services.AddMediatR(cfg =>
       {
