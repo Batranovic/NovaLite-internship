@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Konteh.Infrastructure.Filters;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Konteh.FrontOfficeApi.Features.Exams;
@@ -36,14 +37,10 @@ public class ExamController : Controller
     [HttpGet("{id:long}")]
     [ProducesResponseType(typeof(GetExam.Response), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [EmailClaimRequired]
     public async Task<ActionResult<GetExam.Response>> GetById(long id)
     {
         var emailClaim = HttpContext.Request.Headers["email"].ToString();
-
-        if (string.IsNullOrEmpty(emailClaim))
-        {
-            return Unauthorized("Email claim is missing in the request headers.");
-        }
         var response = await _mediator.Send(new GetExam.Query { ExamId = id, Email = emailClaim });
         return Ok(response);
     }
