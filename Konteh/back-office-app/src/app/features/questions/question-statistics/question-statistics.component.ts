@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { QuestionsClient } from '../../../api/api-reference';
-import { Chart, LinearScale, BarElement, BarController, Title, Tooltip, CategoryScale } from 'chart.js';
+import { Chart, LinearScale,  DoughnutController, Title, Tooltip, CategoryScale, ArcElement } from 'chart.js';
 
 @Component({
   selector: 'app-question-statistics',
@@ -29,10 +29,10 @@ export class QuestionStatisticsComponent implements OnInit {
       const ctx = canvas?.getContext('2d');
 
       if (ctx) {
-        Chart.register(LinearScale, BarElement, BarController, Title, Tooltip, CategoryScale);
+        Chart.register(LinearScale, ArcElement, DoughnutController, Title, Tooltip, CategoryScale);
 
         new Chart(ctx, {
-          type: 'bar',
+          type: 'doughnut',
           data: {
             labels: ['Percentage of Correct Answers', 'Percentage of Incorrect Answers'],
             datasets: [{
