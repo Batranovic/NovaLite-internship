@@ -18,6 +18,9 @@ import { ExamStatisticsComponent } from './exam-statistics/exam-statistics.compo
     ExamsSearchComponent,
     ExamStatisticsComponent
   ],
+  exports: [
+    ExamsOverviewComponent
+  ],
   imports: [
     CommonModule,
     MatTableModule,

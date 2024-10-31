@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Konteh.Domain;
 using Konteh.Domain.Commands;
 
 namespace Konteh.BackOfficeApi.Features.Questions.Validators;
@@ -19,9 +20,8 @@ public class CreateUpdateQuestionValidator : AbstractValidator<CreateOrUpdateQue
             .IsInEnum()
             .WithMessage("Question type must be valid value.");
 
-        RuleFor(x => x)
-            .Must(command => command.ValidateCorrectAnswers())
-            .WithMessage("Invalid number of correct answers.");
+
+        RuleFor(x => x).Must(BeCreateable).WithMessage($"{{{nameof(CreateOrUpdateQuestionCommand.Answers)}}}");
 
         RuleForEach(x => x.Answers).ChildRules(a =>
         {
@@ -30,5 +30,17 @@ public class CreateUpdateQuestionValidator : AbstractValidator<CreateOrUpdateQue
             .WithMessage("Answer text can't be empty");
         });
 
+    }
+
+    private bool BeCreateable(CreateOrUpdateQuestionCommand dto, CreateOrUpdateQuestionCommand command, ValidationContext<CreateOrUpdateQuestionCommand> context)
+    {
+        var result = Question.CanCreate(command);
+        if (result.IsSuccess)
+        {
+            return true;
+        }
+
+        context.MessageFormatter.AppendArgument(nameof(dto.Answers), string.Join(',', result.Errors.Select(x => x.Message)));
+        return false;
     }
 }
