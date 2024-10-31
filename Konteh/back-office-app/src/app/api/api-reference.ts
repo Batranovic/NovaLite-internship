@@ -21,6 +21,7 @@ export interface IQuestionsClient {
     createOrUpdateQuestion(command: CreateOrUpdateQuestionCommand): Observable<void>;
     getAll(): Observable<GetAllQuestionsResponse[]>;
     deleteById(questionId: number): Observable<void>;
+    getQuestionStatistics(questionId: number | undefined): Observable<GetQuestionStatisticsQuestionStatistics>;
 }
 
 @Injectable({
@@ -322,10 +323,63 @@ export class QuestionsClient implements IQuestionsClient {
         }
         return _observableOf(null as any);
     }
+
+    getQuestionStatistics(questionId: number | undefined): Observable<GetQuestionStatisticsQuestionStatistics> {
+        let url_ = this.baseUrl + "/questions/statistics?";
+        if (questionId === null)
+            throw new Error("The parameter 'questionId' cannot be null.");
+        else if (questionId !== undefined)
+            url_ += "QuestionId=" + encodeURIComponent("" + questionId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetQuestionStatistics(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetQuestionStatistics(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<GetQuestionStatisticsQuestionStatistics>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<GetQuestionStatisticsQuestionStatistics>;
+        }));
+    }
+
+    protected processGetQuestionStatistics(response: HttpResponseBase): Observable<GetQuestionStatisticsQuestionStatistics> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetQuestionStatisticsQuestionStatistics.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
 }
 
 export interface IExamsClient {
     getAllExams(candidate: string | null | undefined): Observable<GetExamResponse[]>;
+    getExamStatistics(): Observable<GetExamStatisticsExamStatistics>;
 }
 
 @Injectable({
@@ -388,6 +442,54 @@ export class ExamsClient implements IExamsClient {
             else {
                 result200 = <any>null;
             }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    getExamStatistics(): Observable<GetExamStatisticsExamStatistics> {
+        let url_ = this.baseUrl + "/exams/statistics";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetExamStatistics(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetExamStatistics(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<GetExamStatisticsExamStatistics>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<GetExamStatisticsExamStatistics>;
+        }));
+    }
+
+    protected processGetExamStatistics(response: HttpResponseBase): Observable<GetExamStatisticsExamStatistics> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetExamStatisticsExamStatistics.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -943,11 +1045,51 @@ export interface IGetAllQuestionsResponse {
     category?: QuestionCategory;
 }
 
+export class GetQuestionStatisticsQuestionStatistics implements IGetQuestionStatisticsQuestionStatistics {
+    correctAnswers?: number;
+    wrongAnswers?: number;
+
+    constructor(data?: IGetQuestionStatisticsQuestionStatistics) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.correctAnswers = _data["correctAnswers"];
+            this.wrongAnswers = _data["wrongAnswers"];
+        }
+    }
+
+    static fromJS(data: any): GetQuestionStatisticsQuestionStatistics {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetQuestionStatisticsQuestionStatistics();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["correctAnswers"] = this.correctAnswers;
+        data["wrongAnswers"] = this.wrongAnswers;
+        return data;
+    }
+}
+
+export interface IGetQuestionStatisticsQuestionStatistics {
+    correctAnswers?: number;
+    wrongAnswers?: number;
+}
+
 export class GetExamResponse implements IGetExamResponse {
     id?: number;
     candidate?: string;
     status?: ExamStatus;
-    score?: string;
+    score?: number;
 
     constructor(data?: IGetExamResponse) {
         if (data) {
@@ -988,12 +1130,52 @@ export interface IGetExamResponse {
     id?: number;
     candidate?: string;
     status?: ExamStatus;
-    score?: string;
+    score?: number;
 }
 
 export enum ExamStatus {
     InProgess = 1,
     Completed = 2,
+}
+
+export class GetExamStatisticsExamStatistics implements IGetExamStatisticsExamStatistics {
+    over50Percent?: number;
+    under50Percent?: number;
+
+    constructor(data?: IGetExamStatisticsExamStatistics) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.over50Percent = _data["over50Percent"];
+            this.under50Percent = _data["under50Percent"];
+        }
+    }
+
+    static fromJS(data: any): GetExamStatisticsExamStatistics {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetExamStatisticsExamStatistics();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["over50Percent"] = this.over50Percent;
+        data["under50Percent"] = this.under50Percent;
+        return data;
+    }
+}
+
+export interface IGetExamStatisticsExamStatistics {
+    over50Percent?: number;
+    under50Percent?: number;
 }
 
 export class ApiException extends Error {

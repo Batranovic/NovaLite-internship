@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using static Konteh.BackOfficeApi.Features.Exams.GetAllExams;
+using static Konteh.BackOfficeApi.Features.Exams.GetExamStatistics;
 
 namespace Konteh.BackOfficeApi.Features.Exams;
 
@@ -22,4 +23,12 @@ public class ExamsController : ControllerBase
         var response = await _mediator.Send(request);
         return Ok(response);
     }
+
+    [HttpGet("statistics")]
+    public async Task<ActionResult<ExamStatistics>> GetExamStatistics()
+    {
+        var response = await _mediator.Send(new StatisticsQuery());
+        return Ok(response);
+    }
+
 }

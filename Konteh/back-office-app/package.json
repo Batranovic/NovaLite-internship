@@ -24,6 +24,7 @@
     "@azure/msal-angular": "^3.0.25",
     "@azure/msal-browser": "^3.26.1",
     "@microsoft/signalr": "^8.0.7",
+    "chart.js": "^4.4.6",
     "nswag": "^14.1.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",

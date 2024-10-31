@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static Konteh.BackOfficeApi.Features.Questions.GetQuestionStatistics;
 
 namespace Konteh.BackOfficeApi.Features.Questions;
 
@@ -56,6 +57,13 @@ public class QuestionsController : ControllerBase
     public async Task<ActionResult<IEnumerable<GetAllQuestions.Response>>> GetAll()
     {
         var response = await _mediator.Send(new GetAllQuestions.Query());
+        return Ok(response);
+    }
+
+    [HttpGet("statistics")]
+    public async Task<ActionResult<QuestionStatistics>> GetQuestionStatistics([FromQuery] QuestionStatisticsQuery request)
+    {
+        var response = await _mediator.Send(request);
         return Ok(response);
     }
 }

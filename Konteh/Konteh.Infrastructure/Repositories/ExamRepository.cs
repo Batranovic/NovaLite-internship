@@ -36,4 +36,12 @@ public class ExamRepository : BaseRepository<Exam>
         .ThenInclude(x => x.SubmittedAnswers)
         .Include(x => x.Candiate)
         .SingleOrDefaultAsync(x => x.Id == id);
+
+    public override async Task<IEnumerable<Exam>> GetAll() => await _context.Set<Exam>()
+        .Include(e => e.ExamQuestions)
+        .ThenInclude(eq => eq.SubmittedAnswers)
+        .Include(e => e.ExamQuestions)
+        .ThenInclude(eq => eq.Question.Answers)
+        .ToListAsync();
+
 }
