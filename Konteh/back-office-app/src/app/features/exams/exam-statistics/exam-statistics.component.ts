@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit} from '@angular/core';
 import { ExamsClient } from '../../../api/api-reference';
 import { Chart, LinearScale, BarElement, BarController, Title, Tooltip,CategoryScale  } from 'chart.js'; 
 

@@ -21,6 +21,7 @@ export interface IQuestionsClient {
     createOrUpdateQuestion(command: CreateOrUpdateQuestionCommand): Observable<void>;
     getAll(): Observable<GetAllQuestionsResponse[]>;
     deleteById(questionId: number): Observable<void>;
+    getQuestionStatistics(questionId: number | undefined): Observable<GetQuestionStatisticsQuestionStatistics>;
 }
 
 @Injectable({
@@ -314,6 +315,58 @@ export class QuestionsClient implements IQuestionsClient {
             let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result404 = ProblemDetails.fromJS(resultData404);
             return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    getQuestionStatistics(questionId: number | undefined): Observable<GetQuestionStatisticsQuestionStatistics> {
+        let url_ = this.baseUrl + "/questions/statistics?";
+        if (questionId === null)
+            throw new Error("The parameter 'questionId' cannot be null.");
+        else if (questionId !== undefined)
+            url_ += "QuestionId=" + encodeURIComponent("" + questionId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetQuestionStatistics(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetQuestionStatistics(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<GetQuestionStatisticsQuestionStatistics>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<GetQuestionStatisticsQuestionStatistics>;
+        }));
+    }
+
+    protected processGetQuestionStatistics(response: HttpResponseBase): Observable<GetQuestionStatisticsQuestionStatistics> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetQuestionStatisticsQuestionStatistics.fromJS(resultData200);
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -990,6 +1043,46 @@ export interface IGetAllQuestionsResponse {
     id?: number;
     text?: string;
     category?: QuestionCategory;
+}
+
+export class GetQuestionStatisticsQuestionStatistics implements IGetQuestionStatisticsQuestionStatistics {
+    correctAnswers?: number;
+    wrongAnswers?: number;
+
+    constructor(data?: IGetQuestionStatisticsQuestionStatistics) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.correctAnswers = _data["correctAnswers"];
+            this.wrongAnswers = _data["wrongAnswers"];
+        }
+    }
+
+    static fromJS(data: any): GetQuestionStatisticsQuestionStatistics {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetQuestionStatisticsQuestionStatistics();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["correctAnswers"] = this.correctAnswers;
+        data["wrongAnswers"] = this.wrongAnswers;
+        return data;
+    }
+}
+
+export interface IGetQuestionStatisticsQuestionStatistics {
+    correctAnswers?: number;
+    wrongAnswers?: number;
 }
 
 export class GetExamResponse implements IGetExamResponse {

@@ -12,7 +12,6 @@ public static class GetExamStatistics
     {
         public double Over50Percent { get; set; }
         public double Under50Percent { get; set; }
-
     }
 
     public class RequestHandler : IRequestHandler<StatisticsQuery, ExamStatistics>

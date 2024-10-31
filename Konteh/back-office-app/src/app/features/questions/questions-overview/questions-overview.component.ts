@@ -49,6 +49,10 @@ export class QuestionsOverviewComponent implements OnInit {
     });
   }
 
+  questionStatistics(id: number){
+    this.router.navigate([`/questions/statistics/${id}`]);
+  }
+
   onFilterChanged(filteredText: string) {
     this.filteredText = filteredText;
     this.resetPaginator();

@@ -28,6 +28,7 @@
           </button>
           <mat-menu #menu="matMenu">
             <button mat-menu-item (click)="editQuestion(question.id)" >Edit</button>
+            <button mat-menu-item (click)="questionStatistics(question.id)" >Statistics</button>
             <button class="delete-button" mat-menu-item (click)="deleteQuestion(question.id)">Delete</button>
           </mat-menu>
         </td>

@@ -25,6 +25,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormErrorsComponent } from "../../shared/form-errors.component";
 import { QuestionsRoutingModule } from './questions-routing.module';
 import { MaterialModule } from '../../shared/material/material.module';
+import { QuestionStatisticsComponent } from './question-statistics/question-statistics.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { MaterialModule } from '../../shared/material/material.module';
     AnswerFormComponent,
     QuestionFilterComponent,
     QuestionsOverviewComponent,
-    CategoryNamePipe
+    CategoryNamePipe,
+    QuestionStatisticsComponent
   ],
   exports: [
     QuestionFilterComponent,
