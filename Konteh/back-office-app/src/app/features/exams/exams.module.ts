@@ -16,6 +16,9 @@ import { ExamsRoutingModule } from './exams-routing.module';
     ExamStatusPipe,
     ExamsSearchComponent
   ],
+  exports: [
+    ExamsOverviewComponent
+  ],
   imports: [
     CommonModule,
     MatTableModule,

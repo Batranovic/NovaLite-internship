@@ -86,7 +86,7 @@ public static class GenerateExam
             _examRepository.Create(exam);
 
             await _examRepository.SaveChanges();
-            await _bus.Publish(new GetExamResponse() { Id = exam.Id, Candidate = $"{exam.Candiate.Name} {exam.Candiate.Surname}", Score = 0, Status = ExamStatus.InProgess });
+            await _bus.Publish(new GetExamResponse() { Id = exam.Id, Candidate = $"{exam.Candiate.Name} {exam.Candiate.Surname}", Score = $"0 / {exam.ExamQuestions.Count}", Status = ExamStatus.InProgess });
             return exam.Id;
         }
 

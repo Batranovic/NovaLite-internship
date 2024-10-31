@@ -34,7 +34,7 @@ public static class GetAllExams
                 Id = e.Id,
                 Candidate = $"{e.Candiate.Name} {e.Candiate.Surname}",
                 Status = e.Status,
-                Score = e.ExamQuestions.Count(ea => ea.IsCorrect()),
+                Score = $"{e.ExamQuestions.Count(ea => ea.IsCorrect())} / {e.ExamQuestions.Count}",
             });
         }
     }
