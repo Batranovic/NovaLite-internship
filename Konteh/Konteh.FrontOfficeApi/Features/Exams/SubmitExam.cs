@@ -56,7 +56,7 @@ public static class SubmitExam
             }
 
             await _examRepository.SaveChanges();
-            await _bus.Publish(new GetExamResponse() { Id = exam.Id, Candidate = $"{exam.Candiate.Name} {exam.Candiate.Surname}", Score = 0, Status = ExamStatus.Completed });
+            await _bus.Publish(new GetExamResponse() { Id = exam.Id, Candidate = $"{exam.Candiate.Name} {exam.Candiate.Surname}", Score = $"{exam.ExamQuestions.Count(ea => ea.IsCorrect())} / {exam.ExamQuestions.Count}", Status = ExamStatus.Completed });
         }
     }
 }

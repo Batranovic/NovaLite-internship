@@ -30,6 +30,7 @@
         <button class="question-form-button" mat-flat-button color="primary" type="submit" [disabled]="!questionForm.valid">Submit</button>
     </form>
     <form-errors [form]="questionForm"></form-errors>
+    <mat-error></mat-error>
     <button class="add-answer-button" mat-raised-button color="primary" type="button" (click)="addAnswer()">Add an answer</button>
     <ng-container *ngFor="let group of answersArray.controls; let i = index">
         <app-answer-form *ngIf="!group.value.isDeleted" [answerForm]="group" (delete)="onDeleteAnswer(i)">

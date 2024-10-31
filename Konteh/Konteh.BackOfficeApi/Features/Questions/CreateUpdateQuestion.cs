@@ -38,7 +38,6 @@ public static class CreateUpdateQuestion
             existingQuestion.Text = request.Text;
             existingQuestion.Category = request.Category;
             //TODO: Think about a way to do this
-            //existingQuestion.Type = request.Type;
             foreach (var answer in request.Answers)
             {
                 var existingAnswer = existingQuestion.Answers
