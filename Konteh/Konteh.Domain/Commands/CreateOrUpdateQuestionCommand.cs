@@ -17,19 +17,4 @@ public class CreateOrUpdateQuestionCommand : IRequest<Unit>
         public bool IsCorrect { get; set; }
         public bool IsDeleted { get; set; } = false;
     }
-
-    public bool ValidateCorrectAnswers()
-    {
-        return Type == QuestionType.RadioButton ? ValidateRadioButtonAnswers() : ValidateCheckBoxAnswers();
-    }
-
-    private bool ValidateRadioButtonAnswers()
-    {
-        return Answers.Count(x => x.IsCorrect) == 1;
-    }
-
-    private bool ValidateCheckBoxAnswers()
-    {
-        return Answers.Any(x => x.IsCorrect);
-    }
 }

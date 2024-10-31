@@ -9,8 +9,7 @@ public class RadioButtonQuestion : Question
     {
         if (!submittedAnswerIds.Any())
             return false;
-        var correctAnswerId = Answers.SingleOrDefault(x => x.IsCorrect)?.Id;
+        var correctAnswerId = Answers.SingleOrDefault(x => x.IsCorrect && !x.IsDeleted)?.Id;
         return correctAnswerId == submittedAnswerIds.Single();
     }
-
 }

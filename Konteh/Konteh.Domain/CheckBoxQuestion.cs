@@ -9,8 +9,7 @@ public class CheckBoxQuestion : Question
     {
         if (!submittedAnswerIds.Any())
             return false;
-        var correctAnswerIds = Answers.Where(x => x.IsCorrect).Select(x => x.Id).Order();
+        var correctAnswerIds = Answers.Where(x => x.IsCorrect && !x.IsDeleted).Select(x => x.Id).Order();
         return submittedAnswerIds.Order().SequenceEqual(correctAnswerIds);
     }
-
 }
