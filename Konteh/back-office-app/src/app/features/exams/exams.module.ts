@@ -8,6 +8,7 @@ import { ExamsSearchComponent } from './exams-search/exams-search.component';
 import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { ExamsRoutingModule } from './exams-routing.module';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { MatInputModule } from '@angular/material/input';
     MatIcon,
     ReactiveFormsModule,
     MatLabel,
-    MatInputModule
+    MatInputModule,
+    ExamsRoutingModule
   ]
 })
 export class ExamsModule { }
