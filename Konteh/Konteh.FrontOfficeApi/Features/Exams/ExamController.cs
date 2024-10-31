@@ -38,7 +38,13 @@ public class ExamController : Controller
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<GetExam.Response>> GetById(long id)
     {
-        var response = await _mediator.Send(new GetExam.Query { ExamId = id });
+        var emailClaim = HttpContext.Request.Headers["email"].ToString();
+
+        if (string.IsNullOrEmpty(emailClaim))
+        {
+            return Unauthorized("Email claim is missing in the request headers.");
+        }
+        var response = await _mediator.Send(new GetExam.Query { ExamId = id, Email = emailClaim });
         return Ok(response);
     }
 }
