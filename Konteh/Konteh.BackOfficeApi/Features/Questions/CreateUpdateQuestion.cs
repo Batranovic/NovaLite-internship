@@ -35,9 +35,6 @@ public static class CreateUpdateQuestion
         private async Task UpdateQuestion(CreateOrUpdateQuestionCommand request)
         {
             var existingQuestion = await _repository.GetById(request.Id!.Value) ?? throw new NotFoundException();
-            existingQuestion.Text = request.Text;
-            existingQuestion.Category = request.Category;
-            //TODO: Think about a way to do this
             if (existingQuestion.Type != request.Type)
             {
                 if (existingQuestion is RadioButtonQuestion)
@@ -49,6 +46,8 @@ public static class CreateUpdateQuestion
                     existingQuestion = new RadioButtonQuestion { Id = existingQuestion.Id, Text = request.Text, Category = request.Category, Answers = existingQuestion.Answers };
                 }
             }
+            existingQuestion.Text = request.Text;
+            existingQuestion.Category = request.Category;
             foreach (var answer in request.Answers)
             {
                 var existingAnswer = existingQuestion.Answers
@@ -69,6 +68,8 @@ public static class CreateUpdateQuestion
                     });
                 }
             }
+
+            await _repository.SaveChanges();
         }
 
         private void CreateQuestion(CreateOrUpdateQuestionCommand request)
