@@ -38,6 +38,17 @@ public static class CreateUpdateQuestion
             existingQuestion.Text = request.Text;
             existingQuestion.Category = request.Category;
             //TODO: Think about a way to do this
+            if (existingQuestion.Type != request.Type)
+            {
+                if (existingQuestion is RadioButtonQuestion)
+                {
+                    existingQuestion = new CheckBoxQuestion { Id = existingQuestion.Id, Text = request.Text, Category = request.Category, Answers = existingQuestion.Answers };
+                }
+                else if (existingQuestion is CheckBoxQuestion)
+                {
+                    existingQuestion = new RadioButtonQuestion { Id = existingQuestion.Id, Text = request.Text, Category = request.Category, Answers = existingQuestion.Answers };
+                }
+            }
             foreach (var answer in request.Answers)
             {
                 var existingAnswer = existingQuestion.Answers

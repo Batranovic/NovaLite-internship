@@ -17,7 +17,7 @@ export class CreateQuestionComponent implements OnInit {
   questionForm = new FormGroup({
     text: new FormControl('', Validators.required),
     category: new FormControl(QuestionCategory.Csharp, Validators.required),
-    type: new FormControl({ value: QuestionType.RadioButton, disabled: false }, Validators.required),
+    type: new FormControl( QuestionType.RadioButton, Validators.required),
     answers: new FormArray<UntypedFormGroup>([])
   });
   questionId: number | null = null;
@@ -26,7 +26,7 @@ export class CreateQuestionComponent implements OnInit {
   isEditing = false;
 
   constructor(private questionClient: QuestionsClient, private router: Router, private route: ActivatedRoute,
-    private dialog: MatDialog, private snackBar: MatSnackBar, private cdr: ChangeDetectorRef) { }
+    private dialog: MatDialog, private cdr: ChangeDetectorRef) { }
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
@@ -48,12 +48,13 @@ export class CreateQuestionComponent implements OnInit {
         isDeleted: control.value.isDeleted
       });
     });
-    const questionType = this.isEditing ? this.questionForm.get('type')?.value : this.questionForm.value.type;
+    //const questionType = this.isEditing ? this.questionForm.get('type')?.value : this.questionForm.value.type;
     const command = new CreateOrUpdateQuestionCommand({
       id: this.questionId!,
       text: this.questionForm.value.text!,
       category: this.questionForm.value.category!,
-      type: questionType!,
+      //type: questionType!,
+      type: this.questionForm.value.type!,
       answers: answersToSubmit
     });
     this.questionClient.createOrUpdateQuestion(command).subscribe({
@@ -69,9 +70,9 @@ export class CreateQuestionComponent implements OnInit {
         category: response.category,
         type: response.type
       });
-      if (this.isEditing) {
-        this.questionForm.get('type')?.disable(); 
-      }
+      // if (this.isEditing) {
+      //   this.questionForm.get('type')?.disable(); 
+      // }
       response.answers?.map(x => this.answersArray.push(new FormGroup({
         id: new FormControl(x.id),
         text: new FormControl(x.text, Validators.required),
