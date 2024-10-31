@@ -18,7 +18,7 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 export interface IQuestionsClient {
     paginate(questionText: string | null | undefined, page: number | undefined, pageSize: number | undefined): Observable<SearchQuestionsResponse>;
     getQuestionById(id: number): Observable<GetQuestionByIdResponse>;
-    createOrUpdateQuestion(command: CreateUpdateQuestionCommand): Observable<void>;
+    createOrUpdateQuestion(command: CreateOrUpdateQuestionCommand): Observable<void>;
     getAll(): Observable<GetAllQuestionsResponse[]>;
     deleteById(questionId: number): Observable<void>;
 }
@@ -152,7 +152,7 @@ export class QuestionsClient implements IQuestionsClient {
         return _observableOf(null as any);
     }
 
-    createOrUpdateQuestion(command: CreateUpdateQuestionCommand): Observable<void> {
+    createOrUpdateQuestion(command: CreateOrUpdateQuestionCommand): Observable<void> {
         let url_ = this.baseUrl + "/questions";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -326,6 +326,7 @@ export class QuestionsClient implements IQuestionsClient {
 
 export interface IExamsClient {
     getAllExams(candidate: string | null | undefined): Observable<GetExamResponse[]>;
+    getExamStatistics(): Observable<GetExamStatisticsExamStatistics>;
 }
 
 @Injectable({
@@ -388,6 +389,54 @@ export class ExamsClient implements IExamsClient {
             else {
                 result200 = <any>null;
             }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    getExamStatistics(): Observable<GetExamStatisticsExamStatistics> {
+        let url_ = this.baseUrl + "/exams/statistics";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetExamStatistics(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetExamStatistics(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<GetExamStatisticsExamStatistics>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<GetExamStatisticsExamStatistics>;
+        }));
+    }
+
+    protected processGetExamStatistics(response: HttpResponseBase): Observable<GetExamStatisticsExamStatistics> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetExamStatisticsExamStatistics.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -791,14 +840,14 @@ export interface IValidationProblemDetails extends IHttpValidationProblemDetails
     [key: string]: any;
 }
 
-export class CreateUpdateQuestionCommand implements ICreateUpdateQuestionCommand {
+export class CreateOrUpdateQuestionCommand implements ICreateOrUpdateQuestionCommand {
     id?: number | undefined;
     text?: string;
     category?: QuestionCategory;
     type?: QuestionType;
-    answers?: CreateUpdateQuestionAnswerDto[];
+    answers?: CreateOrUpdateQuestionCommandAnswerDto[];
 
-    constructor(data?: ICreateUpdateQuestionCommand) {
+    constructor(data?: ICreateOrUpdateQuestionCommand) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -816,14 +865,14 @@ export class CreateUpdateQuestionCommand implements ICreateUpdateQuestionCommand
             if (Array.isArray(_data["answers"])) {
                 this.answers = [] as any;
                 for (let item of _data["answers"])
-                    this.answers!.push(CreateUpdateQuestionAnswerDto.fromJS(item));
+                    this.answers!.push(CreateOrUpdateQuestionCommandAnswerDto.fromJS(item));
             }
         }
     }
 
-    static fromJS(data: any): CreateUpdateQuestionCommand {
+    static fromJS(data: any): CreateOrUpdateQuestionCommand {
         data = typeof data === 'object' ? data : {};
-        let result = new CreateUpdateQuestionCommand();
+        let result = new CreateOrUpdateQuestionCommand();
         result.init(data);
         return result;
     }
@@ -843,21 +892,21 @@ export class CreateUpdateQuestionCommand implements ICreateUpdateQuestionCommand
     }
 }
 
-export interface ICreateUpdateQuestionCommand {
+export interface ICreateOrUpdateQuestionCommand {
     id?: number | undefined;
     text?: string;
     category?: QuestionCategory;
     type?: QuestionType;
-    answers?: CreateUpdateQuestionAnswerDto[];
+    answers?: CreateOrUpdateQuestionCommandAnswerDto[];
 }
 
-export class CreateUpdateQuestionAnswerDto implements ICreateUpdateQuestionAnswerDto {
+export class CreateOrUpdateQuestionCommandAnswerDto implements ICreateOrUpdateQuestionCommandAnswerDto {
     id?: number;
     text?: string;
     isCorrect?: boolean;
     isDeleted?: boolean;
 
-    constructor(data?: ICreateUpdateQuestionAnswerDto) {
+    constructor(data?: ICreateOrUpdateQuestionCommandAnswerDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -875,9 +924,9 @@ export class CreateUpdateQuestionAnswerDto implements ICreateUpdateQuestionAnswe
         }
     }
 
-    static fromJS(data: any): CreateUpdateQuestionAnswerDto {
+    static fromJS(data: any): CreateOrUpdateQuestionCommandAnswerDto {
         data = typeof data === 'object' ? data : {};
-        let result = new CreateUpdateQuestionAnswerDto();
+        let result = new CreateOrUpdateQuestionCommandAnswerDto();
         result.init(data);
         return result;
     }
@@ -892,7 +941,7 @@ export class CreateUpdateQuestionAnswerDto implements ICreateUpdateQuestionAnswe
     }
 }
 
-export interface ICreateUpdateQuestionAnswerDto {
+export interface ICreateOrUpdateQuestionCommandAnswerDto {
     id?: number;
     text?: string;
     isCorrect?: boolean;
@@ -948,7 +997,6 @@ export class GetExamResponse implements IGetExamResponse {
     candidate?: string;
     status?: ExamStatus;
     score?: number;
-    maxScore?: number;
 
     constructor(data?: IGetExamResponse) {
         if (data) {
@@ -965,7 +1013,6 @@ export class GetExamResponse implements IGetExamResponse {
             this.candidate = _data["candidate"];
             this.status = _data["status"];
             this.score = _data["score"];
-            this.maxScore = _data["maxScore"];
         }
     }
 
@@ -982,7 +1029,6 @@ export class GetExamResponse implements IGetExamResponse {
         data["candidate"] = this.candidate;
         data["status"] = this.status;
         data["score"] = this.score;
-        data["maxScore"] = this.maxScore;
         return data;
     }
 }
@@ -992,12 +1038,51 @@ export interface IGetExamResponse {
     candidate?: string;
     status?: ExamStatus;
     score?: number;
-    maxScore?: number;
 }
 
 export enum ExamStatus {
     InProgess = 1,
     Completed = 2,
+}
+
+export class GetExamStatisticsExamStatistics implements IGetExamStatisticsExamStatistics {
+    over50Percent?: number;
+    under50Percent?: number;
+
+    constructor(data?: IGetExamStatisticsExamStatistics) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.over50Percent = _data["over50Percent"];
+            this.under50Percent = _data["under50Percent"];
+        }
+    }
+
+    static fromJS(data: any): GetExamStatisticsExamStatistics {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetExamStatisticsExamStatistics();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["over50Percent"] = this.over50Percent;
+        data["under50Percent"] = this.under50Percent;
+        return data;
+    }
+}
+
+export interface IGetExamStatisticsExamStatistics {
+    over50Percent?: number;
+    under50Percent?: number;
 }
 
 export class ApiException extends Error {
