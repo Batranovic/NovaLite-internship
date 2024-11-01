@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ExamClient, GenerateExamCommand } from '../../../api/api-reference';
 import { Router } from '@angular/router';
 import { setServerSideValidationErrors } from '../../../shared/validation';
+import { AuthService } from '../../auth.service';
 
 @Component({
   selector: 'app-exam-registration',
@@ -11,7 +12,7 @@ import { setServerSideValidationErrors } from '../../../shared/validation';
 })
 export class ExamRegistrationComponent {
 
-  constructor(private examClient: ExamClient, private router: Router){}
+  constructor(private authService : AuthService, private examClient: ExamClient, private router: Router){}
 
   examForm = new FormGroup({
     candidateName: new FormControl('', Validators.required),
@@ -28,9 +29,14 @@ export class ExamRegistrationComponent {
         candidateEmail: this.examForm.value.candidateEmail!,  
         candidateFaculty: this.examForm.value.candidateFaculty!  
       });
+
+      if (!command.candidateEmail) return;
+      this.authService.setEmailClaim(command.candidateEmail);
      
       this.examClient.generateExam(command).subscribe({
-        next: examId => this.router.navigate([`exam-overview/${examId}`]),
+        next: examId =>{ 
+          this.router.navigate([`exam-overview/${examId}`]);
+        },
         error: errors => setServerSideValidationErrors(errors, this.examForm)
     });
     } 

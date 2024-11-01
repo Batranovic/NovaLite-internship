@@ -5,6 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component';
 import { filter } from 'rxjs';
+import { AuthService } from '../../auth.service';
 
 @Component({
   selector: 'app-exam-overview',
@@ -16,7 +17,7 @@ export class ExamOverviewComponent {
   currentQuestionIndex = 0;
   isTimerExpired = false;
 
-  constructor(private activatedRoute: ActivatedRoute, private examClient: ExamClient, private snackBar: MatSnackBar, private router: Router, private dialog: MatDialog) {
+  constructor(private authService: AuthService, private activatedRoute: ActivatedRoute, private examClient: ExamClient, private snackBar: MatSnackBar, private router: Router, private dialog: MatDialog) {
     const examId = this.activatedRoute.snapshot.paramMap.get('id');
     if (examId) {
       this.examClient.getById(+examId).subscribe(response => this.exam = response);
@@ -73,6 +74,7 @@ export class ExamOverviewComponent {
               duration: 3000,
             });
             this.router.navigate(['/']);
+            this.authService.clearEmailClaim();
           }
         });
       });

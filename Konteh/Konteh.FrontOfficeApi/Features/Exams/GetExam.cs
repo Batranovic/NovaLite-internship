@@ -13,6 +13,8 @@ public static class GetExam
     public class Query : IRequest<Response>
     {
         public long ExamId { get; set; }
+        public string Email { get; set; } = string.Empty;
+
     }
 
     public class Response
@@ -50,6 +52,11 @@ public static class GetExam
         public async Task<Response> Handle(Query request, CancellationToken cancellationToken)
         {
             var exam = await _examRepository.GetById(request.ExamId) ?? throw new NotFoundException();
+
+            if (exam.Candiate.Email != request.Email)
+            {
+                throw new Exception("User not authorized for this exam!");
+            }
 
             return new Response
             {
